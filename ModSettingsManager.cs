@@ -23,7 +23,6 @@ namespace RiskOfOptions
 
         private static GameObject modOptionsPanel;
         private static GameObject modOptionsButton;
-        private static GameObject descriptionPanel;
 
         private static GameObject[] panelControllers;
         private static GameObject[] headerButtons;
@@ -63,7 +62,6 @@ namespace RiskOfOptions
                     if (modLocals.ContainsKey(token))
                     {
                         result = modLocals[token];
-                        //Debug.Log($"-------{result}---{token}");
                     }
                 }
             }
@@ -74,11 +72,11 @@ namespace RiskOfOptions
         public static void addListener(ModOption modOption, UnityEngine.Events.UnityAction<float> unityAction)
         {
             modOption.onValueChangedFloat = unityAction;
+        }
 
-            if (modOption.gameObject != null)
-            {
-                modOption.gameObject.GetComponentInChildren<SettingsSlider>().slider.onValueChanged.AddListener(unityAction);
-            }
+        public static void addListener(ModOption modOption, UnityEngine.Events.UnityAction<bool> unityAction)
+        {
+            modOption.onValueChangedBool = unityAction;
         }
 
         private static void Console_Awake(On.RoR2.Console.orig_Awake orig, RoR2.Console self)
@@ -106,10 +104,6 @@ namespace RiskOfOptions
             {
                 InstOptions();
 
-                //ModOption hitmarker = ModSettingsManager.getOption("Hitmarker Volume");
-                //BaseSettingsControl baseSettings = hitmarker.gameObject.GetComponentInChildren<BaseSettingsControl>();
-                //hitmarker.gameObject.GetComponentInChildren<SettingsSlider>().slider.onValueChanged.AddListener(new UnityEngine.Events.UnityAction<float>(eatdick));
-
                 isOptionsRegistered = true;
             }
 
@@ -126,11 +120,6 @@ namespace RiskOfOptions
                 }
             }
 
-            //if (GameObject.Find("SettingsSubPanel, Mod Options") != null)
-            //{
-            //    //descriptionPanel.GetComponent<LanguageTextMeshController>().token = "";
-            //}
-
             if (!initilized)
             {
                 GameObject gameplayButton = GameObject.Find("GenericHeaderButton (Audio)");
@@ -142,8 +131,6 @@ namespace RiskOfOptions
                 testButton.GetComponentInChildren<HGTextMeshProUGUI>().SetText("MOD OPTIONS");
 
                 testButton.GetComponentInChildren<HGButton>().onClick.AddListener(loadMainModPanel);
-
-                descriptionPanel = GameObject.Find("DescriptionText");
 
                 initilized = true;
             }
@@ -176,6 +163,26 @@ namespace RiskOfOptions
             modLocals[$"{StartingText}.PanelButton.{id}.PanelButtonDescription".ToUpper().Replace(" ", "_")] = description;
         }
 
+        public static void setPanelTitle(string title)
+        {
+            var classes = Assembly.GetCallingAssembly().GetExportedTypes();
+
+            string id = "";
+
+            foreach (var item in classes)
+            {
+                BepInPlugin bepInPlugin = item.GetCustomAttribute<BepInPlugin>();
+
+                if (bepInPlugin != null)
+                {
+                    id = bepInPlugin.GUID;
+                    break;
+                }
+            }
+
+            modLocals[$"{StartingText}.PanelButton.{id}.PanelButtonTitle".ToUpper().Replace(" ", "_")] = title;
+        }
+
         public static void loadMainModPanel()
         {
             foreach (var item in panelControllers)
@@ -197,7 +204,14 @@ namespace RiskOfOptions
                 {
                     var newEntryButton = UnityEngine.Object.Instantiate<GameObject>(EntryButton, EntryButton.transform.parent);
 
-                    newEntryButton.GetComponentInChildren<HGTextMeshProUGUI>().SetText($"{item.modName} Options");
+                    string Titletext = $"{item.modName} Options";
+
+                    if (modLocals.ContainsKey($"{StartingText}.PanelButton.{item.modGUID}.PanelButtonTitle".ToUpper().Replace(" ", "_")))
+                    {
+                        Titletext = modLocals[$"{StartingText}.PanelButton.{item.modGUID}.PanelButtonTitle".ToUpper().Replace(" ", "_")];
+                    }
+
+                    newEntryButton.GetComponentInChildren<HGTextMeshProUGUI>().SetText(Titletext);
                     newEntryButton.GetComponent<HGButton>().onClick.RemoveAllListeners();
                     newEntryButton.GetComponent<HGButton>().onClick.AddListener(delegate { loadModPanel(item); });
                     newEntryButton.GetComponent<HGButton>().hoverToken = $"{StartingText}.PanelButton.{item.modGUID}.PanelButtonDescription".ToUpper().Replace(" ", "_");
@@ -229,8 +243,6 @@ namespace RiskOfOptions
 
         public static void loadModPanel(ModPanel modPanel)
         {
-            Debug.Log(modPanel.modName);
-
             modOptionsPanel.SetActive(false);
 
             modPanel.panel.SetActive(true);
@@ -441,7 +453,10 @@ namespace RiskOfOptions
                     newOption.GetComponentInChildren<CarouselController>().settingName = mo.longName;
                     newOption.GetComponentInChildren<CarouselController>().nameToken = mo.longName.ToUpper().Replace(" ", "_");
 
-                    newOption.GetComponentInChildren<HGButton>().hoverToken = mo.longName.ToUpper().Replace(" ", "_"); ;
+                    if (mo.onValueChangedBool != null)
+                    {
+                        newOption.AddComponent<BoolListener>().onValueChangedBool = mo.onValueChangedBool;
+                    }
 
                     modLocals[mo.longName.ToUpper().Replace(" ", "_")] = mo.name;
 
@@ -454,11 +469,6 @@ namespace RiskOfOptions
 
                 newOption.GetComponentInChildren<HGButton>().hoverToken = $"{mo.longName.ToUpper().Replace(" ", "_")}_DESCRIPTION";
                 modLocals[$"{mo.longName.ToUpper().Replace(" ", "_")}_DESCRIPTION"] = mo.description;
-
-                //UnityEngine.Object.DestroyImmediate(newOption.GetComponentInChildren<ButtonSkinController>());
-                //UnityEngine.Object.DestroyImmediate(newOption.GetComponentInChildren<HGButton>());
-
-                
 
                 mo.gameObject = newOption;
             }
@@ -501,7 +511,6 @@ namespace RiskOfOptions
                 if (bepInPlugin != null)
                 {
                     id = bepInPlugin.GUID;
-                    Debug.LogWarning($"ModOption request from {id}.");
                     break;
                 }
             }
