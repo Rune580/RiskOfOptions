@@ -63,3 +63,8 @@ string b = ModSettingsManager.getOptionValue("Test Bool");
 ```
 ModSettingsManager.getOption("Test Bool")
 ```
+
+## Previews
+
+![Preview 1](/images/example1.jpg)
+![Preview 2](/images/example2.jpg)
