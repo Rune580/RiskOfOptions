@@ -3,7 +3,7 @@ An API to add Mod Options in game to ROR2.
 
 ## Getting Started
 First you need to grab the latest release from the Thunderstore [insert link here].
-Extract the mod to your plugins folder, and then add a reference to it in Visual Studio.
+Extract the mod to your plugins folder, and then add a reference to the dll in your project in Visual Studio. [Project->Add Reference...->Browse]
 
 Next you need to add Risk Of Options as a dependecy for your mod.
 ```C#
