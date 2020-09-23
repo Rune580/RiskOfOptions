@@ -2,7 +2,7 @@
 An API to add Mod Options in game to ROR2.
 
 ## Getting Started
-First you need to grab the latest release from the Thunderstore [insert link here].
+First you need to grab the latest release from the [Thunderstore](https://thunderstore.io/package/Rune48a891aab771429d/Risk_Of_Options/).
 Extract the mod to your plugins folder, and then add a reference to the dll in your project in Visual Studio. [Project->Add Reference...->Browse]
 
 Next you need to add Risk Of Options as a dependecy for your mod.
@@ -13,7 +13,7 @@ Next you need to add Risk Of Options as a dependecy for your mod.
 Now you're ready to start adding options.
 
 ### Adding an option
-
+This needs to be run on Awake()
 ```C#
 ModSettingsManager.addOption(new ModOption(ModOption.OptionType.Slider, "Test Slider", "This is a Slider test."));
 
