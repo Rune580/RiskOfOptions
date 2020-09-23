@@ -7,9 +7,11 @@ namespace RiskOfOptions
 {
     public class ModPanel
     {
-        public GameObject panel { get; private set; }
+        public GameObject panel;
 
         public GameObject backButton;
+
+        public GameObject entryButton;
         public string modGUID { get; private set; }
         public string modName { get; private set; }
 

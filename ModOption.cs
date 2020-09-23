@@ -17,6 +17,9 @@ namespace RiskOfOptions
         public string name;
         public string description;
 
+        public UnityEngine.Events.UnityEvent ue_valueChangedBool;
+        public UnityEngine.Events.UnityAction<float> onValueChangedFloat;
+
         public BaseConVar conVar;
 
         public GameObject gameObject;

@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using UnityEngine;
 
 /*
 using R2API;
@@ -29,7 +30,7 @@ namespace RiskOfOptions
     public sealed class RiskOfOptionsPlugin : BaseUnityPlugin
     {
         public const string
-            MODNAME = "riskofoptions",
+            MODNAME = "Risk of Options",
             AUTHOR = "rune580",
             GUID = "com." + AUTHOR + "." + MODNAME,
             VERSION = "1.0.0";
@@ -38,12 +39,23 @@ namespace RiskOfOptions
         private void Awake() //Called when loaded by BepInEx.
         {
             ModSettingsManager.Init();
+
+            //ModSettingsManager.setPanelDescription("Testing stuff");
+
+            //ModSettingsManager.addOption(new ModOption(ModOption.OptionType.Slider, "Test Slider", "This is a listener test."));
+
+            //ModSettingsManager.addListener(ModSettingsManager.getOption("Test Slider"), new UnityEngine.Events.UnityAction<float>(testerino));
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Start is automatically called by Unity")]
         private void Start() //Called at the first frame of the game.
         {
-
+            
         }
+
+        //public void testerino(float dum)
+        //{
+        //    Debug.Log($"{dum}");
+        //}
     }
 }

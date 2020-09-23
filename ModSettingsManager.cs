@@ -71,6 +71,16 @@ namespace RiskOfOptions
             return result;
         }
 
+        public static void addListener(ModOption modOption, UnityEngine.Events.UnityAction<float> unityAction)
+        {
+            modOption.onValueChangedFloat = unityAction;
+
+            if (modOption.gameObject != null)
+            {
+                modOption.gameObject.GetComponentInChildren<SettingsSlider>().slider.onValueChanged.AddListener(unityAction);
+            }
+        }
+
         private static void Console_Awake(On.RoR2.Console.orig_Awake orig, RoR2.Console self)
         {
             orig(self);
@@ -81,11 +91,6 @@ namespace RiskOfOptions
                 Debug.Log($"[Risk of Options]: {item.conVar.name} ConVar registered.");
             }
         }
-
-        //public static void eatdick(float bruh)
-        //{
-        //    AkSoundEngine.SetRTPCValue("RuneBadNoise", bruh);
-        //}
 
         private static void SettingsPanelController_Update(On.RoR2.UI.SettingsPanelController.orig_Update orig, SettingsPanelController self)
         {
@@ -142,16 +147,6 @@ namespace RiskOfOptions
 
                 initilized = true;
             }
-
-            if (initilized)
-            {
-                //Debug.Log("-------------------------");
-                //
-
-                //Debug.Log(descriptionPanel.GetComponent<HGTextMeshProUGUI>().text);
-
-                //Debug.Log("-------------------------");
-            }
         }
 
         private static void SettingsPanelController_Start(On.RoR2.UI.SettingsPanelController.orig_Start orig, SettingsPanelController self)
@@ -196,34 +191,30 @@ namespace RiskOfOptions
                 item.GetComponent<HGButton>().interactable = true;
             }
 
-            foreach (var item in modPanelButtons)
+            foreach (var item in subPanels)
             {
-                if (!item.activeSelf)
+                if (item.entryButton == null)
                 {
-                    item.SetActive(true);
+                    var newEntryButton = UnityEngine.Object.Instantiate<GameObject>(EntryButton, EntryButton.transform.parent);
+
+                    newEntryButton.GetComponentInChildren<HGTextMeshProUGUI>().SetText($"{item.modName} Options");
+                    newEntryButton.GetComponent<HGButton>().onClick.RemoveAllListeners();
+                    newEntryButton.GetComponent<HGButton>().onClick.AddListener(delegate { loadModPanel(item); });
+                    newEntryButton.GetComponent<HGButton>().hoverToken = $"{StartingText}.PanelButton.{item.modGUID}.PanelButtonDescription".ToUpper().Replace(" ", "_");
+
+                    item.entryButton = newEntryButton;
+
+                    if (!newEntryButton.activeSelf)
+                    {
+                        newEntryButton.SetActive(true);
+                    }
                 }
             }
 
-            //foreach (var item in modOptions)
-            //{
-            //    if (item.gameObject != null)
-            //    {
-
-            //    }
-            //    if (!item.gameObject.activeSelf)
-            //    {
-            //        item.gameObject.SetActive(true);
-            //    }
-            //}
 
             if (modOptionsButton == null)
             {
                 modOptionsButton = GameObject.Find("GenericHeaderButton (Mod Options)");
-            }
-
-            foreach (var key in modLocals.Keys)
-            {
-                Debug.Log($"----------{key}: {modLocals[key]}");
             }
 
             GameObject highlightedButton = GameObject.Find("GenericHeaderHighlight");
@@ -238,11 +229,11 @@ namespace RiskOfOptions
 
         public static void loadModPanel(ModPanel modPanel)
         {
+            Debug.Log(modPanel.modName);
+
             modOptionsPanel.SetActive(false);
 
             modPanel.panel.SetActive(true);
-
-            
 
             modPanel.backButton.SetActive(true);
 
@@ -352,6 +343,11 @@ namespace RiskOfOptions
 
                     foreach (var item in subPanels)
                     {
+                        if (item.panel == null)
+                        {
+                            item.panel = UnityEngine.Object.Instantiate<GameObject>(modOptionsPanel, modOptionsPanel.transform.parent);
+                        }
+
                         if (EntryButton == null)
                         {
                             EntryButton = UnityEngine.Object.Instantiate<GameObject>(BoolPrefab, BoolPrefab.transform.parent);
@@ -387,13 +383,13 @@ namespace RiskOfOptions
                             EntryButton.SetActive(false);
                         }
 
-                        var newEntryButton = UnityEngine.Object.Instantiate<GameObject>(EntryButton, EntryButton.transform.parent);
+                        //var newEntryButton = UnityEngine.Object.Instantiate<GameObject>(EntryButton, EntryButton.transform.parent);
 
-                        newEntryButton.GetComponentInChildren<HGTextMeshProUGUI>().SetText($"{item.modName} Options");
-                        newEntryButton.GetComponent<HGButton>().onClick.AddListener(delegate { loadModPanel(item); });
-                        newEntryButton.GetComponent<HGButton>().hoverToken = $"{StartingText}.PanelButton.{item.modGUID}.PanelButtonDescription".ToUpper().Replace(" ", "_");
+                        //newEntryButton.GetComponentInChildren<HGTextMeshProUGUI>().SetText($"{item.modName} Options");
+                        //newEntryButton.GetComponent<HGButton>().onClick.AddListener(delegate { loadModPanel(item); });
+                        //newEntryButton.GetComponent<HGButton>().hoverToken = $"{StartingText}.PanelButton.{item.modGUID}.PanelButtonDescription".ToUpper().Replace(" ", "_");
 
-                        modPanelButtons.Add(newEntryButton);
+                        //item.entryButton = newEntryButton;
 
                         GameObject verticalLayout = item.panel.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").gameObject;
 
@@ -403,18 +399,13 @@ namespace RiskOfOptions
                         newExitButton.GetComponent<HGButton>().onClick.AddListener(backToModPanel);
                         newExitButton.GetComponent<HGButton>().hoverToken = $"{StartingText}.GenericBackButton.PanelButtonDescription".ToUpper().Replace(" ", "_");
 
-                        modLocals[$"{StartingText}.GenericBackButton.PanelButtonDescription".ToUpper().Replace(" ", "_")] = "Back To Main Mod Options Panel";
+                        modLocals[$"{StartingText}.GenericBackButton.PanelButtonDescription".ToUpper().Replace(" ", "_")] = "Back To The Main Mod Options Panel";
 
                         item.backButton = newExitButton;
                     }
                 }
 
             }
-        }
-
-        public static void bruhtest()
-        {
-            descriptionPanel.GetComponentInChildren<HGTextMeshProUGUI>().text = "pp";
         }
 
         public static void InstOptions()
@@ -433,9 +424,15 @@ namespace RiskOfOptions
 
                     newOption.GetComponentInChildren<SettingsSlider>().settingName = mo.longName;
                     newOption.GetComponentInChildren<SettingsSlider>().nameToken = mo.longName.ToUpper().Replace(" ", "_");
-                    //newOption.GetComponentInChildren<SettingsSlider>().nameLabel.token = mo.longName.ToUpper().Replace(" ", "_");
+
+                    if (mo.onValueChangedFloat != null)
+                    {
+                        newOption.GetComponentInChildren<SettingsSlider>().slider.onValueChanged.AddListener(mo.onValueChangedFloat);
+                    }
 
                     modLocals[mo.longName.ToUpper().Replace(" ", "_")] = mo.name;
+
+                    newOption.name = $"ModOptions, Slider ({mo.longName})";
                 }
                 else if (mo.optionType == ModOption.OptionType.Bool)
                 {
@@ -447,6 +444,8 @@ namespace RiskOfOptions
                     newOption.GetComponentInChildren<HGButton>().hoverToken = mo.longName.ToUpper().Replace(" ", "_"); ;
 
                     modLocals[mo.longName.ToUpper().Replace(" ", "_")] = mo.name;
+
+                    newOption.name = $"ModOptions, Bool ({mo.longName})";
                 }
                 else if (mo.optionType == ModOption.OptionType.Keybinding)
                 {
@@ -459,7 +458,7 @@ namespace RiskOfOptions
                 //UnityEngine.Object.DestroyImmediate(newOption.GetComponentInChildren<ButtonSkinController>());
                 //UnityEngine.Object.DestroyImmediate(newOption.GetComponentInChildren<HGButton>());
 
-                newOption.name = $"ModOptions, Slider ({mo.longName})";
+                
 
                 mo.gameObject = newOption;
             }
@@ -479,7 +478,6 @@ namespace RiskOfOptions
             {
                 throw new NotImplementedException("Keybinding options are not yet supported.");
             }
-
 
             modOptions.Add(mo);
         }
