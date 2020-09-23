@@ -1,10 +1,7 @@
 ﻿using BepInEx;
-using UnityEngine;
 
 namespace RiskOfOptions
 {
-
-    [BepInDependency("com.bepis.r2api")]
     [BepInPlugin(GUID, MODNAME, VERSION)]
     public sealed class RiskOfOptionsPlugin : BaseUnityPlugin
     {
