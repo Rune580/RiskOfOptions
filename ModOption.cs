@@ -14,6 +14,8 @@ namespace RiskOfOptions
         public string name;
         public string description;
 
+        public string defaultValue;
+
         public UnityEngine.Events.UnityAction<bool> onValueChangedBool;
         public UnityEngine.Events.UnityAction<float> onValueChangedFloat;
 
@@ -28,11 +30,12 @@ namespace RiskOfOptions
             Keybinding
         }
 
-        public ModOption(OptionType _optionType, string _name, string _description)
+        public ModOption(OptionType _optionType, string _name, string _description, string _defaultValue = null)
         {
             optionType = _optionType;
             name = _name;
             description = _description;
+            defaultValue = _defaultValue;
 
             var classes = Assembly.GetCallingAssembly().GetExportedTypes();
 

@@ -14,7 +14,6 @@ namespace RiskOfOptions
     {
         private static List<ModOption> modOptions = new List<ModOption>();
         private static List<ModPanel> subPanels = new List<ModPanel>();
-        private static List<GameObject> modPanelButtons = new List<GameObject>();
 
         private static bool initilized = false;
         private static bool isOptionsRegistered = false;
@@ -24,6 +23,8 @@ namespace RiskOfOptions
 
         private static GameObject[] panelControllers;
         private static GameObject[] headerButtons;
+
+        private static List<UnityEngine.Events.UnityAction> Listeners = new List<UnityEngine.Events.UnityAction>();
 
         private static GameObject verticalLayout;
 
@@ -47,6 +48,11 @@ namespace RiskOfOptions
             On.RoR2.Console.Awake += Console_Awake;
 
             On.RoR2.Language.GetLocalizedStringByToken += Language_GetLocalizedStringByToken;
+        }
+
+        public static void addStartupListener(UnityEngine.Events.UnityAction unityAction)
+        {
+            Listeners.Add(unityAction);
         }
 
         private static string Language_GetLocalizedStringByToken(On.RoR2.Language.orig_GetLocalizedStringByToken orig, RoR2.Language self, string token)
@@ -83,9 +89,20 @@ namespace RiskOfOptions
 
             foreach (var item in modOptions)
             {
+                item.conVar.SetString(item.defaultValue);
+
                 RoR2.Console.instance.InvokeMethod("RegisterConVarInternal", new object[] { item.conVar });
                 Debug.Log($"[Risk of Options]: {item.conVar.name} ConVar registered.");
             }
+
+            RoR2.Console.instance.SubmitCmd(null, "exec config", false);
+
+            foreach (var item in Listeners)
+            {
+                item.Invoke();
+            }
+
+            
         }
 
         private static void SettingsPanelController_Update(On.RoR2.UI.SettingsPanelController.orig_Update orig, SettingsPanelController self)
@@ -476,11 +493,11 @@ namespace RiskOfOptions
         {
             if (mo.optionType == ModOption.OptionType.Slider)
             {
-                mo.conVar = new FloatConVar(mo.longName, RoR2.ConVarFlags.Archive, null, mo.description);
+                mo.conVar = new FloatConVar(mo.longName, RoR2.ConVarFlags.Archive, mo.defaultValue, mo.description);
             }
             else if (mo.optionType == ModOption.OptionType.Bool)
             {
-                mo.conVar = new BoolConVar(mo.longName, RoR2.ConVarFlags.Archive, null, mo.description);
+                mo.conVar = new BoolConVar(mo.longName, RoR2.ConVarFlags.Archive, mo.defaultValue, mo.description);
             }
             else if (mo.optionType == ModOption.OptionType.Keybinding)
             {
