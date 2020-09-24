@@ -24,6 +24,13 @@ ModSettingsManager.addOption(new ModOption(ModOption.OptionType.Slider, "Test Sl
 
 ModSettingsManager.addOption(new ModOption(ModOption.OptionType.Bool, "Test Bool", "This is a Bool test."));
 ```
+and with default values
+```C#
+ModSettingsManager.addOption(new ModOption(ModOption.OptionType.Slider, "Test Slider", "This is a Slider test.", "20"));
+
+ModSettingsManager.addOption(new ModOption(ModOption.OptionType.Bool, "Test Bool", "This is a Bool test.", "1"));
+```
+
 
 ### Changing the description of the mod panel
 ```C#
