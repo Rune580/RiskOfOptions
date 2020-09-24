@@ -42,6 +42,16 @@ ModSettingsManager.setPanelDescription("Testing stuff");
 ModSettingsManager.setPanelTitle("Risk of Options Testing Stuff");
 ```
 
+### Firing an event at the earliest time after values are initilized
+```C#
+ModSettingsManager.addStartupListener(new UnityEngine.Events.UnityAction(loadModels));
+
+public void loadModels()
+        {
+                Debug.log("Do Something");
+        }
+```
+
 ### Fire event when value has changed
 for a slider
 ```C#
