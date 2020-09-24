@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 using BepInEx;
-using MonoMod.RuntimeDetour.HookGen;
 using R2API.Utils;
 using RoR2.ConVar;
 using RoR2.UI;
