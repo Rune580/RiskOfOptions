@@ -351,7 +351,7 @@ namespace RiskOfOptions
                     var keybindButton = keybindingPanel.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").Find("SettingsEntryButton, Binding (Jump)").gameObject;
 
                     KeyBindingPrefab = UnityEngine.Object.Instantiate<GameObject>(keybindButton, keybindButton.transform.parent);
-                    keybindingPanel.SetActive(false);
+                    KeyBindingPrefab.SetActive(false);
 
                     modOptionsPanel.SetActive(false);
 
@@ -360,7 +360,7 @@ namespace RiskOfOptions
                         if (!subPanels.ContainsModPanel(item))
                         {
                             GameObject subPanel = UnityEngine.Object.Instantiate<GameObject>(modOptionsPanel, modOptionsPanel.transform.parent);
-                            ModPanel modPanel = new ModPanel(subPanel, item.owner, item.modName);
+                            ModPanel modPanel = new ModPanel(subPanel, item.owner, item.ModGUID);
 
                             subPanel.SetActive(false);
 

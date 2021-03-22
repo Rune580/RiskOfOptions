@@ -31,7 +31,7 @@ namespace RiskOfOptions
 
                 if (previousValue != currentValue)
                 {
-                    onValueChangedBool.Invoke(previousValue);
+                    onValueChangedBool.Invoke(currentValue);
                 }
 
                 previousValue = currentValue;
