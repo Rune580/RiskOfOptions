@@ -1,30 +1,57 @@
 ﻿using BepInEx;
+using R2API.Utils;
 
 namespace RiskOfOptions
 {
     [BepInPlugin(GUID, MODNAME, VERSION)]
+    [BepInDependency("com.bepis.r2api")]
+    [NetworkCompatibility(CompatibilityLevel.NoNeedForSync, VersionStrictness.DifferentModVersionsAreOk)]
+    [R2APISubmoduleDependency("LanguageAPI")]
     public sealed class RiskOfOptionsPlugin : BaseUnityPlugin
     {
         public const string
             MODNAME = "Risk of Options",
             AUTHOR = "rune580",
             GUID = "com." + AUTHOR + "." + "riskofoptions",
-            VERSION = "1.1.0";
+            VERSION = "2.0.0"; // Yes this update is big enough that I feel it deserves a major version change.
 
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Awake is automatically called by Unity")]
         private void Awake()
         {
+            Debug.Init(base.Logger);
+
             ModSettingsManager.Init();
 
+            ModSettingsManager.createCategory("Audio", "yeah");
 
-            ModOption test = new ModOption(ModOption.OptionType.Bool, "test", "test2", "0");
+            ModSettingsManager.createCategory("Controls", "yeah");
 
-            OptionCategory category = new OptionCategory("com." + AUTHOR + "." + "riskofoptions");
+            ModSettingsManager.addOption("Test CheckBox", "This is a Description", true, "Audio");
 
-            category.Add(ref test);
+            ModSettingsManager.addOption("Test Slider", "This is another Description", 0f, "Audio");
 
-            test.name = "s";
+            ModSettingsManager.addOption("Test KeyBind", "This is another Description", UnityEngine.KeyCode.G, "Controls");
+
+            //ModOption test = new ModOption(ModOption.OptionType.Bool, "test", "test description", "0");
+
+            //ModSettingsManager.addOption(test);
+
+            //OptionCategory category = new OptionCategory("com." + AUTHOR + "." + "riskofoptions");
+
+            //category.Add(ref test);
+
+            //category.debugOptions();
+
+            //test.Name = "s";
+
+            //category.debugOptions();
+
+            //test.Name = "d";
+
+            //category.debugOptions();
+
+            //ModSettingsManager.setSubCategory(ModSettingsManager.getCategory("ligballs"), "ligballs but sub");
         }
     }
 }

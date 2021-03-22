@@ -1,44 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using R2API;
 
 namespace RiskOfOptions
 {
     /// <summary>
+    /// 
     /// </summary>
     public class OptionCategory : OptionBase
     {
-        /// <summary>
-        /// The name displayed in the mod options menu.
-        /// </summary>
-        public string Name;
-
-        /// <summary>
-        /// The name token used for the LanguageAPI and for internal use.
-        /// </summary>
-        public string NameToken;
-
-        /// <summary>
-        /// The description displayed in the mod options menu.
-        /// </summary>
-        public string Description;
-
-        /// <summary>
-        /// The description token used for the LanguageAPI and for internal use.
-        /// </summary>
-        public string DescriptionToken;
-
-
         /// <summary>
         /// A list of options.
         /// These are passed by reference.
         /// </summary>
         public List<OptionBase> Options;
-        public OptionCategory(string ModGUID)
+
+        public OptionCategory(string CategoryName, string ModGUID, string Description = "")
         {
+            this.Name = CategoryName;
             this.ModGUID = ModGUID;
 
             Options = new List<OptionBase>();
+
+            OptionToken = $"{ModSettingsManager.StartingText}.{ModGUID}.{(CategoryName != "" ? "category_" + CategoryName + "." : CategoryName)}{Name}.CATEGORY".ToUpper().Replace(" ", "_");
+
+
+            NameToken = $"{OptionToken}.NAME_TOKEN";
+
+            DescriptionToken = $"{OptionToken}.DESCRIPTION_TOKEN";
+
+            LanguageAPI.Add(NameToken, Name);
+
+            if (Description != "")
+            {
+                LanguageAPI.Add(NameToken, Description);
+            }
         }
 
         public void Add(ref OptionBase option)
@@ -46,14 +44,9 @@ namespace RiskOfOptions
             Options.Add(option);
         }
 
-        public void Add(ref ModOption option)
+        public void Add(ref RiskOfOption option)
         {
             Options.Add(option);
-        }
-
-        public void debugOptions()
-        {
-
         }
     }
 }

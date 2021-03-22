@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace RiskOfOptions
@@ -13,7 +14,13 @@ namespace RiskOfOptions
     {
         public string ModGUID { get; private set; }
 
-        public List<OptionBase> Options;
+        internal List<OptionBase> Options;
+
+        private int lastAmount = 0;
+
+        private List<RiskOfOption> modOptions;
+
+        private List<OptionCategory> Categories;
 
         public OptionContainer(string ModGUID)
         {
@@ -22,6 +29,42 @@ namespace RiskOfOptions
             Options = new List<OptionBase>();
         }
 
+        internal List<RiskOfOption> GetModOptionsCached()
+        {
+            if (modOptions == null || Options.Count != lastAmount)
+            {
+                modOptions = Options.Where(a => a.GetType() == typeof(RiskOfOption)).Cast<RiskOfOption>().ToList();
 
+                lastAmount = Options.Count;
+            }
+
+            return modOptions;
+        }
+
+        internal List<OptionCategory> GetCategoriesCached()
+        {
+            if (Categories == null || Options.Count != lastAmount)
+            {
+                Categories = Options.Where(a => a.GetType() == typeof(OptionCategory)).Cast<OptionCategory>().ToList();
+
+                lastAmount = Options.Count;
+            }
+
+            return Categories;
+        }
+
+        internal void Add(ref OptionBase option)
+        {
+            Options.Add(option);
+        }
+
+        internal void Add(ref RiskOfOption option)
+        {
+            Options.Add(option);
+        }
+        internal void Add(ref OptionCategory option)
+        {
+            Options.Add(option);
+        }
     }
 }

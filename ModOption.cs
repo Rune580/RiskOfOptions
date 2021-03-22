@@ -1,16 +1,18 @@
 ﻿using BepInEx;
 using RoR2.ConVar;
-using System;
 using System.Reflection;
 using UnityEngine;
+using System;
 
 namespace RiskOfOptions
 {
-    public class ModOption : OptionBase
+    [Obsolete("ModOption is now obsolete. please use addOption(...)")]
+    public class ModOption
     {
         public OptionType optionType;
         public string longName;
         public string owner { get; private set; }
+        public string modName { get; private set; }
         public string name;
         public string description;
 
@@ -30,7 +32,6 @@ namespace RiskOfOptions
             Keybinding
         }
 
-        [ObsoleteAttribute("This constructor exists for compatibility sake, please use the other constructors", false)]
         public ModOption(OptionType _optionType, string _name, string _description, string _defaultValue = null)
         {
             optionType = _optionType;
@@ -47,7 +48,7 @@ namespace RiskOfOptions
                 if (bepInPlugin != null)
                 {
                     owner = bepInPlugin.GUID;
-                    ModGUID = bepInPlugin.Name;
+                    modName = bepInPlugin.Name;
                 }
             }
         }
