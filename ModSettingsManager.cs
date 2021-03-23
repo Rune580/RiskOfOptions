@@ -161,7 +161,23 @@ namespace RiskOfOptions
 
         public static void setPanelDescription(string description)
         {
+            string ModGUID = "";
+            string ModName = "";
 
+            var classes = Assembly.GetCallingAssembly().GetExportedTypes();
+
+            foreach (var item in classes)
+            {
+                BepInPlugin bepInPlugin = item.GetCustomAttribute<BepInPlugin>();
+
+                if (bepInPlugin != null)
+                {
+                    ModGUID = bepInPlugin.GUID;
+                    ModName = bepInPlugin.Name;
+                }
+            }
+
+            optionContainers[optionContainers.GetContainerIndex(ModGUID, ModName, true)].Description = description;
         }
 
         public static void setPanelTitle(string title)
@@ -607,9 +623,9 @@ namespace RiskOfOptions
                 optionContainers.Add(new OptionContainer(ModGUID, ModName));
             }
 
-            for (int i = 0; i < optionContainers[optionContainers.GetContainerIndex(ModGUID)].GetCategoriesCached().Count; i++)
+            for (int i = 0; i < optionContainers[optionContainers.GetContainerIndex(ModGUID, ModName)].GetCategoriesCached().Count; i++)
             {
-                if (optionContainers[optionContainers.GetContainerIndex(ModGUID)].GetCategoriesCached()[i].Name == Name)
+                if (optionContainers[optionContainers.GetContainerIndex(ModGUID, ModName)].GetCategoriesCached()[i].Name == Name)
                 {
                     Debug.Log($"Category {Name} already exists!, please make sure you aren't assigning a category before creating one, or you aren't creating the same category twice!", BepInEx.Logging.LogLevel.Warning);
                     return;
@@ -620,7 +636,7 @@ namespace RiskOfOptions
 
             newCategory.Description = Description;
 
-            optionContainers[optionContainers.GetContainerIndex(ModGUID)].Add(ref newCategory);
+            optionContainers[optionContainers.GetContainerIndex(ModGUID, ModName)].Add(ref newCategory);
         }
 
         #region ModOption Legacy Stuff
@@ -631,6 +647,7 @@ namespace RiskOfOptions
             var classes = Assembly.GetCallingAssembly().GetExportedTypes();
 
             string ModGUID = "";
+            string ModName = "";
 
             foreach (var item in classes)
             {
@@ -639,11 +656,12 @@ namespace RiskOfOptions
                 if (bepInPlugin != null)
                 {
                     ModGUID = bepInPlugin.GUID;
+                    ModName = bepInPlugin.Name;
                     break;
                 }
             }
 
-            foreach (var item in optionContainers[optionContainers.GetContainerIndex(ModGUID)].GetModOptionsCached())
+            foreach (var item in optionContainers[optionContainers.GetContainerIndex(ModGUID, ModName)].GetModOptionsCached())
             {
                 if (item.Name == Name)
                 {
@@ -668,6 +686,7 @@ namespace RiskOfOptions
             var classes = Assembly.GetCallingAssembly().GetExportedTypes();
 
             string ModGUID = "";
+            string ModName = "";
 
             foreach (var item in classes)
             {
@@ -676,6 +695,7 @@ namespace RiskOfOptions
                 if (bepInPlugin != null)
                 {
                     ModGUID = bepInPlugin.GUID;
+                    ModName = bepInPlugin.Name;
                     break;
                 }
             }
@@ -686,7 +706,7 @@ namespace RiskOfOptions
                 return "";
             }
 
-            foreach (var item in optionContainers[optionContainers.GetContainerIndex(ModGUID)].GetModOptionsCached())
+            foreach (var item in optionContainers[optionContainers.GetContainerIndex(ModGUID, ModName)].GetModOptionsCached())
             {
                 if (item.Name == name)
                 {

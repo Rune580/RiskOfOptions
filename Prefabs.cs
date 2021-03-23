@@ -13,5 +13,6 @@ namespace RiskOfOptions
         public static GameObject MOPanelPrefab;
         public static GameObject MOCanvas;
         public static GameObject ModButtonPrefab;
+        public static GameObject GDP;
     }
 }

@@ -23,6 +23,8 @@ namespace RiskOfOptions
 
             ModSettingsManager.Init();
 
+            ModSettingsManager.setPanelDescription("Example Description");
+
             ModSettingsManager.createCategory("Audio", "yeah");
 
             ModSettingsManager.createCategory("Controls", "yeah");
@@ -31,7 +33,7 @@ namespace RiskOfOptions
 
             ModSettingsManager.addOption("Test Slider", "This is another Description", 0f, "Audio");
 
-            ModSettingsManager.addOption("Test KeyBind", "This is another Description", UnityEngine.KeyCode.G, "Controls");
+            ModSettingsManager.addOption("Test KeyBind", "This is yet another Description", UnityEngine.KeyCode.G, "Controls");
 
             //ModOption test = new ModOption(ModOption.OptionType.Bool, "test", "test description", "0");
 
