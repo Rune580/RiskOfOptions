@@ -15,7 +15,7 @@ namespace RiskOfOptions
     {
         //private static List<ModOption> modOptions = new List<ModOption>();
 
-        private static List<OptionContainer> optionContainers = new List<OptionContainer>();
+        internal static List<OptionContainer> optionContainers = new List<OptionContainer>();
 
         //private static List<ModPanel> subPanels = new List<ModPanel>();
 
@@ -604,7 +604,7 @@ namespace RiskOfOptions
 
             if (!optionContainers.Contains(ModGUID))
             {
-                optionContainers.Add(new OptionContainer(ModGUID));
+                optionContainers.Add(new OptionContainer(ModGUID, ModName));
             }
 
             for (int i = 0; i < optionContainers[optionContainers.GetContainerIndex(ModGUID)].GetCategoriesCached().Count; i++)

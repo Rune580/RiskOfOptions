@@ -12,5 +12,6 @@ namespace RiskOfOptions
         public static GameObject MOHeaderButtonPrefab;
         public static GameObject MOPanelPrefab;
         public static GameObject MOCanvas;
+        public static GameObject ModButtonPrefab;
     }
 }

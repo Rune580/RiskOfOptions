@@ -27,7 +27,7 @@ namespace RiskOfOptions
 
             Debug.Log($"Did not find Container for {option.Name}, creating a new one under {option.ModGUID}");
 
-            OptionContainer newContainer = new OptionContainer(option.ModGUID);
+            OptionContainer newContainer = new OptionContainer(option.ModGUID, option.ModName);
 
             newContainer.Add(ref option);
 
@@ -78,7 +78,7 @@ namespace RiskOfOptions
 
             Debug.Log($"Did not find Container for {mo.Name}, creating a new one under {mo.ModGUID}");
 
-            OptionContainer newContainer = new OptionContainer(mo.ModGUID);
+            OptionContainer newContainer = new OptionContainer(mo.ModGUID, mo.ModName);
 
             newContainer.Add(ref mo);
 

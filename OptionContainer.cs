@@ -14,6 +14,16 @@ namespace RiskOfOptions
     {
         public string ModGUID { get; private set; }
 
+        public string ModName { get; private set; }
+
+        public string Name { get; internal set; }
+        public string NameToken { get; internal set; }
+
+        public string Description { get; internal set; }
+
+        public string DescriptionToken { get; internal set; }
+
+
         internal List<OptionBase> Options;
 
         private int lastAmount = 0;
@@ -22,9 +32,10 @@ namespace RiskOfOptions
 
         private List<OptionCategory> Categories;
 
-        public OptionContainer(string ModGUID)
+        public OptionContainer(string ModGUID, string ModName)
         {
             this.ModGUID = ModGUID;
+            this.ModName = ModName;
 
             Options = new List<OptionBase>();
         }
