@@ -29,7 +29,7 @@ namespace RiskOfOptions
 
             ModSettingsManager.createCategory("Controls", "yeah");
 
-            ModSettingsManager.addOption("Test CheckBox", "This is a Description", true, "Audio");
+            ModSettingsManager.addOption("Test CheckBox", "This is a Description", true);
 
             ModSettingsManager.addOption("Test Slider", "This is another Description", 0f, "Audio");
 

@@ -40,7 +40,6 @@ namespace RiskOfOptions
             {
                 if (containers[i].ModGUID == mo.ModGUID)
                 {
-                    
                     Debug.Log($"Found Container for {mo.Name}, under {mo.ModGUID}");
 
                     if (mo.CategoryName != "")
@@ -65,9 +64,16 @@ namespace RiskOfOptions
 
                             OptionCategory newCategory = new OptionCategory(mo.CategoryName, mo.ModGUID);
 
-                            newCategory.Add(ref mo);
-
                             containers[i].Add(ref newCategory);
+
+                            for (int x = 0; x < containers[i].GetCategoriesCached().Count; x++)
+                            {
+                                if (containers[i].GetCategoriesCached()[x].Name == mo.CategoryName)
+                                {
+
+                                    containers[i].GetCategoriesCached()[x].Add(ref mo);
+                                }
+                            }
                         }
                     }
 

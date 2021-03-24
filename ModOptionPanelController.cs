@@ -165,8 +165,6 @@ namespace RiskOfOptions
 
             ModDescriptionPanel.name = "Mod Description Panel";
 
-
-
             CategoryHeader = GameObject.Instantiate(Prefabs.MOPanelPrefab, Prefabs.MOCanvas.transform);
 
             CategoryHeader.GetComponent<RectTransform>().anchorMin = new Vector2(0.275f, 0.86f);
@@ -176,15 +174,75 @@ namespace RiskOfOptions
 
             CategoryHeader.name = "Category Headers";
 
-            GameObject.DestroyImmediate(CategoryHeader.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").gameObject);
 
+            GameObject.DestroyImmediate(CategoryHeader.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").gameObject);
             GameObject.DestroyImmediate(CategoryHeader.transform.Find("Scroll View").Find("Scrollbar Vertical").gameObject);
-            GameObject.DestroyImmediate(CategoryHeader.transform.Find("Scroll View").Find("Scrollbar Horizontal").gameObject);
+
 
             GameObject Headers = GameObject.Instantiate(HeaderArea.gameObject, CategoryHeader.transform.Find("Scroll View").Find("Viewport"));
-
             Headers.name = "Categories (JUICED)";
 
+            Headers.GetComponent<CanvasGroup>().alpha = 1;
+
+            RectTransform[] oldButtons = Headers.GetComponentsInChildren<RectTransform>();
+
+            for (int i = 0; i < oldButtons.Length; i++)
+            {
+                if (oldButtons[i] != null)
+                {
+                    if (oldButtons[i] != Headers.GetComponent<RectTransform>())
+                    {
+                        //Debug.Log($"Destroying {oldButtons[i]}");
+                        GameObject.DestroyImmediate(oldButtons[i].gameObject);
+                    }
+                }
+            }
+
+            //foreach (var rectTransform in Headers.GetComponentsInChildren<RectTransform>())
+            //{
+            //    Debug.Log(rectTransform.gameObject);
+            //    if (rectTransform != Headers.GetComponent<RectTransform>())
+            //    {
+            //        GameObject.DestroyImmediate(rectTransform.gameObject);
+            //    }
+            //}
+
+
+            ScrollRect scrollRectScript = CategoryHeader.transform.Find("Scroll View").GetComponent<ScrollRect>();
+
+
+            scrollRectScript.content = CategoryHeader.transform.Find("Scroll View").Find("Viewport").Find("Categories (JUICED)").GetComponent<RectTransform>();
+
+
+            scrollRectScript.horizontal = true;
+            scrollRectScript.vertical = false;
+
+
+            RectTransform scrollBar = CategoryHeader.transform.Find("Scroll View").Find("Scrollbar Horizontal").gameObject.GetComponent<RectTransform>();
+
+            scrollRectScript.horizontalScrollbar = scrollBar.GetComponent<CustomScrollbar>();
+
+            scrollBar.anchorMin = new Vector2(0, 0);
+            scrollBar.anchorMax = new Vector2(1, 0);
+
+
+            ContentSizeFitter sizeFitter = Headers.AddComponent<ContentSizeFitter>();
+
+            sizeFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            sizeFitter.verticalFit = ContentSizeFitter.FitMode.Unconstrained;
+
+
+            HorizontalLayoutGroup HLG = Headers.GetComponent<HorizontalLayoutGroup>();
+
+            HLG.enabled = true;
+
+            HLG.padding = new RectOffset(4, 4, 4, 4);
+            HLG.spacing = 16;
+            HLG.childAlignment = TextAnchor.MiddleCenter;
+            HLG.childControlWidth = true;
+            HLG.childControlHeight = true;
+            HLG.childForceExpandWidth = true;
+            HLG.childForceExpandHeight = true;
 
 
             OptionsPanel = GameObject.Instantiate(Prefabs.MOPanelPrefab, Prefabs.MOCanvas.transform);
@@ -196,8 +254,6 @@ namespace RiskOfOptions
 
             OptionsPanel.name = "Options Panel";
 
-
-
             OptionDescriptionPanel = GameObject.Instantiate(Prefabs.MOPanelPrefab, Prefabs.MOCanvas.transform);
 
             OptionDescriptionPanel.GetComponent<RectTransform>().anchorMin = new Vector2(0.65f, 0);
@@ -206,7 +262,6 @@ namespace RiskOfOptions
             OptionDescriptionPanel.SetActive(false);
 
             OptionDescriptionPanel.name = "Option Description Panel";
-
 
 
             CreateModListButtons();
@@ -271,6 +326,8 @@ namespace RiskOfOptions
                 newModButton.GetComponent<ROOModListButton>().Description = Container.Description;
                 newModButton.GetComponent<ROOModListButton>().tmp = ModDescriptionPanel.GetComponentInChildren<HGTextMeshProUGUI>();
 
+                //Debug.Log($"Loading Mod List Button {i}");
+
                 newModButton.GetComponent<ROOModListButton>().ContainerIndex = i;
 
                 newModButton.GetComponent<ROOModListButton>().hoverToken = $"{ModSettingsManager.StartingText}.{Container.ModGUID}.{Container.ModName}.ModListOption".ToUpper().Replace(" ", "_");
@@ -285,12 +342,21 @@ namespace RiskOfOptions
         {
             OptionContainer Container = ModSettingsManager.optionContainers[ContainerIndex];
 
+            //Debug.Log($"Loading Container: {Container.ModName}");
+
             var MDP = canvas.Find("Mod Description Panel").gameObject;
             var CH = canvas.Find("Category Headers").gameObject;
             var OP = canvas.Find("Options Panel").gameObject;
             var ODP = canvas.Find("Option Description Panel").gameObject;
 
-            if (MDP || !CH || !OP || !ODP)
+            GameObject CategoriesObject = CH.transform.Find("Scroll View").Find("Viewport").Find("Categories (JUICED)").gameObject;
+
+            if (CH.activeSelf || OP.activeSelf || ODP.activeSelf)
+            {
+                UnloadExistingCategoryButtons(CategoriesObject.transform);
+            }
+
+            if (MDP.activeSelf || !CH.activeSelf || !OP.activeSelf || !ODP.activeSelf)
             {
                 MDP.GetComponentInChildren<HGTextMeshProUGUI>().SetText("");
 
@@ -299,6 +365,27 @@ namespace RiskOfOptions
                 CH.SetActive(true);
                 OP.SetActive(true);
                 ODP.SetActive(true);
+            }
+
+            for (int i = 0; i < Container.GetCategoriesCached().Count; i++)
+            {
+                //Debug.Log($"Loading Category: {Container.GetCategoriesCached()[i].Name}");
+
+                GameObject newCategoryButton = GameObject.Instantiate(Prefabs.MOHeaderButtonPrefab, CategoriesObject.transform);
+
+                LayoutElement le = newCategoryButton.AddComponent<LayoutElement>();
+
+                le.preferredWidth = 200;
+
+                newCategoryButton.GetComponentInChildren<LanguageTextMeshController>().token = Container.GetCategoriesCached()[i].NameToken;
+
+                newCategoryButton.GetComponentInChildren<HGTextMeshProUGUI>().SetText(Container.GetCategoriesCached()[i].Name);
+
+                newCategoryButton.GetComponentInChildren<HGButton>().onClick.RemoveAllListeners();
+
+                newCategoryButton.name = $"Category Button, {Container.GetCategoriesCached()[i].Name}";
+
+                newCategoryButton.SetActive(true);
             }
         }
 
@@ -318,10 +405,10 @@ namespace RiskOfOptions
                 ODP.SetActive(false);
             }
 
-            ResetButtons(canvas);
+            ResetModListButtons(canvas);
         }
 
-        internal void ResetButtons(Transform canvas)
+        internal void ResetModListButtons(Transform canvas)
         {
             foreach (var Button in canvas.GetComponentsInChildren<ROOModListButton>())
             {
@@ -332,6 +419,26 @@ namespace RiskOfOptions
 
                 Button.imageOnHover.color = new Color(tempColor.r, tempColor.g, tempColor.b, 0f);
                 Button.imageOnHover.transform.localScale = new Vector3(1.1f, 1.1f, 1.1f);
+            }
+        }
+
+        internal void UnloadExistingCategoryButtons(Transform CH)
+        {
+            HGButton[] activeCategoryButtons = CH.GetComponentsInChildren<HGButton>();
+
+            if (activeCategoryButtons.Length > 0)
+            {
+                for (int i = 0; i < activeCategoryButtons.Length; i++)
+                {
+                    if (activeCategoryButtons[i].gameObject != null)
+                    {
+                        //Debug.Log($"Unloading {activeCategoryButtons[i].gameObject}");
+
+                        activeCategoryButtons[i].gameObject.SetActive(false);
+
+                        GameObject.DestroyImmediate(activeCategoryButtons[i].gameObject);
+                    }
+                }
             }
         }
     }

@@ -663,7 +663,7 @@ namespace RiskOfOptions
 
             foreach (var item in optionContainers[optionContainers.GetContainerIndex(ModGUID, ModName)].GetModOptionsCached())
             {
-                if (item.Name == Name)
+                if (item.Name.ToLower() == Name.ToLower())
                 {
                     var temp = new ModOption((ModOption.OptionType)item.optionType, item.Name, item.Description, item.defaultValue);
 
@@ -708,7 +708,7 @@ namespace RiskOfOptions
 
             foreach (var item in optionContainers[optionContainers.GetContainerIndex(ModGUID, ModName)].GetModOptionsCached())
             {
-                if (item.Name == name)
+                if (item.Name.ToLower() == name.ToLower())
                 {
                     //Debug.Log(item.ConsoleToken);
                     conVar = RoR2.Console.instance.FindConVar(item.ConsoleToken);

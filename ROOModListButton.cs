@@ -12,11 +12,9 @@ namespace RiskOfOptions
         public string Description = "";
         public HGTextMeshProUGUI tmp;
         public ModOptionPanelController mopc { get; internal set; }
-        public int ContainerIndex { get; internal set; }
+        public int ContainerIndex;
 
         internal bool Selected = false;
-
-        //public UnityEngine.Events.UnityAction OnPointerClickEvent;
 
         public override void OnSelect(BaseEventData eventData)
         {
@@ -51,7 +49,7 @@ namespace RiskOfOptions
                 {
                     mopc.LoadModOptionsFromContainer(ContainerIndex, transform.parent.parent.parent.parent.parent);
 
-                    mopc.ResetButtons(transform.parent.parent.parent.parent.parent);
+                    mopc.ResetModListButtons(transform.parent.parent.parent.parent.parent);
 
                     Selected = true;
                     showImageOnHover = false;

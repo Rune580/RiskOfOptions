@@ -37,12 +37,17 @@ namespace RiskOfOptions
             this.Description = Description;
             defaultValue = DefaultValue;
 
+            if (CategoryName == "")
+            {
+                CategoryName = "Default";
+            }
+
             this.CategoryName = CategoryName;
 
             this.ModGUID = ModGUID;
             this.ModName = ModName;
 
-            OptionToken = $"{ModSettingsManager.StartingText}.{ModGUID}.{(CategoryName != "" ? "category_" + CategoryName + "." : CategoryName)}{Name}.{optionType}".ToUpper().Replace(" ", "_");
+            OptionToken = $"{ModSettingsManager.StartingText}.{ModGUID}.category_{CategoryName}.{Name}.{optionType}".ToUpper().Replace(" ", "_");
 
             ConsoleToken = OptionToken.ToLower();
 
@@ -75,7 +80,12 @@ namespace RiskOfOptions
                 }
             }
 
-            OptionToken = $"{ModSettingsManager.StartingText}.{ModGUID}.{(CategoryName != "" ? "category_" + CategoryName + "." : CategoryName)}{Name}.{optionType}".ToUpper().Replace(" ", "_");
+            if (CategoryName == "")
+            {
+                CategoryName = "Default";
+            }
+
+            OptionToken = $"{ModSettingsManager.StartingText}.{ModGUID}.category_{CategoryName}.{Name}.{optionType}".ToUpper().Replace(" ", "_");
 
             ConsoleToken = OptionToken.ToLower();
 
