@@ -13,8 +13,7 @@ namespace RiskOfOptions
         public HGTextMeshProUGUI tmp;
         public ModOptionPanelController mopc { get; internal set; }
         public int ContainerIndex;
-
-        internal bool Selected = false;
+        public HGHeaderNavigationController navigationController;
 
         public override void OnSelect(BaseEventData eventData)
         {
@@ -47,17 +46,9 @@ namespace RiskOfOptions
             base.onClick.AddListener(new UnityEngine.Events.UnityAction(
                 delegate ()
                 {
+                    navigationController.ChooseHeaderByButton(this);
+
                     mopc.LoadModOptionsFromContainer(ContainerIndex, transform.parent.parent.parent.parent.parent);
-
-                    mopc.ResetModListButtons(transform.parent.parent.parent.parent.parent);
-
-                    Selected = true;
-                    showImageOnHover = false;
-
-                    Color color = imageOnHover.color;
-
-                    imageOnHover.color = new Color(color.r, color.g, color.b, 1f);
-                    imageOnHover.transform.localScale = new Vector3(1f, 1f, 1f);
                 }));
         }
 
@@ -75,20 +66,8 @@ namespace RiskOfOptions
             {
                 this.Select();
             }
-
-            interactable = !Selected;
         }
 
-        //public override void OnPointerClick(PointerEventData eventData)
-        //{
-        //    base.OnPointerClick(eventData);
-
-        //    Debug.Log("1");
-
-        //    test();
-
-        //    Debug.Log("2");
-        //}
 
         private void SetDescription()
         {

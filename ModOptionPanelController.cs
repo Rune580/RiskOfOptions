@@ -1,4 +1,5 @@
 ﻿using R2API;
+using R2API.Utils;
 using RoR2.UI;
 using RoR2.UI.SkinControllers;
 using System;
@@ -12,11 +13,15 @@ namespace RiskOfOptions
 {
     public class ModOptionPanelController : MonoBehaviour
     {
-        private GameObject ModListPanel;
+        public bool initilized = false;
+
+        public GameObject ModListPanel;
         private GameObject ModDescriptionPanel;
         private GameObject CategoryHeader;
         private GameObject OptionsPanel;
         private GameObject OptionDescriptionPanel;
+        private GameObject CategoryHeaderHighlight;
+        public GameObject ModListHighlight;
 
         public void Start()
         {
@@ -150,6 +155,25 @@ namespace RiskOfOptions
 
             ModListPanel.name = "Mod List Panel";
 
+            ModListPanel.AddComponent<ModListHeaderController>();
+
+
+            ModListHighlight = GameObject.Instantiate(GetComponent<HGHeaderNavigationController>().headerHighlightObject, GetComponent<HGHeaderNavigationController>().headerHighlightObject.transform.parent);
+
+            foreach (var imageComp in ModListHighlight.GetComponentsInChildren<UnityEngine.UI.Image>())
+            {
+                imageComp.maskable = false;
+            }
+
+            ModListHighlight.SetActive(false);
+
+
+            HGHeaderNavigationController ModListController = ModListPanel.AddComponent<HGHeaderNavigationController>();
+
+            ModListController.headerHighlightObject = ModListHighlight;
+            ModListController.unselectedTextColor = Color.white;
+
+            ModListController.makeSelectedHeaderButtonNoninteractable = true;
 
 
             ModDescriptionPanel = GameObject.Instantiate(Prefabs.MOPanelPrefab, Prefabs.MOCanvas.transform);
@@ -182,6 +206,17 @@ namespace RiskOfOptions
             GameObject Headers = GameObject.Instantiate(HeaderArea.gameObject, CategoryHeader.transform.Find("Scroll View").Find("Viewport"));
             Headers.name = "Categories (JUICED)";
 
+            RectTransform rt = Headers.GetComponent<RectTransform>();
+
+            rt.pivot = new Vector2(0.5f, 0.5f);
+
+            rt.anchorMin = new Vector2(0f, 0.2f);
+            rt.anchorMax = new Vector2(1f, 0.8f);
+
+            rt.anchoredPosition = new Vector2(0, 0);
+
+            Headers.transform.localPosition = new Vector3(Headers.transform.localPosition.x, -47f, Headers.transform.localPosition.z);
+
             Headers.GetComponent<CanvasGroup>().alpha = 1;
 
             RectTransform[] oldButtons = Headers.GetComponentsInChildren<RectTransform>();
@@ -192,26 +227,27 @@ namespace RiskOfOptions
                 {
                     if (oldButtons[i] != Headers.GetComponent<RectTransform>())
                     {
-                        //Debug.Log($"Destroying {oldButtons[i]}");
                         GameObject.DestroyImmediate(oldButtons[i].gameObject);
                     }
                 }
             }
 
-            //foreach (var rectTransform in Headers.GetComponentsInChildren<RectTransform>())
-            //{
-            //    Debug.Log(rectTransform.gameObject);
-            //    if (rectTransform != Headers.GetComponent<RectTransform>())
-            //    {
-            //        GameObject.DestroyImmediate(rectTransform.gameObject);
-            //    }
-            //}
+
+            CategoryHeaderHighlight = GameObject.Instantiate(GetComponent<HGHeaderNavigationController>().headerHighlightObject, GetComponent<HGHeaderNavigationController>().headerHighlightObject.transform.parent);
+
+            CategoryHeaderHighlight.SetActive(false);
+
+            HGHeaderNavigationController CategoryController = Headers.AddComponent<HGHeaderNavigationController>();
+
+            CategoryController.headerHighlightObject = CategoryHeaderHighlight;
+            CategoryController.unselectedTextColor = Color.white;
+
+            CategoryController.makeSelectedHeaderButtonNoninteractable = true;
 
 
             ScrollRect scrollRectScript = CategoryHeader.transform.Find("Scroll View").GetComponent<ScrollRect>();
 
-
-            scrollRectScript.content = CategoryHeader.transform.Find("Scroll View").Find("Viewport").Find("Categories (JUICED)").GetComponent<RectTransform>();
+            scrollRectScript.content = Headers.GetComponent<RectTransform>();
 
 
             scrollRectScript.horizontal = true;
@@ -243,6 +279,7 @@ namespace RiskOfOptions
             HLG.childControlHeight = true;
             HLG.childForceExpandWidth = true;
             HLG.childForceExpandHeight = true;
+
 
 
             OptionsPanel = GameObject.Instantiate(Prefabs.MOPanelPrefab, Prefabs.MOCanvas.transform);
@@ -310,6 +347,9 @@ namespace RiskOfOptions
         {
             Transform ModListLayout = ModListPanel.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout");
 
+            HGHeaderNavigationController navigationController = ModListPanel.GetComponent<HGHeaderNavigationController>();
+
+            List<HGHeaderNavigationController.Header> headers = new List<HGHeaderNavigationController.Header>();
 
             for (int i = 0; i < ModSettingsManager.optionContainers.Count; i++)
             {
@@ -330,12 +370,27 @@ namespace RiskOfOptions
 
                 newModButton.GetComponent<ROOModListButton>().ContainerIndex = i;
 
+                newModButton.GetComponent<ROOModListButton>().navigationController = navigationController;
+
                 newModButton.GetComponent<ROOModListButton>().hoverToken = $"{ModSettingsManager.StartingText}.{Container.ModGUID}.{Container.ModName}.ModListOption".ToUpper().Replace(" ", "_");
 
                 newModButton.name = $"ModListButton ({Container.ModName})";
 
                 newModButton.SetActive(true);
+
+                HGHeaderNavigationController.Header header = new HGHeaderNavigationController.Header();
+
+                header.headerButton = newModButton.GetComponent<ROOModListButton>();
+                header.headerName = $"ModListButton ({Container.ModName})";
+                header.tmpHeaderText = newModButton.GetComponentInChildren<HGTextMeshProUGUI>();
+                header.headerRoot = null;
+
+                headers.Add(header);
             }
+
+            navigationController.headers = headers.ToArray();
+
+            navigationController.currentHeaderIndex = -1;
         }
 
         internal void LoadModOptionsFromContainer(int ContainerIndex, Transform canvas)
@@ -350,6 +405,8 @@ namespace RiskOfOptions
             var ODP = canvas.Find("Option Description Panel").gameObject;
 
             GameObject CategoriesObject = CH.transform.Find("Scroll View").Find("Viewport").Find("Categories (JUICED)").gameObject;
+
+            HGHeaderNavigationController navigationController = CategoriesObject.GetComponent<HGHeaderNavigationController>();
 
             if (CH.activeSelf || OP.activeSelf || ODP.activeSelf)
             {
@@ -367,6 +424,10 @@ namespace RiskOfOptions
                 ODP.SetActive(true);
             }
 
+            List<HGHeaderNavigationController.Header> headers = new List<HGHeaderNavigationController.Header>();
+
+            navigationController.currentHeaderIndex = 0;
+
             for (int i = 0; i < Container.GetCategoriesCached().Count; i++)
             {
                 //Debug.Log($"Loading Category: {Container.GetCategoriesCached()[i].Name}");
@@ -383,14 +444,38 @@ namespace RiskOfOptions
 
                 newCategoryButton.GetComponentInChildren<HGButton>().onClick.RemoveAllListeners();
 
+                newCategoryButton.GetComponentInChildren<HGButton>().onClick.AddListener(new UnityEngine.Events.UnityAction(
+                delegate ()
+                {
+                    navigationController.ChooseHeaderByButton(newCategoryButton.GetComponentInChildren<HGButton>());
+                }));
+
                 newCategoryButton.name = $"Category Button, {Container.GetCategoriesCached()[i].Name}";
 
                 newCategoryButton.SetActive(true);
+
+
+                HGHeaderNavigationController.Header header = new HGHeaderNavigationController.Header();
+
+                header.headerButton = newCategoryButton.GetComponent<HGButton>();
+                header.headerName = $"Category Button, {Container.GetCategoriesCached()[i].Name}";
+                header.tmpHeaderText = newCategoryButton.GetComponentInChildren<HGTextMeshProUGUI>();
+                header.headerRoot = null;
+
+                headers.Add(header);
             }
+            navigationController.headers = headers.ToArray();
+
+            navigationController.InvokeMethod("RebuildHeaders");
         }
+
+        internal void LoadOptionListFromCategory()
 
         internal void UnLoad(Transform canvas)
         {
+            if (!initilized)
+                return;
+
             var MDP = canvas.Find("Mod Description Panel").gameObject;
             var CH = canvas.Find("Category Headers").gameObject;
             var OP = canvas.Find("Options Panel").gameObject;
@@ -405,25 +490,19 @@ namespace RiskOfOptions
                 ODP.SetActive(false);
             }
 
-            ResetModListButtons(canvas);
+
+            ModListHighlight.transform.SetParent(transform);
+            ModListHighlight.SetActive(false);
+
+            UnloadExistingCategoryButtons(CH.transform);
         }
 
-        internal void ResetModListButtons(Transform canvas)
-        {
-            foreach (var Button in canvas.GetComponentsInChildren<ROOModListButton>())
-            {
-                Button.Selected = false;
-                Button.showImageOnHover = true;
-
-                Color tempColor = Button.imageOnHover.color;
-
-                Button.imageOnHover.color = new Color(tempColor.r, tempColor.g, tempColor.b, 0f);
-                Button.imageOnHover.transform.localScale = new Vector3(1.1f, 1.1f, 1.1f);
-            }
-        }
 
         internal void UnloadExistingCategoryButtons(Transform CH)
         {
+            CategoryHeaderHighlight.transform.SetParent(transform);
+            CategoryHeaderHighlight.SetActive(false);
+
             HGButton[] activeCategoryButtons = CH.GetComponentsInChildren<HGButton>();
 
             if (activeCategoryButtons.Length > 0)
@@ -440,6 +519,26 @@ namespace RiskOfOptions
                     }
                 }
             }
+        }
+
+        public void OnDisable()
+        {
+            //Debug.Log("Unloading Assets");
+
+            initilized = false;
+
+            GameObject.DestroyImmediate(ModListPanel);
+            GameObject.DestroyImmediate(ModDescriptionPanel);
+            GameObject.DestroyImmediate(CategoryHeader);
+            GameObject.DestroyImmediate(OptionsPanel);
+            GameObject.DestroyImmediate(OptionDescriptionPanel);
+            GameObject.DestroyImmediate(CategoryHeaderHighlight);
+            GameObject.DestroyImmediate(ModListHighlight);
+        }
+
+        public void OnEnable()
+        {
+            initilized = true;
         }
     }
 }

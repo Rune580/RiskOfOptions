@@ -510,6 +510,11 @@ namespace RiskOfOptions
                 mo.conVar = new KeyConVar(mo.ConsoleToken, RoR2.ConVarFlags.Archive, mo.defaultValue, mo.Description);
             }
 
+            if (mo.CategoryName == "Main")
+            {
+                createCategory(mo.CategoryName, "The Main Category", mo.ModGUID, mo.ModName);
+            }
+
             optionContainers.Add(ref mo);
         }
 
@@ -637,6 +642,29 @@ namespace RiskOfOptions
             newCategory.Description = Description;
 
             optionContainers[optionContainers.GetContainerIndex(ModGUID, ModName)].Add(ref newCategory);
+        }
+
+        internal static void createCategory(string Name, string Description, string ModGUID, string ModName)
+        {
+            if (!optionContainers.Contains(ModGUID))
+            {
+                optionContainers.Add(new OptionContainer(ModGUID, ModName));
+            }
+
+            for (int i = 0; i < optionContainers[optionContainers.GetContainerIndex(ModGUID, ModName)].GetCategoriesCached().Count; i++)
+            {
+                if (optionContainers[optionContainers.GetContainerIndex(ModGUID, ModName)].GetCategoriesCached()[i].Name == Name)
+                {
+                    //Debug.Log($"Category {Name} already exists!, please make sure you aren't assigning a category before creating one, or you aren't creating the same category twice!", BepInEx.Logging.LogLevel.Warning);
+                    return;
+                }
+            }
+
+            OptionCategory newCategory = new OptionCategory(Name, ModGUID);
+
+            newCategory.Description = Description;
+
+            optionContainers[optionContainers.GetContainerIndex(ModGUID, ModName)].Insert(ref newCategory);
         }
 
         #region ModOption Legacy Stuff

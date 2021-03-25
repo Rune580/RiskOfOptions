@@ -77,5 +77,10 @@ namespace RiskOfOptions
         {
             Options.Add(option);
         }
+
+        internal void Insert(ref OptionCategory option)
+        {
+            Options.Insert(0, option);
+        }
     }
 }

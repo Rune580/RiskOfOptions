@@ -24,24 +24,11 @@ namespace RiskOfOptions
 
             if (Prefabs.SettingsPanelPrefab == null)
                 throw new Exception("Couldn't initilize Risk Of Options! Continue at your own risk!");
-
-
-            //Transform SubPanelArea = Prefabs.SettingsPanelPrefab.transform.Find("SafeArea").Find("SubPanelArea");
-            //Transform HeaderArea = Prefabs.SettingsPanelPrefab.transform.Find("SafeArea").Find("HeaderContainer").Find("Header (JUICED)");
-
-            //GameObject audioPanel = SubPanelArea.Find("SettingsSubPanel, Audio").gameObject;
-
-            //Prefabs.MOPanelPrefab = GameObject.Instantiate(audioPanel);
-            //Prefabs.MOPanelPrefab.name = "SettingsSubPanel, Mod Options";
-
-            //Prefabs.MOHeaderButtonPrefab = GameObject.Instantiate(HeaderArea.Find("GenericHeaderButton (Audio)").gameObject);
         }
 
         private static void AddToPrefab()
         {
             Prefabs.SettingsPanelPrefab.AddComponent<ModOptionPanelController>();
-
-            //Prefabs.SettingsPanelPrefab.transform.Find("SafeArea").Find("SubPanelArea").gameObject.AddComponent<DescriptionController>();
         }
     }
 }

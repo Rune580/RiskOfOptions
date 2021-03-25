@@ -39,7 +39,7 @@ namespace RiskOfOptions
 
             if (CategoryName == "")
             {
-                CategoryName = "Default";
+                CategoryName = "Main";
             }
 
             this.CategoryName = CategoryName;
@@ -65,6 +65,11 @@ namespace RiskOfOptions
             this.Description = Description;
             defaultValue = DefaultValue;
 
+            if (CategoryName == "")
+            {
+                CategoryName = "Main";
+            }
+
             this.CategoryName = CategoryName;
 
             var classes = Assembly.GetCallingAssembly().GetExportedTypes();
@@ -78,11 +83,6 @@ namespace RiskOfOptions
                     ModGUID = bepInPlugin.GUID;
                     ModName = bepInPlugin.Name;
                 }
-            }
-
-            if (CategoryName == "")
-            {
-                CategoryName = "Default";
             }
 
             OptionToken = $"{ModSettingsManager.StartingText}.{ModGUID}.category_{CategoryName}.{Name}.{optionType}".ToUpper().Replace(" ", "_");

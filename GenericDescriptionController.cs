@@ -23,13 +23,21 @@ namespace RiskOfOptions
 
         void OnDisable()
         {
-            GenericDescriptionPanel.SetActive(true);
+            if (!mopc)
+                mopc = GetComponentInParent<ModOptionPanelController>();
+
+            if (!mopc.initilized)
+            {
+                return;
+            }
+
+            if (GenericDescriptionPanel)
+            {
+                GenericDescriptionPanel.SetActive(true);
+            }
 
             if (!canvas)
                 canvas = GenericDescriptionPanel.transform.parent.Find("SettingsSubPanel, Mod Options(Clone)");
-
-            if (!mopc)
-                mopc = GetComponentInParent<ModOptionPanelController>();
 
             mopc.UnLoad(canvas);
         }
