@@ -16,9 +16,12 @@ namespace RiskOfOptions
         public int containerIndex;
         public HGHeaderNavigationController navigationController;
 
+        //private UnityEngine.UI.Image _icon;
+
         public override void OnSelect(BaseEventData eventData)
         {
             base.OnSelect(eventData);
+            //_icon.color = new Color(0.984f, 1, 0.69f, 0.73f);
             SetDescription();
         }
 
@@ -28,6 +31,8 @@ namespace RiskOfOptions
 
             if (!Mopc)
                 Mopc = GetComponentInParent<ModOptionPanelController>();
+
+            //_icon = GetComponentInChildren<UnityEngine.UI.Image>();
 
             base.onClick.AddListener(new UnityEngine.Events.UnityAction(
                 delegate ()

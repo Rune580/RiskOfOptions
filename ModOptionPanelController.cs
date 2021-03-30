@@ -149,14 +149,14 @@ namespace RiskOfOptions
 
             RectTransform modIconRectTransform = modIconGameObject.AddComponent<RectTransform>();
             modIconGameObject.AddComponent<CanvasRenderer>();
-            modIconGameObject.AddComponent<UnityEngine.UI.Image>();
+            modIconGameObject.AddComponent<UnityEngine.UI.Image>().preserveAspect = true;
 
             modIconRectTransform.anchorMin = new Vector2(0.04f, 0.13f);
             modIconRectTransform.anchorMax = new Vector2(0.19f, 0.86f);
 
             modIconRectTransform.pivot = new Vector2(0.5f, 0.5f);
 
-            modIconRectTransform.localPosition = new Vector3(-142, -0.32f, 0);
+            //modIconRectTransform.localPosition = new Vector3(-142, -0.32f, 0);
 
             modIconGameObject.transform.SetParent(Prefabs.ModButtonPrefab.transform);
 
@@ -403,24 +403,6 @@ namespace RiskOfOptions
 
             List<HGHeaderNavigationController.Header> headers = new List<HGHeaderNavigationController.Header>();
 
-            Dictionary<string, Sprite> icons = new Dictionary<string, Sprite>();
-
-            if (Thunderstore.doneFetching)
-            {
-                foreach (var icon in Thunderstore.GetModIcons())
-                {
-                    UnityWebRequest www = new UnityWebRequest($"file://{icon.Icon}");
-
-                    DownloadHandlerTexture downloadHandler = new DownloadHandlerTexture(true);
-
-                    www.downloadHandler = downloadHandler;
-
-                    www.SendWebRequest();
-
-                    icons.Add(icon.modGuid, Sprite.Create(downloadHandler.texture, new Rect(0f, 0f, downloadHandler.texture.width, downloadHandler.texture.height), new Vector2(0.5f, 0.5f)));
-                }
-            }
-
             for (int i = 0; i < ModSettingsManager.OptionContainers.Count; i++)
             {
                 var container = ModSettingsManager.OptionContainers[i];
@@ -436,19 +418,23 @@ namespace RiskOfOptions
                 newModButton.GetComponent<RooModListButton>().description = container.Description;
                 newModButton.GetComponent<RooModListButton>().tmp = _modDescriptionPanel.GetComponentInChildren<HGTextMeshProUGUI>();
 
-
                 newModButton.GetComponent<RooModListButton>().containerIndex = i;
 
                 newModButton.GetComponent<RooModListButton>().navigationController = navigationController;
 
                 newModButton.GetComponent<RooModListButton>().hoverToken = $"{ModSettingsManager.StartingText}.{container.ModGuid}.{container.ModName}.ModListOption".ToUpper().Replace(" ", "_");
 
-                newModButton.name = $"ModListButton ({container.ModName})";
+                RectTransform modIconRectTransform = newModButton.transform.Find("ModIcon").gameObject.GetComponent<RectTransform>();
 
-                if (icons.Count > 0)
-                {
-                    newModButton.transform.Find("ModIcon").GetComponent<UnityEngine.UI.Image>().sprite = icons[container.ModGuid];
-                }
+                modIconRectTransform.localPosition = new Vector3(-147f, -0.32f, 0f);
+                modIconRectTransform.sizeDelta = Vector2.zero;
+                modIconRectTransform.anchoredPosition = Vector2.zero;
+
+                //modIconRectTransform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+
+                modIconRectTransform.gameObject.AddComponent<FetchIconWhenReady>().modGuid = container.ModGuid;
+
+                newModButton.name = $"ModListButton ({container.ModName})";
 
                 newModButton.SetActive(true);
 

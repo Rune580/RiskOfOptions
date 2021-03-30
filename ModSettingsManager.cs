@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using BepInEx;
+using EntityStates.AncientWispMonster;
 using On.RoR2;
 using On.RoR2.UI;
 using R2API.Utils;
@@ -49,7 +51,6 @@ namespace RiskOfOptions
             orig(args);
         }
 
-
         // ReSharper disable once UnusedMember.Global
         // ReSharper disable once InconsistentNaming
         public static void addStartupListener(UnityEngine.Events.UnityAction unityAction)
@@ -57,7 +58,7 @@ namespace RiskOfOptions
             Listeners.Add(unityAction);
         }
 
-        public static void AddListener(UnityEngine.Events.UnityAction<bool> unityAction, string name, string categoryName = "Main")
+        public static void AddListener(UnityEngine.Events.UnityAction<bool> unityAction, string name, string categoryName = "Main", bool restartRequired = false)
         {
             ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
             Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
@@ -65,7 +66,7 @@ namespace RiskOfOptions
             OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer].OnValueChangedBool = unityAction;
         }
 
-        public static void AddListener(UnityEngine.Events.UnityAction<float> unityAction, string name, string categoryName = "Main")
+        public static void AddListener(UnityEngine.Events.UnityAction<float> unityAction, string name, string categoryName = "Main", bool restartRequired = false)
         {
             ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
             Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
@@ -73,7 +74,7 @@ namespace RiskOfOptions
             OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer].OnValueChangedFloat = unityAction;
         }
 
-        public static void AddListener(UnityEngine.Events.UnityAction<KeyCode> unityAction, string name, string categoryName = "Main")
+        public static void AddListener(UnityEngine.Events.UnityAction<KeyCode> unityAction, string name, string categoryName = "Main", bool restartRequired = false)
         {
             ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
             Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
@@ -124,10 +125,10 @@ namespace RiskOfOptions
             OptionContainers[OptionContainers.GetContainerIndex(modInfo.ModGuid, modInfo.ModName, true)].ModName = title;
         }
 
-        public static void AddModIcon()
-        {
-
-        }
+        //public static void AddModIcon()
+        //{
+        //    Throw
+        //}
 
         public static void RegisterOption(RiskOfOption mo)
         {

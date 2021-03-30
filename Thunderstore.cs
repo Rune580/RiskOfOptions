@@ -49,13 +49,27 @@ namespace RiskOfOptions
             return modIcons;
         }
 
+        internal static ModIconInfo GetModIcon(string modGuid)
+        {
+            foreach (var modIconInfo in _modIcons)
+            {
+                if (modIconInfo.modGuid == modGuid)
+                {
+                    return modIconInfo;
+                }
+            }
+
+
+            throw new Exception($"No mod icon could be found for: {modGuid}");
+        }
+
         internal static ModSearchEntry[] RemoveIfIconExists(ModSearchEntry[] modStrings)
         {
             List<ModSearchEntry> searchEntries = new List<ModSearchEntry>();
             foreach (var modSearchEntry in modStrings)
             {
                 string path = $"{GetMyGamesPath()}{modSearchEntry.modGuid.Replace(".", "_")}-Icon.png";
-                if (!File.Exists(path))
+                if (!File.Exists(path) && !_modIcons.Contains(modSearchEntry))
                 {
                     searchEntries.Add(modSearchEntry);
                 }
@@ -237,6 +251,11 @@ namespace RiskOfOptions
             }
 
             return json;
+        }
+
+        private static bool Contains(this List<ModIconInfo> modIconInfos, ModSearchEntry searchEntry)
+        {
+            return modIconInfos.Any(modIconInfo => modIconInfo.modGuid == searchEntry.modGuid);
         }
 
         internal struct ModSearchEntry
