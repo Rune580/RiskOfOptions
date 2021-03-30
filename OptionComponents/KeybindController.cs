@@ -15,6 +15,8 @@ namespace RiskOfOptions.OptionComponents
         private bool _listening = false;
         private TextMeshProUGUI _keybindLabel;
 
+        private int _count;
+
         public UnityEngine.Events.UnityAction<KeyCode> onValueChangedKeyCode;
 
         protected new void Awake()
@@ -39,7 +41,12 @@ namespace RiskOfOptions.OptionComponents
 
         public void StartListening()
         {
+            _count = 2;
             _listening = true;
+
+            _keybindLabel.SetText(".");
+
+            RoR2Application.unscaledTimeTimers.CreateTimer(1f, UpdateKeyBindTextDuringListen);
         }
 
         public void OnGUI()
@@ -53,8 +60,16 @@ namespace RiskOfOptions.OptionComponents
             if (Event.current.keyCode == KeyCode.None)
                 return;
 
-
             Debug.Log($"Key {Event.current.keyCode} Pressed!");
+
+            if (Event.current.keyCode == KeyCode.Escape)
+            {
+                base.SubmitSetting($"{(int)KeyCode.None}");
+
+                StopListening();
+
+                return;
+            }
 
             base.SubmitSetting($"{(int)Event.current.keyCode}");
 
@@ -85,6 +100,30 @@ namespace RiskOfOptions.OptionComponents
                 StopListening();
             }
         }
+
+        private void UpdateKeyBindTextDuringListen()
+        {
+            if (!_listening)
+                return;
+
+            if (_count > 3)
+                _count = 1;
+
+            string text = "";
+
+            for (int i = 0; i < _count; i++)
+            {
+                text += ".";
+            }
+
+            _count++;
+
+            _keybindLabel.SetText(text);
+
+            RoR2Application.unscaledTimeTimers.CreateTimer(1f, UpdateKeyBindTextDuringListen);
+        }
+
+
 
         public void StopListening()
         {
