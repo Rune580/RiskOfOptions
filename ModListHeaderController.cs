@@ -6,9 +6,9 @@ using UnityEngine;
 
 namespace RiskOfOptions
 {
-    class ModListHeaderController : MonoBehaviour
+    public class ModListHeaderController : MonoBehaviour
     {
-        private ModOptionPanelController mopc;
+        private ModOptionPanelController _mopc;
         private void OnEnable()
         {
             if (!GetComponentInParent<ModOptionPanelController>().initilized)
@@ -16,8 +16,8 @@ namespace RiskOfOptions
                 return;
             }
 
-            if (!mopc)
-                mopc = GetComponentInParent<ModOptionPanelController>();
+            if (!_mopc)
+                _mopc = GetComponentInParent<ModOptionPanelController>();
 
             HGHeaderNavigationController navigationController = GetComponent<HGHeaderNavigationController>();
 

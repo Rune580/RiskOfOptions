@@ -18,9 +18,9 @@ namespace RiskOfOptions
 
         private static void FindPrefab()
         {
-            GameObject PauseMenuPrefab = Resources.Load<GameObject>("prefabs/ui/pausescreen");
+            GameObject pauseMenuPrefab = Resources.Load<GameObject>("prefabs/ui/pausescreen");
 
-            Prefabs.SettingsPanelPrefab = PauseMenuPrefab.GetComponentInChildren<PauseScreenController>().settingsPanelPrefab;
+            Prefabs.SettingsPanelPrefab = pauseMenuPrefab.GetComponentInChildren<PauseScreenController>().settingsPanelPrefab;
 
             if (Prefabs.SettingsPanelPrefab == null)
                 throw new Exception("Couldn't initilize Risk Of Options! Continue at your own risk!");

@@ -6,8 +6,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RoR2;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
+
+using RiskOfOptions.OptionComponents;
+using UnityEngine.Events;
 
 namespace RiskOfOptions
 {
@@ -15,13 +20,19 @@ namespace RiskOfOptions
     {
         public bool initilized = false;
 
-        public GameObject ModListPanel;
-        private GameObject ModDescriptionPanel;
-        private GameObject CategoryHeader;
-        private GameObject OptionsPanel;
-        private GameObject OptionDescriptionPanel;
-        private GameObject CategoryHeaderHighlight;
-        public GameObject ModListHighlight;
+        public GameObject modListPanel;
+        public GameObject modListHighlight;
+
+        private GameObject _modDescriptionPanel;
+        private GameObject _categoryHeader;
+        private GameObject _optionsPanel;
+        private GameObject _optionDescriptionPanel;
+        private GameObject _categoryHeaderHighlight;
+
+        private GameObject _checkBoxPrefab;
+        private GameObject _sliderPrefab;
+        private GameObject _keybindPrefab;
+        
 
         public void Start()
         {
@@ -31,33 +42,49 @@ namespace RiskOfOptions
         }
         private void CreatePrefabs()
         {
-            Transform SubPanelArea = transform.Find("SafeArea").Find("SubPanelArea");
-            Transform HeaderArea = transform.Find("SafeArea").Find("HeaderContainer").Find("Header (JUICED)");
+            Transform subPanelArea = transform.Find("SafeArea").Find("SubPanelArea");
+            Transform headerArea = transform.Find("SafeArea").Find("HeaderContainer").Find("Header (JUICED)");
 
-            Prefabs.GDP = GameObject.Instantiate(SubPanelArea.Find("GenericDescriptionPanel").gameObject);
+            Prefabs.Gdp = GameObject.Instantiate(subPanelArea.Find("GenericDescriptionPanel").gameObject);
 
-            UnityEngine.Object.DestroyImmediate(Prefabs.GDP.GetComponentInChildren<DisableIfTextIsEmpty>());
-            UnityEngine.Object.DestroyImmediate(Prefabs.GDP.GetComponentInChildren<LanguageTextMeshController>());
-            UnityEngine.Object.DestroyImmediate(Prefabs.GDP.transform.Find("ContentSizeFitter").Find("BlurPanel").gameObject);
-            UnityEngine.Object.DestroyImmediate(Prefabs.GDP.transform.Find("ContentSizeFitter").Find("CornerRect").gameObject);
+            GameObject.DestroyImmediate(Prefabs.Gdp.GetComponentInChildren<DisableIfTextIsEmpty>());
+            GameObject.DestroyImmediate(Prefabs.Gdp.GetComponentInChildren<LanguageTextMeshController>());
+            GameObject.DestroyImmediate(Prefabs.Gdp.transform.Find("ContentSizeFitter").Find("BlurPanel").gameObject);
+            GameObject.DestroyImmediate(Prefabs.Gdp.transform.Find("ContentSizeFitter").Find("CornerRect").gameObject);
 
-            GameObject audioPanel = SubPanelArea.Find("SettingsSubPanel, Audio").gameObject;
+            GameObject audioPanel = subPanelArea.Find("SettingsSubPanel, Audio").gameObject;
 
-            Prefabs.MOPanelPrefab = GameObject.Instantiate(audioPanel);
-            Prefabs.MOPanelPrefab.name = "SettingsSubPanel, Mod Options";
+            Prefabs.MoPanelPrefab = GameObject.Instantiate(audioPanel);
+            Prefabs.MoPanelPrefab.name = "SettingsSubPanel, Mod Options";
 
-            Prefabs.MOHeaderButtonPrefab = GameObject.Instantiate(HeaderArea.Find("GenericHeaderButton (Audio)").gameObject);
+            Prefabs.MoHeaderButtonPrefab = GameObject.Instantiate(headerArea.Find("GenericHeaderButton (Audio)").gameObject);
 
-            GameObject verticalLayout = Prefabs.MOPanelPrefab.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").gameObject;
+            GameObject verticalLayout = Prefabs.MoPanelPrefab.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").gameObject;
 
             Prefabs.ModButtonPrefab = GameObject.Instantiate(verticalLayout.transform.Find("SettingsEntryButton, Bool (Audio Focus)").gameObject);
 
-            UnityEngine.Object.DestroyImmediate(Prefabs.ModButtonPrefab.GetComponentInChildren<CarouselController>());
-            UnityEngine.Object.DestroyImmediate(Prefabs.ModButtonPrefab.GetComponentInChildren<ButtonSkinController>());
-            UnityEngine.Object.DestroyImmediate(Prefabs.ModButtonPrefab.transform.Find("CarouselRect").gameObject);
+            _checkBoxPrefab = GameObject.Instantiate(Prefabs.ModButtonPrefab);
+            _sliderPrefab = GameObject.Instantiate(verticalLayout.transform.Find("SettingsEntryButton, Slider (Master Volume)").gameObject);
+            _keybindPrefab = GameObject.Instantiate(subPanelArea.Find("SettingsSubPanel, Controls (M&KB)").Find("Scroll View").Find("Viewport").Find("VerticalLayout").Find("SettingsEntryButton, Binding (Jump)").gameObject);
+
+            #region KeybindPrefabCleaning
+
+            GameObject.DestroyImmediate(_keybindPrefab.GetComponentInChildren<InputBindingControl>());
+            GameObject.DestroyImmediate(_keybindPrefab.GetComponentInChildren<InputBindingDisplayController>());
+
+            _keybindPrefab.AddComponent<KeybindController>();
+
+            #endregion
+
+            _checkBoxPrefab.SetActive(false);
+            _sliderPrefab.SetActive(false);
+            _keybindPrefab.SetActive(false);
+
+            GameObject.DestroyImmediate(Prefabs.ModButtonPrefab.GetComponentInChildren<CarouselController>());
+            GameObject.DestroyImmediate(Prefabs.ModButtonPrefab.GetComponentInChildren<ButtonSkinController>());
+            GameObject.DestroyImmediate(Prefabs.ModButtonPrefab.transform.Find("CarouselRect").gameObject);
 
             // Converting a HGButton to a ROOButton so we can modify it better.
-
 
             HGButton oldButton = Prefabs.ModButtonPrefab.GetComponent<HGButton>();
 
@@ -79,13 +106,11 @@ namespace RiskOfOptions
             string hoverToken = oldButton.hoverToken;
             string uiClickSoundOverride = oldButton.uiClickSoundOverride;
 
-
             GameObject.DestroyImmediate(oldButton);
 
-            colors.disabledColor = Prefabs.MOHeaderButtonPrefab.GetComponent<HGButton>().colors.disabledColor;
+            colors.disabledColor = Prefabs.MoHeaderButtonPrefab.GetComponent<HGButton>().colors.disabledColor;
 
-
-            ROOModListButton newButton = Prefabs.ModButtonPrefab.AddComponent<ROOModListButton>();
+            RooModListButton newButton = Prefabs.ModButtonPrefab.AddComponent<RooModListButton>();
             newButton.allowAllEventSystems = allowAllEventSystems;
             newButton.submitOnPointerUp = submitOnPointerUp;
             newButton.requiredTopLayer = requiredTopLayer;
@@ -118,95 +143,96 @@ namespace RiskOfOptions
 
         private void CreatePanel()
         {
-            Prefabs.MOPanelPrefab.name = "SettingsSubPanel, Mod Options";
+            Prefabs.MoPanelPrefab.name = "SettingsSubPanel, Mod Options";
 
-            Transform HeaderArea = transform.Find("SafeArea").Find("HeaderContainer").Find("Header (JUICED)");
+            Transform headerArea = transform.Find("SafeArea").Find("HeaderContainer").Find("Header (JUICED)");
 
-            GameObject verticalLayout = Prefabs.MOPanelPrefab.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").gameObject;
+            GameObject verticalLayout = Prefabs.MoPanelPrefab.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").gameObject;
 
             UnityEngine.Object.DestroyImmediate(verticalLayout.transform.Find("SettingsEntryButton, Slider (Master Volume)").gameObject);
             UnityEngine.Object.DestroyImmediate(verticalLayout.transform.Find("SettingsEntryButton, Slider (SFX Volume)").gameObject);
             UnityEngine.Object.DestroyImmediate(verticalLayout.transform.Find("SettingsEntryButton, Slider (MSX Volume)").gameObject);
             UnityEngine.Object.DestroyImmediate(verticalLayout.transform.Find("SettingsEntryButton, Bool (Audio Focus)").gameObject);
 
-            Prefabs.MOCanvas = GameObject.Instantiate(Prefabs.MOPanelPrefab, Prefabs.MOPanelPrefab.transform.parent);
+            Prefabs.MoCanvas = GameObject.Instantiate(Prefabs.MoPanelPrefab, Prefabs.MoPanelPrefab.transform.parent);
 
-            Prefabs.MOCanvas.GetComponent<RectTransform>().anchorMax = new Vector2(1f, 1f);
+            Prefabs.MoCanvas.GetComponent<RectTransform>().anchorMax = new Vector2(1f, 1f);
 
-            GameObject.DestroyImmediate(Prefabs.MOCanvas.GetComponent<SettingsPanelController>());
-            GameObject.DestroyImmediate(Prefabs.MOCanvas.GetComponent<UnityEngine.UI.Image>());
-            GameObject.DestroyImmediate(Prefabs.MOCanvas.GetComponent<HGButtonHistory>());
+            GameObject.DestroyImmediate(Prefabs.MoCanvas.GetComponent<SettingsPanelController>());
+            GameObject.DestroyImmediate(Prefabs.MoCanvas.GetComponent<UnityEngine.UI.Image>());
+            GameObject.DestroyImmediate(Prefabs.MoCanvas.GetComponent<HGButtonHistory>());
 
-            GameObject.DestroyImmediate(Prefabs.MOCanvas.transform.Find("Scroll View").gameObject);
+            GameObject.DestroyImmediate(Prefabs.MoCanvas.transform.Find("Scroll View").gameObject);
 
-            Prefabs.MOCanvas.AddComponent<GenericDescriptionController>();
+            Prefabs.MoCanvas.AddComponent<GenericDescriptionController>();
 
-            Prefabs.MOCanvas.name = "SettingsSubPanel, Mod Options";
-
-
-
-            ModListPanel = GameObject.Instantiate(Prefabs.MOPanelPrefab, Prefabs.MOCanvas.transform);
-
-            ModListPanel.GetComponent<RectTransform>().anchorMax = new Vector2(0.25f, 1f);
-
-            ModListPanel.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").GetComponent<VerticalLayoutGroup>().spacing = 6;
-
-            ModListPanel.SetActive(true);
-
-            ModListPanel.name = "Mod List Panel";
-
-            ModListPanel.AddComponent<ModListHeaderController>();
+            Prefabs.MoCanvas.name = "SettingsSubPanel, Mod Options";
 
 
-            ModListHighlight = GameObject.Instantiate(GetComponent<HGHeaderNavigationController>().headerHighlightObject, GetComponent<HGHeaderNavigationController>().headerHighlightObject.transform.parent);
 
-            foreach (var imageComp in ModListHighlight.GetComponentsInChildren<UnityEngine.UI.Image>())
+            modListPanel = GameObject.Instantiate(Prefabs.MoPanelPrefab, Prefabs.MoCanvas.transform);
+
+            modListPanel.GetComponent<RectTransform>().anchorMax = new Vector2(0.25f, 1f);
+
+            modListPanel.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").GetComponent<VerticalLayoutGroup>().spacing = 6;
+
+            modListPanel.SetActive(true);
+
+            modListPanel.name = "Mod List Panel";
+
+            modListPanel.AddComponent<ModListHeaderController>();
+
+
+            modListHighlight = GameObject.Instantiate(GetComponent<HGHeaderNavigationController>().headerHighlightObject, GetComponent<HGHeaderNavigationController>().headerHighlightObject.transform.parent);
+
+            foreach (var imageComp in modListHighlight.GetComponentsInChildren<UnityEngine.UI.Image>())
             {
                 imageComp.maskable = false;
             }
 
-            ModListHighlight.SetActive(false);
+            modListHighlight.SetActive(false);
 
 
-            HGHeaderNavigationController ModListController = ModListPanel.AddComponent<HGHeaderNavigationController>();
+            HGHeaderNavigationController modListController = modListPanel.AddComponent<HGHeaderNavigationController>();
 
-            ModListController.headerHighlightObject = ModListHighlight;
-            ModListController.unselectedTextColor = Color.white;
+            modListController.headerHighlightObject = modListHighlight;
+            modListController.unselectedTextColor = Color.white;
 
-            ModListController.makeSelectedHeaderButtonNoninteractable = true;
-
-
-            ModDescriptionPanel = GameObject.Instantiate(Prefabs.MOPanelPrefab, Prefabs.MOCanvas.transform);
-
-            ModDescriptionPanel.GetComponent<RectTransform>().anchorMin = new Vector2(0.275f, 0f);
-            ModDescriptionPanel.GetComponent<RectTransform>().anchorMax = new Vector2(1f, 1f);
-
-            Transform MDPVerticalLayout = ModDescriptionPanel.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout");
-
-            GameObject.Instantiate(Prefabs.GDP, MDPVerticalLayout);
-
-            ModDescriptionPanel.SetActive(true);
-
-            ModDescriptionPanel.name = "Mod Description Panel";
-
-            CategoryHeader = GameObject.Instantiate(Prefabs.MOPanelPrefab, Prefabs.MOCanvas.transform);
-
-            CategoryHeader.GetComponent<RectTransform>().anchorMin = new Vector2(0.275f, 0.86f);
-            CategoryHeader.GetComponent<RectTransform>().anchorMax = new Vector2(1f, 1f);
-
-            CategoryHeader.SetActive(false);
-
-            CategoryHeader.name = "Category Headers";
+            modListController.makeSelectedHeaderButtonNoninteractable = true;
 
 
-            GameObject.DestroyImmediate(CategoryHeader.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").gameObject);
-            GameObject.DestroyImmediate(CategoryHeader.transform.Find("Scroll View").Find("Scrollbar Vertical").gameObject);
+            _modDescriptionPanel = GameObject.Instantiate(Prefabs.MoPanelPrefab, Prefabs.MoCanvas.transform);
+
+            _modDescriptionPanel.GetComponent<RectTransform>().anchorMin = new Vector2(0.275f, 0f);
+            _modDescriptionPanel.GetComponent<RectTransform>().anchorMax = new Vector2(1f, 1f);
+
+            Transform mdpVerticalLayout = _modDescriptionPanel.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout");
+
+            GameObject.Instantiate(Prefabs.Gdp, mdpVerticalLayout);
 
 
-            GameObject Headers = GameObject.Instantiate(HeaderArea.gameObject, CategoryHeader.transform.Find("Scroll View").Find("Viewport"));
-            Headers.name = "Categories (JUICED)";
+            _modDescriptionPanel.SetActive(true);
 
-            RectTransform rt = Headers.GetComponent<RectTransform>();
+            _modDescriptionPanel.name = "Mod Description Panel";
+
+            _categoryHeader = GameObject.Instantiate(Prefabs.MoPanelPrefab, Prefabs.MoCanvas.transform);
+
+            _categoryHeader.GetComponent<RectTransform>().anchorMin = new Vector2(0.275f, 0.86f);
+            _categoryHeader.GetComponent<RectTransform>().anchorMax = new Vector2(1f, 1f);
+
+            _categoryHeader.SetActive(false);
+
+            _categoryHeader.name = "Category Headers";
+
+
+            GameObject.DestroyImmediate(_categoryHeader.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").gameObject);
+            GameObject.DestroyImmediate(_categoryHeader.transform.Find("Scroll View").Find("Scrollbar Vertical").gameObject);
+
+
+            GameObject headers = GameObject.Instantiate(headerArea.gameObject, _categoryHeader.transform.Find("Scroll View").Find("Viewport"));
+            headers.name = "Categories (JUICED)";
+
+            RectTransform rt = headers.GetComponent<RectTransform>();
 
             rt.pivot = new Vector2(0.5f, 0.5f);
 
@@ -215,46 +241,49 @@ namespace RiskOfOptions
 
             rt.anchoredPosition = new Vector2(0, 0);
 
-            Headers.transform.localPosition = new Vector3(Headers.transform.localPosition.x, -47f, Headers.transform.localPosition.z);
+            var localPosition = headers.transform.localPosition;
 
-            Headers.GetComponent<CanvasGroup>().alpha = 1;
+            localPosition = new Vector3(localPosition.x, -47f, localPosition.z);
+            headers.transform.localPosition = localPosition;
 
-            RectTransform[] oldButtons = Headers.GetComponentsInChildren<RectTransform>();
+            headers.GetComponent<CanvasGroup>().alpha = 1;
 
-            for (int i = 0; i < oldButtons.Length; i++)
+            RectTransform[] oldButtons = headers.GetComponentsInChildren<RectTransform>();
+
+            foreach (var oldButton in oldButtons)
             {
-                if (oldButtons[i] != null)
+                if (oldButton != null)
                 {
-                    if (oldButtons[i] != Headers.GetComponent<RectTransform>())
+                    if (oldButton != headers.GetComponent<RectTransform>())
                     {
-                        GameObject.DestroyImmediate(oldButtons[i].gameObject);
+                        GameObject.DestroyImmediate(oldButton.gameObject);
                     }
                 }
             }
 
 
-            CategoryHeaderHighlight = GameObject.Instantiate(GetComponent<HGHeaderNavigationController>().headerHighlightObject, GetComponent<HGHeaderNavigationController>().headerHighlightObject.transform.parent);
+            _categoryHeaderHighlight = GameObject.Instantiate(GetComponent<HGHeaderNavigationController>().headerHighlightObject, GetComponent<HGHeaderNavigationController>().headerHighlightObject.transform.parent);
 
-            CategoryHeaderHighlight.SetActive(false);
+            _categoryHeaderHighlight.SetActive(false);
 
-            HGHeaderNavigationController CategoryController = Headers.AddComponent<HGHeaderNavigationController>();
+            HGHeaderNavigationController categoryController = headers.AddComponent<HGHeaderNavigationController>();
 
-            CategoryController.headerHighlightObject = CategoryHeaderHighlight;
-            CategoryController.unselectedTextColor = Color.white;
+            categoryController.headerHighlightObject = _categoryHeaderHighlight;
+            categoryController.unselectedTextColor = Color.white;
 
-            CategoryController.makeSelectedHeaderButtonNoninteractable = true;
+            categoryController.makeSelectedHeaderButtonNoninteractable = true;
 
 
-            ScrollRect scrollRectScript = CategoryHeader.transform.Find("Scroll View").GetComponent<ScrollRect>();
+            ScrollRect scrollRectScript = _categoryHeader.transform.Find("Scroll View").GetComponent<ScrollRect>();
 
-            scrollRectScript.content = Headers.GetComponent<RectTransform>();
+            scrollRectScript.content = headers.GetComponent<RectTransform>();
 
 
             scrollRectScript.horizontal = true;
             scrollRectScript.vertical = false;
 
 
-            RectTransform scrollBar = CategoryHeader.transform.Find("Scroll View").Find("Scrollbar Horizontal").gameObject.GetComponent<RectTransform>();
+            RectTransform scrollBar = _categoryHeader.transform.Find("Scroll View").Find("Scrollbar Horizontal").gameObject.GetComponent<RectTransform>();
 
             scrollRectScript.horizontalScrollbar = scrollBar.GetComponent<CustomScrollbar>();
 
@@ -262,13 +291,13 @@ namespace RiskOfOptions
             scrollBar.anchorMax = new Vector2(1, 0);
 
 
-            ContentSizeFitter sizeFitter = Headers.AddComponent<ContentSizeFitter>();
+            ContentSizeFitter sizeFitter = headers.AddComponent<ContentSizeFitter>();
 
             sizeFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
             sizeFitter.verticalFit = ContentSizeFitter.FitMode.Unconstrained;
 
 
-            HorizontalLayoutGroup HLG = Headers.GetComponent<HorizontalLayoutGroup>();
+            HorizontalLayoutGroup HLG = headers.GetComponent<HorizontalLayoutGroup>();
 
             HLG.enabled = true;
 
@@ -282,23 +311,23 @@ namespace RiskOfOptions
 
 
 
-            OptionsPanel = GameObject.Instantiate(Prefabs.MOPanelPrefab, Prefabs.MOCanvas.transform);
+            _optionsPanel = GameObject.Instantiate(Prefabs.MoPanelPrefab, Prefabs.MoCanvas.transform);
 
-            OptionsPanel.GetComponent<RectTransform>().anchorMin = new Vector2(0.275f, 0);
-            OptionsPanel.GetComponent<RectTransform>().anchorMax = new Vector2(0.625f, 0.82f);
+            _optionsPanel.GetComponent<RectTransform>().anchorMin = new Vector2(0.275f, 0);
+            _optionsPanel.GetComponent<RectTransform>().anchorMax = new Vector2(0.625f, 0.82f);
 
-            OptionsPanel.SetActive(false);
+            _optionsPanel.SetActive(false);
 
-            OptionsPanel.name = "Options Panel";
+            _optionsPanel.name = "Options Panel";
 
-            OptionDescriptionPanel = GameObject.Instantiate(Prefabs.MOPanelPrefab, Prefabs.MOCanvas.transform);
+            _optionDescriptionPanel = GameObject.Instantiate(_modDescriptionPanel, Prefabs.MoCanvas.transform);
 
-            OptionDescriptionPanel.GetComponent<RectTransform>().anchorMin = new Vector2(0.65f, 0);
-            OptionDescriptionPanel.GetComponent<RectTransform>().anchorMax = new Vector2(1f, 0.82f);
+            _optionDescriptionPanel.GetComponent<RectTransform>().anchorMin = new Vector2(0.65f, 0);
+            _optionDescriptionPanel.GetComponent<RectTransform>().anchorMax = new Vector2(1f, 0.82f);
 
-            OptionDescriptionPanel.SetActive(false);
+            _optionDescriptionPanel.SetActive(false);
 
-            OptionDescriptionPanel.name = "Option Description Panel";
+            _optionDescriptionPanel.name = "Option Description Panel";
 
 
             CreateModListButtons();
@@ -306,36 +335,37 @@ namespace RiskOfOptions
 
         private void AddPanelsToSettings()
         {
-            Transform SubPanelArea = transform.Find("SafeArea").Find("SubPanelArea");
-            Transform HeaderArea = transform.Find("SafeArea").Find("HeaderContainer").Find("Header (JUICED)");
+            Transform subPanelArea = transform.Find("SafeArea").Find("SubPanelArea");
+            Transform headerArea = transform.Find("SafeArea").Find("HeaderContainer").Find("Header (JUICED)");
 
-            GameObject ModOptionsPanel = GameObject.Instantiate(Prefabs.MOCanvas, SubPanelArea);
+            GameObject modOptionsPanel = GameObject.Instantiate(Prefabs.MoCanvas, subPanelArea);
 
             HGHeaderNavigationController navigationController = GetComponent<HGHeaderNavigationController>();
 
             LanguageAPI.Add(Prefabs.HeaderButtonTextToken, "Mod Options");
 
-            GameObject ModOptionsHeaderButton = GameObject.Instantiate(Prefabs.MOHeaderButtonPrefab, HeaderArea);
+            GameObject modOptionsHeaderButton = GameObject.Instantiate(Prefabs.MoHeaderButtonPrefab, headerArea);
 
-            ModOptionsHeaderButton.name = "GenericHeaderButton (Mod Options)";
-            ModOptionsHeaderButton.GetComponentInChildren<LanguageTextMeshController>().token = Prefabs.HeaderButtonTextToken;
-            ModOptionsHeaderButton.GetComponentInChildren<HGButton>().onClick.RemoveAllListeners();
-            ModOptionsHeaderButton.GetComponentInChildren<HGButton>().onClick.AddListener(new UnityEngine.Events.UnityAction(
+            modOptionsHeaderButton.name = "GenericHeaderButton (Mod Options)";
+            modOptionsHeaderButton.GetComponentInChildren<LanguageTextMeshController>().token = Prefabs.HeaderButtonTextToken;
+            modOptionsHeaderButton.GetComponentInChildren<HGButton>().onClick.RemoveAllListeners();
+            modOptionsHeaderButton.GetComponentInChildren<HGButton>().onClick.AddListener(new UnityEngine.Events.UnityAction(
             delegate ()
             {
-                navigationController.ChooseHeaderByButton(ModOptionsHeaderButton.GetComponentInChildren<HGButton>());
+                navigationController.ChooseHeaderByButton(modOptionsHeaderButton.GetComponentInChildren<HGButton>());
             }));
 
             List<HGHeaderNavigationController.Header> headers = GetComponent<HGHeaderNavigationController>().headers.ToList();
 
-            ModOptionsHeaderButton.GetComponentInChildren<HGTextMeshProUGUI>().SetText("MOD OPTIONS");
+            modOptionsHeaderButton.GetComponentInChildren<HGTextMeshProUGUI>().SetText("MOD OPTIONS");
 
-            HGHeaderNavigationController.Header header = new HGHeaderNavigationController.Header();
-
-            header.headerButton = ModOptionsHeaderButton.GetComponent<HGButton>();
-            header.headerName = "Mod Options";
-            header.tmpHeaderText = ModOptionsHeaderButton.GetComponentInChildren<HGTextMeshProUGUI>();
-            header.headerRoot = ModOptionsPanel;
+            HGHeaderNavigationController.Header header = new HGHeaderNavigationController.Header
+            {
+                headerButton = modOptionsHeaderButton.GetComponent<HGButton>(),
+                headerName = "Mod Options",
+                tmpHeaderText = modOptionsHeaderButton.GetComponentInChildren<HGTextMeshProUGUI>(),
+                headerRoot = modOptionsPanel
+            };
 
             headers.Add(header);
 
@@ -345,45 +375,46 @@ namespace RiskOfOptions
 
         private void CreateModListButtons()
         {
-            Transform ModListLayout = ModListPanel.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout");
+            Transform modListLayout = modListPanel.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout");
 
-            HGHeaderNavigationController navigationController = ModListPanel.GetComponent<HGHeaderNavigationController>();
+            HGHeaderNavigationController navigationController = modListPanel.GetComponent<HGHeaderNavigationController>();
 
             List<HGHeaderNavigationController.Header> headers = new List<HGHeaderNavigationController.Header>();
 
-            for (int i = 0; i < ModSettingsManager.optionContainers.Count; i++)
+            for (int i = 0; i < ModSettingsManager.OptionContainers.Count; i++)
             {
-                var Container = ModSettingsManager.optionContainers[i];
+                var container = ModSettingsManager.OptionContainers[i];
 
-                GameObject newModButton = GameObject.Instantiate(Prefabs.ModButtonPrefab, ModListLayout);
+                GameObject newModButton = GameObject.Instantiate(Prefabs.ModButtonPrefab, modListLayout);
 
-                LanguageAPI.Add($"{ModSettingsManager.StartingText}.{Container.ModGUID}.{Container.ModName}.ModListOption".ToUpper().Replace(" ", "_"), Container.ModName);
+                LanguageAPI.Add($"{ModSettingsManager.StartingText}.{container.ModGuid}.{container.ModName}.ModListOption".ToUpper().Replace(" ", "_"), container.ModName);
 
                 //newModButton.GetComponent<LanguageTextMeshController>().token = $"{ModSettingsManager.StartingText}.{Container.ModGUID}.{Container.ModName}.ModListOption".ToUpper().Replace(" ", "_");
 
-                newModButton.GetComponentInChildren<HGTextMeshProUGUI>().text = Container.ModName;
+                newModButton.GetComponentInChildren<HGTextMeshProUGUI>().text = container.ModName;
 
-                newModButton.GetComponent<ROOModListButton>().Description = Container.Description;
-                newModButton.GetComponent<ROOModListButton>().tmp = ModDescriptionPanel.GetComponentInChildren<HGTextMeshProUGUI>();
+                newModButton.GetComponent<RooModListButton>().description = container.Description;
+                newModButton.GetComponent<RooModListButton>().tmp = _modDescriptionPanel.GetComponentInChildren<HGTextMeshProUGUI>();
 
-                //Debug.Log($"Loading Mod List Button {i}");
 
-                newModButton.GetComponent<ROOModListButton>().ContainerIndex = i;
+                newModButton.GetComponent<RooModListButton>().containerIndex = i;
 
-                newModButton.GetComponent<ROOModListButton>().navigationController = navigationController;
+                newModButton.GetComponent<RooModListButton>().navigationController = navigationController;
 
-                newModButton.GetComponent<ROOModListButton>().hoverToken = $"{ModSettingsManager.StartingText}.{Container.ModGUID}.{Container.ModName}.ModListOption".ToUpper().Replace(" ", "_");
+                newModButton.GetComponent<RooModListButton>().hoverToken = $"{ModSettingsManager.StartingText}.{container.ModGuid}.{container.ModName}.ModListOption".ToUpper().Replace(" ", "_");
 
-                newModButton.name = $"ModListButton ({Container.ModName})";
+                newModButton.name = $"ModListButton ({container.ModName})";
 
                 newModButton.SetActive(true);
 
-                HGHeaderNavigationController.Header header = new HGHeaderNavigationController.Header();
+                HGHeaderNavigationController.Header header = new HGHeaderNavigationController.Header
+                {
+                    headerButton = newModButton.GetComponent<RooModListButton>(),
+                    headerName = $"ModListButton ({container.ModName})",
+                    tmpHeaderText = newModButton.GetComponentInChildren<HGTextMeshProUGUI>(),
+                    headerRoot = null
+                };
 
-                header.headerButton = newModButton.GetComponent<ROOModListButton>();
-                header.headerName = $"ModListButton ({Container.ModName})";
-                header.tmpHeaderText = newModButton.GetComponentInChildren<HGTextMeshProUGUI>();
-                header.headerRoot = null;
 
                 headers.Add(header);
             }
@@ -393,131 +424,251 @@ namespace RiskOfOptions
             navigationController.currentHeaderIndex = -1;
         }
 
-        internal void LoadModOptionsFromContainer(int ContainerIndex, Transform canvas)
+        internal void LoadModOptionsFromContainer(int containerIndex, Transform canvas)
         {
-            OptionContainer Container = ModSettingsManager.optionContainers[ContainerIndex];
+            OptionContainer container = ModSettingsManager.OptionContainers[containerIndex];
 
             //Debug.Log($"Loading Container: {Container.ModName}");
 
-            var MDP = canvas.Find("Mod Description Panel").gameObject;
-            var CH = canvas.Find("Category Headers").gameObject;
-            var OP = canvas.Find("Options Panel").gameObject;
-            var ODP = canvas.Find("Option Description Panel").gameObject;
+            var mdp = canvas.Find("Mod Description Panel").gameObject;
+            var ch = canvas.Find("Category Headers").gameObject;
+            var op = canvas.Find("Options Panel").gameObject;
+            var odp = canvas.Find("Option Description Panel").gameObject;
 
-            GameObject CategoriesObject = CH.transform.Find("Scroll View").Find("Viewport").Find("Categories (JUICED)").gameObject;
+            GameObject categoriesObject = ch.transform.Find("Scroll View").Find("Viewport").Find("Categories (JUICED)").gameObject;
 
-            HGHeaderNavigationController navigationController = CategoriesObject.GetComponent<HGHeaderNavigationController>();
+            HGHeaderNavigationController navigationController = categoriesObject.GetComponent<HGHeaderNavigationController>();
 
-            if (CH.activeSelf || OP.activeSelf || ODP.activeSelf)
+            if (ch.activeSelf || op.activeSelf || odp.activeSelf)
             {
-                UnloadExistingCategoryButtons(CategoriesObject.transform);
+                UnloadExistingCategoryButtons(categoriesObject.transform);
             }
 
-            if (MDP.activeSelf || !CH.activeSelf || !OP.activeSelf || !ODP.activeSelf)
+            if (mdp.activeSelf || !ch.activeSelf || !op.activeSelf || !odp.activeSelf)
             {
-                MDP.GetComponentInChildren<HGTextMeshProUGUI>().SetText("");
+                mdp.GetComponentInChildren<HGTextMeshProUGUI>().SetText("");
 
-                MDP.SetActive(false);
+                mdp.SetActive(false);
 
-                CH.SetActive(true);
-                OP.SetActive(true);
-                ODP.SetActive(true);
+                ch.SetActive(true);
+                op.SetActive(true);
+                odp.SetActive(true);
             }
 
             List<HGHeaderNavigationController.Header> headers = new List<HGHeaderNavigationController.Header>();
 
             navigationController.currentHeaderIndex = 0;
 
-            for (int i = 0; i < Container.GetCategoriesCached().Count; i++)
+            for (int i = 0; i < container.GetCategoriesCached().Count; i++)
             {
-                //Debug.Log($"Loading Category: {Container.GetCategoriesCached()[i].Name}");
-
-                GameObject newCategoryButton = GameObject.Instantiate(Prefabs.MOHeaderButtonPrefab, CategoriesObject.transform);
+                GameObject newCategoryButton = GameObject.Instantiate(Prefabs.MoHeaderButtonPrefab, categoriesObject.transform);
 
                 LayoutElement le = newCategoryButton.AddComponent<LayoutElement>();
 
                 le.preferredWidth = 200;
 
-                newCategoryButton.GetComponentInChildren<LanguageTextMeshController>().token = Container.GetCategoriesCached()[i].NameToken;
+                newCategoryButton.GetComponentInChildren<LanguageTextMeshController>().token = container.GetCategoriesCached()[i].NameToken;
 
-                newCategoryButton.GetComponentInChildren<HGTextMeshProUGUI>().SetText(Container.GetCategoriesCached()[i].Name);
+                newCategoryButton.GetComponentInChildren<HGTextMeshProUGUI>().SetText(container.GetCategoriesCached()[i].Name);
 
                 newCategoryButton.GetComponentInChildren<HGButton>().onClick.RemoveAllListeners();
+
+                var categoryIndex = i;
 
                 newCategoryButton.GetComponentInChildren<HGButton>().onClick.AddListener(new UnityEngine.Events.UnityAction(
                 delegate ()
                 {
                     navigationController.ChooseHeaderByButton(newCategoryButton.GetComponentInChildren<HGButton>());
+
+                    LoadOptionListFromCategory(containerIndex, categoryIndex, canvas);
                 }));
 
-                newCategoryButton.name = $"Category Button, {Container.GetCategoriesCached()[i].Name}";
+                newCategoryButton.name = $"Category Button, {container.GetCategoriesCached()[i].Name}";
 
                 newCategoryButton.SetActive(true);
 
 
-                HGHeaderNavigationController.Header header = new HGHeaderNavigationController.Header();
+                HGHeaderNavigationController.Header header = new HGHeaderNavigationController.Header
+                {
+                    headerButton = newCategoryButton.GetComponent<HGButton>(),
+                    headerName = $"Category Button, {container.GetCategoriesCached()[i].Name}",
+                    tmpHeaderText = newCategoryButton.GetComponentInChildren<HGTextMeshProUGUI>(),
+                    headerRoot = null
+                };
 
-                header.headerButton = newCategoryButton.GetComponent<HGButton>();
-                header.headerName = $"Category Button, {Container.GetCategoriesCached()[i].Name}";
-                header.tmpHeaderText = newCategoryButton.GetComponentInChildren<HGTextMeshProUGUI>();
-                header.headerRoot = null;
 
                 headers.Add(header);
             }
             navigationController.headers = headers.ToArray();
 
             navigationController.InvokeMethod("RebuildHeaders");
+
+            LoadOptionListFromCategory(containerIndex, navigationController.currentHeaderIndex, canvas);
         }
 
-        internal void LoadOptionListFromCategory()
+        internal void LoadOptionListFromCategory(int containerIndex, int categoryIndex, Transform canvas)
+        {
+            UnloadExistingOptionButtons(canvas.Find("Options Panel"));
+
+            OptionCategory category = ModSettingsManager.OptionContainers[containerIndex].GetCategoriesCached()[categoryIndex];
+
+            var verticalLayoutTransform = canvas.Find("Options Panel").Find("Scroll View").Find("Viewport").Find("VerticalLayout");
+
+            for (int i = 0; i < category.GetModOptionsCached().Count; i++)
+            {
+                var option = category.GetModOptionsCached()[i];
+
+                GameObject button;
+
+                BaseSettingsControl.SettingSource roo = (BaseSettingsControl.SettingSource) 2;
+
+                switch (option.optionType)
+                {
+                    case RiskOfOption.OptionType.Bool:
+                        button = GameObject.Instantiate(_checkBoxPrefab, verticalLayoutTransform);
+
+                        var controller = button.GetComponentInChildren<CarouselController>();
+
+                        controller.settingName = option.ConsoleToken;
+                        controller.nameToken = option.NameToken;
+
+                        controller.settingSource = roo;
+
+                        if (option.OnValueChangedBool != null)
+                            button.AddComponent<BoolListener>().onValueChangedBool = option.OnValueChangedBool;
+
+                        button.name = $"Mod Option CheckBox, {option.Name}";
+                        break;
+                    case RiskOfOption.OptionType.Slider:
+                        button = GameObject.Instantiate(_sliderPrefab, verticalLayoutTransform);
+
+                        var slider = button.GetComponentInChildren<SettingsSlider>();
+
+                        slider.settingName = option.ConsoleToken;
+                        slider.nameToken = option.NameToken;
+
+                        slider.settingSource = roo;
+
+                        if (option.OnValueChangedFloat != null)
+                            slider.slider.onValueChanged.AddListener(option.OnValueChangedFloat);
+
+                        button.name = $"Mod Option Slider, {option.Name}";
+                        break;
+                    case RiskOfOption.OptionType.Keybinding:
+                        button = GameObject.Instantiate(_keybindPrefab, verticalLayoutTransform);
+
+                        var keybindController = button.GetComponentInChildren<KeybindController>();
+
+                        keybindController.settingName = option.ConsoleToken;
+                        keybindController.nameToken = option.NameToken;
+
+                        keybindController.settingSource = roo;
+
+                        if (option.OnValueChangedKeyCode != null)
+                            keybindController.onValueChangedKeyCode = option.OnValueChangedKeyCode;
+
+                        button.transform.Find("ButtonText").GetComponent<HGTextMeshProUGUI>().SetText(option.Name);
+
+                        button.name = $"Mod Option KeyBind, {option.Name}";
+
+                        foreach (var hgButton in button.GetComponentsInChildren<HGButton>())
+                        {
+                            hgButton.onClick.RemoveAllListeners();
+
+                            var kbController = keybindController;
+                            hgButton.onClick.AddListener(new UnityAction(delegate()
+                            {
+                                kbController.StartListening();
+                            }));
+                        }
+
+
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+                button.GetComponentInChildren<HGButton>().hoverToken = option.DescriptionToken;
+
+                button.GetComponentInChildren<HGButton>().onSelect.AddListener(new UnityAction(delegate()
+                {
+                    canvas.Find("Option Description Panel").GetComponentInChildren<HGTextMeshProUGUI>().SetText(option.Description);
+                }));
+
+                button.SetActive(true);
+            }
+        }
 
         internal void UnLoad(Transform canvas)
         {
             if (!initilized)
                 return;
 
-            var MDP = canvas.Find("Mod Description Panel").gameObject;
-            var CH = canvas.Find("Category Headers").gameObject;
-            var OP = canvas.Find("Options Panel").gameObject;
-            var ODP = canvas.Find("Option Description Panel").gameObject;
+            var mdp = canvas.Find("Mod Description Panel").gameObject;
+            var ch = canvas.Find("Category Headers").gameObject;
+            var op = canvas.Find("Options Panel").gameObject;
+            var odp = canvas.Find("Option Description Panel").gameObject;
 
-            if (!MDP.activeSelf)
+            if (!mdp.activeSelf)
             {
-                MDP.SetActive(true);
+                mdp.SetActive(true);
 
-                CH.SetActive(false);
-                OP.SetActive(false);
-                ODP.SetActive(false);
+                ch.SetActive(false);
+                op.SetActive(false);
+                odp.SetActive(false);
             }
 
 
-            ModListHighlight.transform.SetParent(transform);
-            ModListHighlight.SetActive(false);
+            modListHighlight.transform.SetParent(transform);
+            modListHighlight.SetActive(false);
 
-            UnloadExistingCategoryButtons(CH.transform);
+            UnloadExistingOptionButtons(op.transform);
+            UnloadExistingCategoryButtons(ch.transform);
         }
 
 
-        internal void UnloadExistingCategoryButtons(Transform CH)
+        internal void UnloadExistingCategoryButtons(Transform ch)
         {
-            CategoryHeaderHighlight.transform.SetParent(transform);
-            CategoryHeaderHighlight.SetActive(false);
+            _categoryHeaderHighlight.transform.SetParent(transform);
+            _categoryHeaderHighlight.SetActive(false);
 
-            HGButton[] activeCategoryButtons = CH.GetComponentsInChildren<HGButton>();
+            HGButton[] activeCategoryButtons = ch.GetComponentsInChildren<HGButton>();
 
-            if (activeCategoryButtons.Length > 0)
+            if (activeCategoryButtons.Length <= 0)
+                return;
+
+            foreach (var activeCategoryButton in activeCategoryButtons)
             {
-                for (int i = 0; i < activeCategoryButtons.Length; i++)
-                {
-                    if (activeCategoryButtons[i].gameObject != null)
-                    {
-                        //Debug.Log($"Unloading {activeCategoryButtons[i].gameObject}");
+                if (activeCategoryButton.gameObject == null)
+                    continue;
 
-                        activeCategoryButtons[i].gameObject.SetActive(false);
+                //Debug.Log($"Unloading {activeCategoryButtons[i].gameObject}");
 
-                        GameObject.DestroyImmediate(activeCategoryButtons[i].gameObject);
-                    }
-                }
+                GameObject buttonGameObject = activeCategoryButton.gameObject;
+
+                buttonGameObject.SetActive(false);
+
+                GameObject.DestroyImmediate(buttonGameObject);
+            }
+        }
+
+        internal void UnloadExistingOptionButtons(Transform op)
+        {
+            BaseSettingsControl[] activeOptionButtons = op.GetComponentsInChildren<BaseSettingsControl>();
+
+            if (activeOptionButtons.Length <= 0)
+                return;
+
+            foreach (var button in activeOptionButtons)
+            {
+                if (button.gameObject == null)
+                    continue;
+
+                GameObject buttonGameObject = button.gameObject;
+
+                buttonGameObject.SetActive(false);
+
+                GameObject.DestroyImmediate(buttonGameObject);
             }
         }
 
@@ -527,13 +678,13 @@ namespace RiskOfOptions
 
             initilized = false;
 
-            GameObject.DestroyImmediate(ModListPanel);
-            GameObject.DestroyImmediate(ModDescriptionPanel);
-            GameObject.DestroyImmediate(CategoryHeader);
-            GameObject.DestroyImmediate(OptionsPanel);
-            GameObject.DestroyImmediate(OptionDescriptionPanel);
-            GameObject.DestroyImmediate(CategoryHeaderHighlight);
-            GameObject.DestroyImmediate(ModListHighlight);
+            GameObject.DestroyImmediate(modListPanel);
+            GameObject.DestroyImmediate(_modDescriptionPanel);
+            GameObject.DestroyImmediate(_categoryHeader);
+            GameObject.DestroyImmediate(_optionsPanel);
+            GameObject.DestroyImmediate(_optionDescriptionPanel);
+            GameObject.DestroyImmediate(_categoryHeaderHighlight);
+            GameObject.DestroyImmediate(modListHighlight);
         }
 
         public void OnEnable()

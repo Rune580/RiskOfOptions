@@ -17,14 +17,18 @@ namespace RiskOfOptions
         /// </summary>
         public List<OptionBase> Options;
 
-        public OptionCategory(string CategoryName, string ModGUID, string Description = "")
+        private List<RiskOfOption> _modOptions;
+
+        private int _lastAmount = 0;
+
+        public OptionCategory(string categoryName, string modGuid, string description = "")
         {
-            this.Name = CategoryName;
-            this.ModGUID = ModGUID;
+            this.Name = categoryName;
+            this.ModGuid = modGuid;
 
             Options = new List<OptionBase>();
 
-            OptionToken = $"{ModSettingsManager.StartingText}.{ModGUID}.{(CategoryName != "" ? "category_" + CategoryName + "." : CategoryName)}{Name}.CATEGORY".ToUpper().Replace(" ", "_");
+            OptionToken = $"{ModSettingsManager.StartingText}.{modGuid}.{(categoryName != "" ? "category_" + categoryName + "." : categoryName)}{Name}.CATEGORY".ToUpper().Replace(" ", "_");
 
 
             NameToken = $"{OptionToken}.NAME_TOKEN";
@@ -33,10 +37,24 @@ namespace RiskOfOptions
 
             LanguageAPI.Add(NameToken, Name);
 
-            if (Description != "")
+            if (description != "")
             {
-                LanguageAPI.Add(NameToken, Description);
+                LanguageAPI.Add(NameToken, description);
             }
+        }
+
+        internal List<RiskOfOption> GetModOptionsCached()
+        {
+            if (_modOptions != null && Options.Count == _lastAmount)
+                return _modOptions;
+
+
+            _modOptions = Options.Where(a => a.GetType() == typeof(RiskOfOption)).Cast<RiskOfOption>().ToList();
+
+            _lastAmount = Options.Count;
+
+
+            return _modOptions;
         }
 
         public void Add(ref OptionBase option)

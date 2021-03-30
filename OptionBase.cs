@@ -30,7 +30,7 @@ namespace RiskOfOptions
 
         public string ConsoleToken { get; protected set; }
 
-        public string ModGUID { get; protected set; }
+        public string ModGuid { get; protected set; }
         public string ModName { get; protected set; }
     }
 }

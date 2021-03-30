@@ -3,39 +3,39 @@ using UnityEngine;
 
 namespace RiskOfOptions
 {
-    class BoolListener : MonoBehaviour
+    public class BoolListener : MonoBehaviour
     {
         public UnityEngine.Events.UnityAction<bool> onValueChangedBool;
 
-        private bool previousValue = false;
+        private bool _previousValue = false;
 
-        private CarouselController cc;
+        private CarouselController _cc;
 
         private void Start()
         {
-            cc = gameObject.GetComponentInChildren<CarouselController>();
+            _cc = gameObject.GetComponentInChildren<CarouselController>();
         }
 
         private void Update()
         {
-            if (cc != null)
+            if (!_cc)
+                return;
+
+            bool currentValue = false;
+
+            string value = _cc.GetCurrentValue();
+
+            if (value == "1")
             {
-                bool currentValue = false;
-
-                string value = cc.GetCurrentValue();
-
-                if (value == "1")
-                {
-                    currentValue = true;
-                }
-
-                if (previousValue != currentValue)
-                {
-                    onValueChangedBool.Invoke(currentValue);
-                }
-
-                previousValue = currentValue;
+                currentValue = true;
             }
+
+            if (_previousValue != currentValue)
+            {
+                onValueChangedBool.Invoke(currentValue);
+            }
+
+            _previousValue = currentValue;
         }
     }
 }

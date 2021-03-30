@@ -12,9 +12,9 @@ namespace RiskOfOptions
     /// </summary>
     internal class OptionContainer
     {
-        public string ModGUID { get; private set; }
+        public string ModGuid { get; private set; }
 
-        public string ModName { get; private set; }
+        public string ModName { get; internal set; }
 
         public string Name { get; internal set; }
         public string NameToken { get; internal set; }
@@ -26,42 +26,42 @@ namespace RiskOfOptions
 
         internal List<OptionBase> Options;
 
-        private int lastAmount = 0;
+        private int _lastAmount = 0;
 
-        private List<RiskOfOption> modOptions;
+        private List<RiskOfOption> _modOptions;
 
-        private List<OptionCategory> Categories;
+        private List<OptionCategory> _categories;
 
-        public OptionContainer(string ModGUID, string ModName)
+        public OptionContainer(string modGuid, string modName)
         {
-            this.ModGUID = ModGUID;
-            this.ModName = ModName;
+            this.ModGuid = modGuid;
+            this.ModName = modName;
 
             Options = new List<OptionBase>();
         }
 
         internal List<RiskOfOption> GetModOptionsCached()
         {
-            if (modOptions == null || Options.Count != lastAmount)
-            {
-                modOptions = Options.Where(a => a.GetType() == typeof(RiskOfOption)).Cast<RiskOfOption>().ToList();
+            if (_modOptions != null && Options.Count == _lastAmount)
+                return _modOptions;
 
-                lastAmount = Options.Count;
-            }
+            _modOptions = Options.Where(a => a.GetType() == typeof(RiskOfOption)).Cast<RiskOfOption>().ToList();
 
-            return modOptions;
+            _lastAmount = Options.Count;
+
+            return _modOptions;
         }
 
         internal List<OptionCategory> GetCategoriesCached()
         {
-            if (Categories == null || Options.Count != lastAmount)
-            {
-                Categories = Options.Where(a => a.GetType() == typeof(OptionCategory)).Cast<OptionCategory>().ToList();
+            if (_categories != null && Options.Count == _lastAmount)
+                return _categories;
 
-                lastAmount = Options.Count;
-            }
+            _categories = Options.Where(a => a.GetType() == typeof(OptionCategory)).Cast<OptionCategory>().ToList();
 
-            return Categories;
+            _lastAmount = Options.Count;
+
+            return _categories;
         }
 
         internal void Add(ref OptionBase option)

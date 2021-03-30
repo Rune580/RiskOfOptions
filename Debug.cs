@@ -7,16 +7,16 @@ namespace RiskOfOptions
 {
     internal static class Debug
     {
-        private static ManualLogSource _LogSource;
+        private static ManualLogSource _logSource;
 
-        internal static void Init(ManualLogSource LogSource)
+        internal static void Init(ManualLogSource logSource)
         {
-            _LogSource = LogSource;
+            _logSource = logSource;
         }
 
         internal static void Log(object message, LogLevel logLevel = LogLevel.Info)
         {
-            _LogSource.Log(logLevel, $"{message}");
+            _logSource.Log(logLevel, $"{message}");
         }
     }
 }

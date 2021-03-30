@@ -9,10 +9,10 @@ namespace RiskOfOptions
     {
         public static readonly string HeaderButtonTextToken = "RISK_OF_OPTIONS_MOD_OPTIONS_HEADER_BUTTON_TEXT";
         public static GameObject SettingsPanelPrefab;
-        public static GameObject MOHeaderButtonPrefab;
-        public static GameObject MOPanelPrefab;
-        public static GameObject MOCanvas;
+        public static GameObject MoHeaderButtonPrefab;
+        public static GameObject MoPanelPrefab;
+        public static GameObject MoCanvas;
         public static GameObject ModButtonPrefab;
-        public static GameObject GDP;
+        public static GameObject Gdp;
     }
 }

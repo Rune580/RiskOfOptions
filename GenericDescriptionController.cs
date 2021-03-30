@@ -10,36 +10,44 @@ namespace RiskOfOptions
 {
     class GenericDescriptionController : MonoBehaviour
     {
-        private GameObject GenericDescriptionPanel;
-        public ModOptionPanelController mopc { get; internal set; }
-        private Transform canvas;
-        void OnEnable()
-        {
-            if (!GenericDescriptionPanel)
-                GenericDescriptionPanel = GameObject.Find("GenericDescriptionPanel");
+        private GameObject _genericDescriptionPanel;
+        public ModOptionPanelController Mopc { get; internal set; }
+        private Transform _canvas;
 
-            GenericDescriptionPanel.SetActive(false);
+        private void OnEnable()
+        {
+            if (!_genericDescriptionPanel)
+                _genericDescriptionPanel = GameObject.Find("GenericDescriptionPanel");
+
+            _genericDescriptionPanel.SetActive(false);
         }
 
-        void OnDisable()
+        private void OnDisable()
         {
-            if (!mopc)
-                mopc = GetComponentInParent<ModOptionPanelController>();
-
-            if (!mopc.initilized)
+            try
             {
-                return;
-            }
+                if (!Mopc)
+                    Mopc = GetComponentInParent<ModOptionPanelController>();
 
-            if (GenericDescriptionPanel)
+                if (!Mopc.initilized)
+                {
+                    return;
+                }
+
+                if (_genericDescriptionPanel)
+                {
+                    _genericDescriptionPanel.SetActive(true);
+                }
+
+                if (!_canvas)
+                    _canvas = _genericDescriptionPanel.transform.parent.Find("SettingsSubPanel, Mod Options(Clone)");
+
+                Mopc.UnLoad(_canvas);
+            }
+            catch
             {
-                GenericDescriptionPanel.SetActive(true);
+                // ignored
             }
-
-            if (!canvas)
-                canvas = GenericDescriptionPanel.transform.parent.Find("SettingsSubPanel, Mod Options(Clone)");
-
-            mopc.UnLoad(canvas);
         }
     }
 }

@@ -5,23 +5,26 @@ using System;
 using System.Reflection;
 using UnityEngine;
 
+using static RiskOfOptions.ExtensionMethods;
+// ReSharper disable IdentifierTypo
+
 namespace RiskOfOptions
 {
     public class RiskOfOption : OptionBase
     {
         public OptionType optionType;
 
-        public string defaultValue;
+        public string DefaultValue;
 
-        public UnityEngine.Events.UnityAction<bool> onValueChangedBool;
-        public UnityEngine.Events.UnityAction<float> onValueChangedFloat;
-        public UnityEngine.Events.UnityAction<KeyCode> onValueChangedKeyCode;
+        public UnityEngine.Events.UnityAction<bool> OnValueChangedBool;
+        public UnityEngine.Events.UnityAction<float> OnValueChangedFloat;
+        public UnityEngine.Events.UnityAction<KeyCode> OnValueChangedKeyCode;
 
         public string CategoryName { get; internal set; }
 
-        internal BaseConVar conVar;
+        internal BaseConVar ConVar;
 
-        public GameObject gameObject;
+        internal string Value;
 
         public enum OptionType
         {
@@ -30,24 +33,24 @@ namespace RiskOfOptions
             Keybinding
         }
 
-        internal RiskOfOption(string ModGUID, string ModName, OptionType optionType, string Name, string Description, string DefaultValue, string CategoryName = "")
+        internal RiskOfOption(string modGuid, string modName, OptionType optionType, string name, string description, string defaultValue, string categoryName = "")
         {
             this.optionType = optionType;
-            this.Name = Name;
-            this.Description = Description;
-            defaultValue = DefaultValue;
+            Name = name;
+            Description = description;
+            DefaultValue = defaultValue;
 
-            if (CategoryName == "")
+            if (categoryName == "")
             {
-                CategoryName = "Main";
+                categoryName = "Main";
             }
 
-            this.CategoryName = CategoryName;
+            CategoryName = categoryName;
 
-            this.ModGUID = ModGUID;
-            this.ModName = ModName;
+            ModGuid = modGuid;
+            ModName = modName;
 
-            OptionToken = $"{ModSettingsManager.StartingText}.{ModGUID}.category_{CategoryName}.{Name}.{optionType}".ToUpper().Replace(" ", "_");
+            OptionToken = $"{ModSettingsManager.StartingText}.{modGuid}.{modName}.category_{categoryName.Replace(".", "")}.{name}.{optionType}".ToUpper().Replace(" ", "_");
 
             ConsoleToken = OptionToken.ToLower();
 
@@ -58,34 +61,26 @@ namespace RiskOfOptions
             RegisterTokens();
         }
 
-        public RiskOfOption(OptionType optionType, string Name, string Description, string DefaultValue, string CategoryName = "")
+        public RiskOfOption(OptionType optionType, string name, string description, string defaultValue, string categoryName = "")
         {
             this.optionType = optionType;
-            this.Name = Name;
-            this.Description = Description;
-            defaultValue = DefaultValue;
+            Name = name;
+            Description = description;
+            DefaultValue = defaultValue;
 
-            if (CategoryName == "")
+            if (categoryName == "")
             {
-                CategoryName = "Main";
+                categoryName = "Main";
             }
 
-            this.CategoryName = CategoryName;
+            CategoryName = categoryName;
 
-            var classes = Assembly.GetCallingAssembly().GetExportedTypes();
+            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
 
-            foreach (var item in classes)
-            {
-                BepInPlugin bepInPlugin = item.GetCustomAttribute<BepInPlugin>();
+            ModGuid = modInfo.ModGuid;
+            ModName = modInfo.ModName;
 
-                if (bepInPlugin != null)
-                {
-                    ModGUID = bepInPlugin.GUID;
-                    ModName = bepInPlugin.Name;
-                }
-            }
-
-            OptionToken = $"{ModSettingsManager.StartingText}.{ModGUID}.category_{CategoryName}.{Name}.{optionType}".ToUpper().Replace(" ", "_");
+            OptionToken = $"{ModSettingsManager.StartingText}.{ModGuid}.{ModName}.category_{categoryName}.{name}.{optionType}".ToUpper().Replace(" ", "_");
 
             ConsoleToken = OptionToken.ToLower();
 
@@ -108,7 +103,8 @@ namespace RiskOfOptions
             {
                 throw new Exception($"Option {Name} is not a Bool!");
             }
-            return bool.Parse(conVar.GetString());
+
+            return bool.Parse(ConVar != null ? ConVar.GetString() : Value);
         }
 
         public float GetFloat()
@@ -117,7 +113,8 @@ namespace RiskOfOptions
             {
                 throw new Exception($"Option {Name} is not a Slider!");
             }
-            return float.Parse(conVar.GetString());
+
+            return float.Parse(ConVar != null ? ConVar.GetString() : Value);
         }
 
         public KeyCode GetKeyCode()
@@ -126,25 +123,23 @@ namespace RiskOfOptions
             {
                 throw new Exception($"Option {Name} is not a KeyCode!");
             }
-            return (KeyCode)int.Parse(conVar.GetString());
+
+            if (ConVar != null)
+            {
+                return (KeyCode)int.Parse(ConVar.GetString());
+            }
+
+            return (KeyCode)int.Parse(Value);
         }
 
         public static bool operator ==(RiskOfOption a, RiskOfOption b)
         {
-            if (a.DescriptionToken == b.DescriptionToken)
-            {
-                return true;
-            }
-            return false;
+            return a?.DescriptionToken == b?.DescriptionToken;
         }
 
         public static bool operator !=(RiskOfOption a, RiskOfOption b)
         {
-            if (a.DescriptionToken != b.DescriptionToken)
-            {
-                return true;
-            }
-            return false;
+            return a?.DescriptionToken != b?.DescriptionToken;
         }
     }
 }

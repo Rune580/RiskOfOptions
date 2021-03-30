@@ -23,17 +23,34 @@ namespace RiskOfOptions
 
             ModSettingsManager.Init();
 
+            ModSettingsManager.setPanelTitle("Example Title Bitch");
+
             ModSettingsManager.setPanelDescription("Example Description");
 
-            ModSettingsManager.createCategory("Audio", "yeah");
+            ModSettingsManager.CreateCategory("Audio", "yeah");
 
-            ModSettingsManager.createCategory("Controls", "yeah");
+            ModSettingsManager.CreateCategory("Controls", "yeah");
 
-            ModSettingsManager.addOption("Test CheckBox", "This is a Description", true);
+            ModSettingsManager.CreateCategory("Enemies", "yeah");
 
-            ModSettingsManager.addOption("Test Slider", "This is another Description", 0f, "Audio");
+            ModSettingsManager.CreateCategory("Dick", "yeah");
 
-            ModSettingsManager.addOption("Test KeyBind", "This is yet another Description", UnityEngine.KeyCode.G, "Controls");
+            ModSettingsManager.CreateCategory("Balls", "yeah");
+
+            ModSettingsManager.CreateCategory("Ligma", "yeah");
+
+            ModSettingsManager.CreateCategory("Got em", "yeah");
+
+            ModSettingsManager.CreateCategory("Etc", "yeah");
+
+
+            ModSettingsManager.AddOption("Test CheckBox", "This is a Description", true);
+
+            ModSettingsManager.AddOption("Test Slider", "This is another Description", 0f, "Audio");
+
+            ModSettingsManager.AddOption("Test KeyBind", "This is yet another Description", UnityEngine.KeyCode.G, "Controls");
+
+
 
             //ModOption test = new ModOption(ModOption.OptionType.Bool, "test", "test description", "0");
 

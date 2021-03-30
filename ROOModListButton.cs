@@ -4,15 +4,16 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 
 namespace RiskOfOptions
 {
-    public class ROOModListButton : HGButton
+    public class RooModListButton : HGButton
     {
-        public string Description = "";
+        public string description = "";
         public HGTextMeshProUGUI tmp;
-        public ModOptionPanelController mopc { get; internal set; }
-        public int ContainerIndex;
+        public ModOptionPanelController Mopc { get; internal set; }
+        public int containerIndex;
         public HGHeaderNavigationController navigationController;
 
         public override void OnSelect(BaseEventData eventData)
@@ -21,34 +22,19 @@ namespace RiskOfOptions
             SetDescription();
         }
 
-        public override void OnPointerExit(PointerEventData eventData)
-        {
-            base.OnPointerExit(eventData);
-        }
-
-        protected override void Awake()
-        {
-            base.Awake();
-        }
-
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-        }
-
         protected override void Start()
         {
             base.Start();
 
-            if (!mopc)
-                mopc = GetComponentInParent<ModOptionPanelController>();
+            if (!Mopc)
+                Mopc = GetComponentInParent<ModOptionPanelController>();
 
             base.onClick.AddListener(new UnityEngine.Events.UnityAction(
                 delegate ()
                 {
                     navigationController.ChooseHeaderByButton(this);
 
-                    mopc.LoadModOptionsFromContainer(ContainerIndex, transform.parent.parent.parent.parent.parent);
+                    Mopc.LoadModOptionsFromContainer(containerIndex, transform.parent.parent.parent.parent.parent);
                 }));
         }
 
@@ -71,10 +57,10 @@ namespace RiskOfOptions
 
         private void SetDescription()
         {
-            if (!tmp || Description == "")
+            if (!tmp || description == "")
                 return;
 
-            tmp.SetText(Description);
+            tmp.SetText(description);
         }
     }
 }

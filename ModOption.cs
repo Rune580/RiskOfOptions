@@ -4,6 +4,12 @@ using System.Reflection;
 using UnityEngine;
 using System;
 
+using static RiskOfOptions.ExtensionMethods;
+// ReSharper disable InconsistentNaming
+// ReSharper disable UnusedMember.Global
+// ReSharper disable IdentifierTypo
+#pragma warning disable 660,661
+
 namespace RiskOfOptions
 {
     [Obsolete("ModOption is now obsolete. please use addOption(...)")]
@@ -39,36 +45,25 @@ namespace RiskOfOptions
             description = _description;
             defaultValue = _defaultValue;
 
-            var classes = Assembly.GetCallingAssembly().GetExportedTypes();
+            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
 
-            foreach (var item in classes)
-            {
-                BepInPlugin bepInPlugin = item.GetCustomAttribute<BepInPlugin>();
+            owner = modInfo.ModGuid;
+            modName = modInfo.ModName;
+        }
 
-                if (bepInPlugin != null)
-                {
-                    owner = bepInPlugin.GUID;
-                    modName = bepInPlugin.Name;
-                }
-            }
+        internal void SetOwner(string modGuid)
+        {
+            owner = modGuid;
         }
 
         public static bool operator ==(ModOption a, ModOption b)
         {
-            if (a.longName == b.longName)
-            {
-                return true;
-            }
-            return false;
+            return a?.longName == b?.longName;
         }
 
         public static bool operator !=(ModOption a, ModOption b)
         {
-            if (a.longName != b.longName)
-            {
-                return true;
-            }
-            return false;
+            return a?.longName != b?.longName;
         }
 
 
