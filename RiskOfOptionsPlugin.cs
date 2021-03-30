@@ -21,9 +21,11 @@ namespace RiskOfOptions
         {
             Debug.Init(base.Logger);
 
+            Thunderstore.AddStartupEvent();
+
             ModSettingsManager.Init();
 
-            ModSettingsManager.setPanelTitle("Example Title Bitch");
+            //ModSettingsManager.setPanelTitle("Example Title Bitch");
 
             ModSettingsManager.setPanelDescription("Example Description");
 
@@ -33,15 +35,15 @@ namespace RiskOfOptions
 
             ModSettingsManager.CreateCategory("Enemies", "yeah");
 
-            ModSettingsManager.CreateCategory("Dick", "yeah");
+            //ModSettingsManager.CreateCategory("Dick", "yeah");
 
-            ModSettingsManager.CreateCategory("Balls", "yeah");
+            //ModSettingsManager.CreateCategory("Balls", "yeah");
 
-            ModSettingsManager.CreateCategory("Ligma", "yeah");
+            //ModSettingsManager.CreateCategory("Ligma", "yeah");
 
-            ModSettingsManager.CreateCategory("Got em", "yeah");
+            //ModSettingsManager.CreateCategory("Got em", "yeah");
 
-            ModSettingsManager.CreateCategory("Etc", "yeah");
+            //ModSettingsManager.CreateCategory("Etc", "yeah");
 
 
             ModSettingsManager.AddOption("Test CheckBox", "This is a Description", true);
@@ -49,6 +51,8 @@ namespace RiskOfOptions
             ModSettingsManager.AddOption("Test Slider", "This is another Description", 0f, "Audio");
 
             ModSettingsManager.AddOption("Test KeyBind", "This is yet another Description", UnityEngine.KeyCode.G, "Controls");
+
+            ModSettingsManager.AddOption("Emote Wheel", "Coming up with all of these examples is getting hard.", UnityEngine.KeyCode.C, "Controls");
 
 
 

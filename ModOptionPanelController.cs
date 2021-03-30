@@ -13,6 +13,7 @@ using UnityEngine.UI;
 
 using RiskOfOptions.OptionComponents;
 using UnityEngine.Events;
+using UnityEngine.Networking;
 
 namespace RiskOfOptions
 {
@@ -134,9 +135,30 @@ namespace RiskOfOptions
             newButton.disablePointerClick = false;
             newButton.onClick.RemoveAllListeners();
 
+            RectTransform buttonTextRectTransform = Prefabs.ModButtonPrefab.transform.Find("ButtonText").GetComponent<RectTransform>();
+
+            buttonTextRectTransform.anchorMin = new Vector2(0.19f, 0);
+            buttonTextRectTransform.anchorMax = new Vector2(1, 1);
 
             UnityEngine.Object.DestroyImmediate(Prefabs.ModButtonPrefab.GetComponent<LanguageTextMeshController>());
 
+
+            GameObject modIconGameObject = new GameObject();
+
+            modIconGameObject.name = "ModIcon";
+
+            RectTransform modIconRectTransform = modIconGameObject.AddComponent<RectTransform>();
+            modIconGameObject.AddComponent<CanvasRenderer>();
+            modIconGameObject.AddComponent<UnityEngine.UI.Image>();
+
+            modIconRectTransform.anchorMin = new Vector2(0.04f, 0.13f);
+            modIconRectTransform.anchorMax = new Vector2(0.19f, 0.86f);
+
+            modIconRectTransform.pivot = new Vector2(0.5f, 0.5f);
+
+            modIconRectTransform.localPosition = new Vector3(-142, -0.32f, 0);
+
+            modIconGameObject.transform.SetParent(Prefabs.ModButtonPrefab.transform);
 
             Prefabs.ModButtonPrefab.SetActive(false);
         }
@@ -381,6 +403,24 @@ namespace RiskOfOptions
 
             List<HGHeaderNavigationController.Header> headers = new List<HGHeaderNavigationController.Header>();
 
+            Dictionary<string, Sprite> icons = new Dictionary<string, Sprite>();
+
+            if (Thunderstore.doneFetching)
+            {
+                foreach (var icon in Thunderstore.GetModIcons())
+                {
+                    UnityWebRequest www = new UnityWebRequest($"file://{icon.Icon}");
+
+                    DownloadHandlerTexture downloadHandler = new DownloadHandlerTexture(true);
+
+                    www.downloadHandler = downloadHandler;
+
+                    www.SendWebRequest();
+
+                    icons.Add(icon.modGuid, Sprite.Create(downloadHandler.texture, new Rect(0f, 0f, downloadHandler.texture.width, downloadHandler.texture.height), new Vector2(0.5f, 0.5f)));
+                }
+            }
+
             for (int i = 0; i < ModSettingsManager.OptionContainers.Count; i++)
             {
                 var container = ModSettingsManager.OptionContainers[i];
@@ -404,6 +444,11 @@ namespace RiskOfOptions
                 newModButton.GetComponent<RooModListButton>().hoverToken = $"{ModSettingsManager.StartingText}.{container.ModGuid}.{container.ModName}.ModListOption".ToUpper().Replace(" ", "_");
 
                 newModButton.name = $"ModListButton ({container.ModName})";
+
+                if (icons.Count > 0)
+                {
+                    newModButton.transform.Find("ModIcon").GetComponent<UnityEngine.UI.Image>().sprite = icons[container.ModGuid];
+                }
 
                 newModButton.SetActive(true);
 

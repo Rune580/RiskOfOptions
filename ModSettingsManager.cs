@@ -4,11 +4,14 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using BepInEx;
+using On.RoR2;
+using On.RoR2.UI;
 using R2API.Utils;
 using RoR2.ConVar;
 using UnityEngine;
 
 using static RiskOfOptions.ExtensionMethods;
+using ConCommandArgs = RoR2.ConCommandArgs;
 using Console = RoR2.Console;
 
 #pragma warning disable 618
@@ -24,6 +27,8 @@ namespace RiskOfOptions
 
         internal static readonly string StartingText = "risk_of_options";
 
+        internal static bool doingKeybind = false;
+
 
         public static void Init()
         {
@@ -32,7 +37,18 @@ namespace RiskOfOptions
             BaseSettingsControlOverride.Init();
 
             SettingsMenu.Init();
+
+            On.RoR2.PauseManager.CCTogglePause += PauseManagerOnCCTogglePause;
         }
+
+        private static void PauseManagerOnCCTogglePause(PauseManager.orig_CCTogglePause orig, ConCommandArgs args)
+        {
+            if (doingKeybind)
+                return;
+
+            orig(args);
+        }
+
 
         // ReSharper disable once UnusedMember.Global
         // ReSharper disable once InconsistentNaming
@@ -41,24 +57,28 @@ namespace RiskOfOptions
             Listeners.Add(unityAction);
         }
 
-        [Obsolete("Usage of ModOption is depreciated, use RiskOfOption instead.")]
-        // ReSharper disable once UnusedMember.Global
-        // ReSharper disable once InconsistentNaming
-        public static void addListener(ModOption modOption, UnityEngine.Events.UnityAction<float> unityAction)
+        public static void AddListener(UnityEngine.Events.UnityAction<bool> unityAction, string name, string categoryName = "Main")
         {
-            Indexes indexes = OptionContainers.GetIndexes(modOption.owner, modOption.name);
+            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
+            Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
+
+            OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer].OnValueChangedBool = unityAction;
+        }
+
+        public static void AddListener(UnityEngine.Events.UnityAction<float> unityAction, string name, string categoryName = "Main")
+        {
+            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
+            Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
 
             OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer].OnValueChangedFloat = unityAction;
         }
 
-        [Obsolete("Usage of ModOption is depreciated, use RiskOfOption instead.")]
-        // ReSharper disable once UnusedMember.Global
-        // ReSharper disable once InconsistentNaming
-        public static void addListener(ModOption modOption, UnityEngine.Events.UnityAction<bool> unityAction)
+        public static void AddListener(UnityEngine.Events.UnityAction<KeyCode> unityAction, string name, string categoryName = "Main")
         {
-            Indexes indexes = OptionContainers.GetIndexes(modOption.owner, modOption.name);
+            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
+            Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
 
-            OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer].OnValueChangedBool = unityAction;
+            OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer].OnValueChangedKeyCode = unityAction;
         }
 
         private static void AddToConsoleAwake(On.RoR2.Console.orig_Awake orig, RoR2.Console self)
@@ -80,6 +100,7 @@ namespace RiskOfOptions
                 mo.Value = RoR2.Console.instance.FindConVar(mo.ConsoleToken).GetString();
             }
 
+            Debug.Log($"Invoke Startup Listeners");
             foreach (var item in Listeners)
             {
                 item.Invoke();
@@ -101,6 +122,11 @@ namespace RiskOfOptions
             ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
 
             OptionContainers[OptionContainers.GetContainerIndex(modInfo.ModGuid, modInfo.ModName, true)].ModName = title;
+        }
+
+        public static void AddModIcon()
+        {
+
         }
 
         public static void RegisterOption(RiskOfOption mo)
@@ -213,7 +239,48 @@ namespace RiskOfOptions
             throw new Exception($"An ROO couldn't be found for {consoleToken}!");
         }
 
+        internal static Thunderstore.ModSearchEntry[] GetIconSearchEntries()
+        {
+            List<Thunderstore.ModSearchEntry> modSearchEntries = new List<Thunderstore.ModSearchEntry>();
+
+            foreach (var container in OptionContainers)
+            {
+                modSearchEntries.Add(new Thunderstore.ModSearchEntry()
+                {
+                    fullName = $"{container.ModGuid.Split('.')[1]}-{container.ModGuid.Split('.')[2]}",
+                    fullNameWithUnderscores = $"{container.ModGuid.Split('.')[1]}-{container.ModName.Replace(" ", "_")}",
+                    fullNameWithoutSpaces = $"{container.ModGuid.Split('.')[1]}-{container.ModName.Replace(" ", "")}",
+                    nameWithUnderscores = $"{container.ModName.Replace(" ", "_")}",
+                    nameWithoutSpaces = $"{container.ModName.Replace(" ", "")}",
+                    modGuid = container.ModGuid,
+                    modName = container.ModName
+                });
+            }
+
+            return modSearchEntries.ToArray();
+        }
+
         #region ModOption Legacy Stuff
+
+        [Obsolete("Usage of ModOption is depreciated, use RiskOfOption instead.")]
+        // ReSharper disable once UnusedMember.Global
+        // ReSharper disable once InconsistentNaming
+        public static void addListener(ModOption modOption, UnityEngine.Events.UnityAction<float> unityAction)
+        {
+            Indexes indexes = OptionContainers.GetIndexes(modOption.owner, modOption.name);
+
+            OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer].OnValueChangedFloat = unityAction;
+        }
+
+        [Obsolete("Usage of ModOption is depreciated, use RiskOfOption instead.")]
+        // ReSharper disable once UnusedMember.Global
+        // ReSharper disable once InconsistentNaming
+        public static void addListener(ModOption modOption, UnityEngine.Events.UnityAction<bool> unityAction)
+        {
+            Indexes indexes = OptionContainers.GetIndexes(modOption.owner, modOption.name);
+
+            OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer].OnValueChangedBool = unityAction;
+        }
 
         [Obsolete("ModOptions are handled internally now. Please use the other constructors.", false)]
         // ReSharper disable once UnusedMember.Global

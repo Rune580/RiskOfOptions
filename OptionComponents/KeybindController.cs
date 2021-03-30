@@ -41,8 +41,13 @@ namespace RiskOfOptions.OptionComponents
 
         public void StartListening()
         {
+            if (_listening || ModSettingsManager.doingKeybind)
+                return;
+
             _count = 2;
             _listening = true;
+
+            ModSettingsManager.doingKeybind = _listening;
 
             _keybindLabel.SetText(".");
 
@@ -60,7 +65,7 @@ namespace RiskOfOptions.OptionComponents
             if (Event.current.keyCode == KeyCode.None)
                 return;
 
-            Debug.Log($"Key {Event.current.keyCode} Pressed!");
+
 
             if (Event.current.keyCode == KeyCode.Escape)
             {
@@ -85,17 +90,43 @@ namespace RiskOfOptions.OptionComponents
 
             if (Input.GetKey(KeyCode.LeftShift))
             {
-                Debug.Log($"Key {KeyCode.LeftShift} Pressed!");
-
                 base.SubmitSetting($"{(int)KeyCode.LeftShift}");
 
                 StopListening();
             }
             else if (Input.GetKey(KeyCode.RightShift))
             {
-                Debug.Log($"Key {KeyCode.RightShift} Pressed!");
-
                 base.SubmitSetting($"{(int)KeyCode.RightShift}");
+
+                StopListening();
+            }
+            else if (Input.GetKey(KeyCode.Mouse0))
+            {
+                base.SubmitSetting($"{(int)KeyCode.Mouse0}");
+
+                StopListening();
+            }
+            else if (Input.GetKey(KeyCode.Mouse1))
+            {
+                base.SubmitSetting($"{(int)KeyCode.Mouse1}");
+
+                StopListening();
+            }
+            else if (Input.GetKey(KeyCode.Mouse2))
+            {
+                base.SubmitSetting($"{(int)KeyCode.Mouse2}");
+
+                StopListening();
+            }
+            else if (Input.GetKey(KeyCode.Mouse3))
+            {
+                base.SubmitSetting($"{(int)KeyCode.Mouse3}");
+
+                StopListening();
+            }
+            else if (Input.GetKey(KeyCode.Mouse4))
+            {
+                base.SubmitSetting($"{(int)KeyCode.Mouse4}");
 
                 StopListening();
             }
@@ -124,17 +155,63 @@ namespace RiskOfOptions.OptionComponents
         }
 
 
-
         public void StopListening()
         {
             _listening = false;
 
             SetDisplay();
+
+            RoR2Application.unscaledTimeTimers.CreateTimer(0.3f, FixPauseMenu);
         }
 
         private void SetDisplay()
         {
-            _keybindLabel.SetText(((KeyCode)int.Parse(base.GetCurrentValue())).ToString());
+            string displayText = ((KeyCode) int.Parse(base.GetCurrentValue())).ToString();
+
+            switch (displayText)
+            {
+                case "Mouse0":
+                    displayText = "M1";
+                    break;
+                case "Mouse1":
+                    displayText = "M2";
+                    break;
+                case "Mouse2":
+                    displayText = "M3";
+                    break;
+                case "Mouse3":
+                    displayText = "M4";
+                    break;
+                case "Mouse4":
+                    displayText = "M5";
+                    break;
+            }
+
+            char[] characters = displayText.ToCharArray();
+
+            displayText = "";
+
+            int i = 0;
+
+            while (true)
+            {
+                if (characters.Length <= i)
+                    break;
+
+                if (char.IsUpper(characters[i]) && i != 0)
+                    displayText += " ";
+
+                displayText += characters[i];
+
+                i++;
+            }
+
+            _keybindLabel.SetText(displayText);
+        }
+
+        private void FixPauseMenu()
+        {
+            ModSettingsManager.doingKeybind = _listening;
         }
     }
 }
