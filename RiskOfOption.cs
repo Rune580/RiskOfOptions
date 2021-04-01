@@ -20,6 +20,7 @@ namespace RiskOfOptions
         public UnityEngine.Events.UnityAction<float> OnValueChangedFloat;
         public UnityEngine.Events.UnityAction<KeyCode> OnValueChangedKeyCode;
 
+        internal ModSettingsManager.OptionInfo overridingOption;
         public string CategoryName { get; internal set; }
 
         internal BaseConVar ConVar;
@@ -104,7 +105,7 @@ namespace RiskOfOptions
                 throw new Exception($"Option {Name} is not a Bool!");
             }
 
-            return bool.Parse(ConVar != null ? ConVar.GetString() : Value);
+            return ConVar != null ? (int.Parse(ConVar.GetString()) == 1) : bool.Parse(Value);
         }
 
         public float GetFloat()

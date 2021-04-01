@@ -16,6 +16,8 @@ namespace RiskOfOptions
 
         public string ModName { get; internal set; }
 
+        public string Title { get; internal set; }
+
         public string Name { get; internal set; }
         public string NameToken { get; internal set; }
 
@@ -36,6 +38,9 @@ namespace RiskOfOptions
         {
             this.ModGuid = modGuid;
             this.ModName = modName;
+
+
+            this.Title = this.ModName;
 
             Options = new List<OptionBase>();
         }

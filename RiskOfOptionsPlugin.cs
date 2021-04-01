@@ -6,7 +6,7 @@ namespace RiskOfOptions
     [BepInPlugin(GUID, MODNAME, VERSION)]
     [BepInDependency("com.bepis.r2api")]
     [NetworkCompatibility(CompatibilityLevel.NoNeedForSync, VersionStrictness.DifferentModVersionsAreOk)]
-    [R2APISubmoduleDependency("LanguageAPI")]
+    [R2APISubmoduleDependency("LanguageAPI", "ResourcesAPI")]
     public sealed class RiskOfOptionsPlugin : BaseUnityPlugin
     {
         public const string
@@ -21,19 +21,17 @@ namespace RiskOfOptions
         {
             Debug.Init(base.Logger);
 
-            Thunderstore.AddStartupEvent();
-
             ModSettingsManager.Init();
 
             //ModSettingsManager.setPanelTitle("Example Title Bitch");
 
-            ModSettingsManager.setPanelDescription("Example Description");
+            //ModSettingsManager.setPanelDescription("Example Description");
 
-            ModSettingsManager.CreateCategory("Audio", "yeah");
+            //ModSettingsManager.CreateCategory("Audio");
 
-            ModSettingsManager.CreateCategory("Controls", "yeah");
+            //ModSettingsManager.CreateCategory("Controls");
 
-            ModSettingsManager.CreateCategory("Enemies", "yeah");
+            //ModSettingsManager.CreateCategory("Enemies");
 
             //ModSettingsManager.CreateCategory("Dick", "yeah");
 
@@ -46,13 +44,13 @@ namespace RiskOfOptions
             //ModSettingsManager.CreateCategory("Etc", "yeah");
 
 
-            ModSettingsManager.AddOption("Test CheckBox", "This is a Description", true);
+            //ModSettingsManager.AddCheckBox("Test CheckBox", "This is a Description", true);
 
-            ModSettingsManager.AddOption("Test Slider", "This is another Description", 0f, "Audio");
+            //ModSettingsManager.AddSlider("Test Slider", "This is another Description", 0f, "Audio");
 
-            ModSettingsManager.AddOption("Test KeyBind", "This is yet another Description", UnityEngine.KeyCode.G, "Controls");
+            //ModSettingsManager.AddKeyBind("Test KeyBind", "This is yet another Description", UnityEngine.KeyCode.G, "Controls");
 
-            ModSettingsManager.AddOption("Emote Wheel", "Coming up with all of these examples is getting hard.", UnityEngine.KeyCode.C, "Controls");
+            //ModSettingsManager.AddOption("Emote Wheel", "Coming up with all of these examples is getting hard.", UnityEngine.KeyCode.C, "Controls");
 
 
 

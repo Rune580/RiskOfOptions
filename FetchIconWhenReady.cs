@@ -21,6 +21,15 @@ namespace RiskOfOptions
 
         private void Start()
         {
+            _image.sprite = Thunderstore.defaultIcon;
+
+            Debug.Log(Thunderstore.defaultIcon);
+
+            if (Thunderstore.defaultIcon)
+            {
+                Debug.Log(Thunderstore.defaultIcon.name);
+            }
+
             StartCoroutine(SetTexture());
         }
 
@@ -36,17 +45,20 @@ namespace RiskOfOptions
 
             var modIconInfo = Thunderstore.GetModIcon(modGuid);
 
-            UnityWebRequest www = new UnityWebRequest($"file://{modIconInfo.Icon}");
+            if (modIconInfo.Icon != string.Empty)
+            {
+                UnityWebRequest www = new UnityWebRequest($"file://{modIconInfo.Icon}");
 
-            DownloadHandlerTexture downloadHandler = new DownloadHandlerTexture(true);
+                DownloadHandlerTexture downloadHandler = new DownloadHandlerTexture(true);
 
-            www.downloadHandler = downloadHandler;
+                www.downloadHandler = downloadHandler;
 
-            www.SendWebRequest();
+                www.SendWebRequest();
 
-            yield return new WaitUntil(() => downloadHandler.isDone);
+                yield return new WaitUntil(() => downloadHandler.isDone);
 
-            _image.sprite = Sprite.Create(downloadHandler.texture, new Rect(0f, 0f, downloadHandler.texture.width, downloadHandler.texture.height), new Vector2(0.5f, 0.5f));
+                _image.sprite = Sprite.Create(downloadHandler.texture, new Rect(0f, 0f, downloadHandler.texture.width, downloadHandler.texture.height), new Vector2(0.5f, 0.5f));
+            }
         }
     }
 }

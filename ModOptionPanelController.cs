@@ -142,7 +142,6 @@ namespace RiskOfOptions
 
             UnityEngine.Object.DestroyImmediate(Prefabs.ModButtonPrefab.GetComponent<LanguageTextMeshController>());
 
-
             GameObject modIconGameObject = new GameObject();
 
             modIconGameObject.name = "ModIcon";
@@ -159,6 +158,15 @@ namespace RiskOfOptions
             //modIconRectTransform.localPosition = new Vector3(-142, -0.32f, 0);
 
             modIconGameObject.transform.SetParent(Prefabs.ModButtonPrefab.transform);
+
+            GameObject iconOutline = GameObject.Instantiate(Prefabs.ModButtonPrefab.transform.Find("BaseOutline").gameObject, modIconRectTransform);
+
+            RectTransform iconOutlineRectTransform = iconOutline.GetComponent<RectTransform>();
+
+            iconOutlineRectTransform.sizeDelta = Vector2.zero;
+            iconOutlineRectTransform.anchoredPosition = Vector2.zero;
+
+            iconOutlineRectTransform.localScale = new Vector3(0.94f, 1.16f, 1);
 
             Prefabs.ModButtonPrefab.SetActive(false);
         }
@@ -409,11 +417,11 @@ namespace RiskOfOptions
 
                 GameObject newModButton = GameObject.Instantiate(Prefabs.ModButtonPrefab, modListLayout);
 
-                LanguageAPI.Add($"{ModSettingsManager.StartingText}.{container.ModGuid}.{container.ModName}.ModListOption".ToUpper().Replace(" ", "_"), container.ModName);
+                LanguageAPI.Add($"{ModSettingsManager.StartingText}.{container.ModGuid}.{container.ModName}.ModListOption".ToUpper().Replace(" ", "_"), container.Title);
 
                 //newModButton.GetComponent<LanguageTextMeshController>().token = $"{ModSettingsManager.StartingText}.{Container.ModGUID}.{Container.ModName}.ModListOption".ToUpper().Replace(" ", "_");
 
-                newModButton.GetComponentInChildren<HGTextMeshProUGUI>().text = container.ModName;
+                newModButton.GetComponentInChildren<HGTextMeshProUGUI>().text = container.Title;
 
                 newModButton.GetComponent<RooModListButton>().description = container.Description;
                 newModButton.GetComponent<RooModListButton>().tmp = _modDescriptionPanel.GetComponentInChildren<HGTextMeshProUGUI>();
@@ -533,6 +541,11 @@ namespace RiskOfOptions
             navigationController.headers = headers.ToArray();
 
             navigationController.InvokeMethod("RebuildHeaders");
+
+            // fix this you ass!
+
+
+            ch.transform.Find("Scroll View").Find("Scrollbar Horizontal").gameObject.GetComponent<CustomScrollbar>().value = 0;
 
             LoadOptionListFromCategory(containerIndex, navigationController.currentHeaderIndex, canvas);
         }

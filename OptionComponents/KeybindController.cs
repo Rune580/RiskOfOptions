@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using On.RoR2;
 using R2API.Utils;
-using RoR2;
 using RoR2.UI;
 using TMPro;
 using UnityEngine;
+using RoR2Application = RoR2.RoR2Application;
 
 namespace RiskOfOptions.OptionComponents
 {
@@ -36,6 +37,8 @@ namespace RiskOfOptions.OptionComponents
             base.Start();
 
             SetDisplay();
+
+            onValueChangedKeyCode?.Invoke(((KeyCode)int.Parse(base.GetCurrentValue())));
         }
 
 
@@ -69,14 +72,21 @@ namespace RiskOfOptions.OptionComponents
 
             if (Event.current.keyCode == KeyCode.Escape)
             {
-                base.SubmitSetting($"{(int)KeyCode.None}");
-
-                StopListening();
-
+                SetKeyBind(KeyCode.None);
                 return;
             }
 
             base.SubmitSetting($"{(int)Event.current.keyCode}");
+
+            StopListening();
+
+            onValueChangedKeyCode?.Invoke((KeyCode)int.Parse(base.GetCurrentValue()));
+        }
+
+        private void SetKeyBind(KeyCode keyCode)
+        {
+            base.SubmitSetting($"{(int)keyCode}");
+            onValueChangedKeyCode?.Invoke(keyCode);
 
             StopListening();
         }
@@ -90,45 +100,31 @@ namespace RiskOfOptions.OptionComponents
 
             if (Input.GetKey(KeyCode.LeftShift))
             {
-                base.SubmitSetting($"{(int)KeyCode.LeftShift}");
-
-                StopListening();
+                SetKeyBind(KeyCode.LeftShift);
             }
             else if (Input.GetKey(KeyCode.RightShift))
             {
-                base.SubmitSetting($"{(int)KeyCode.RightShift}");
-
-                StopListening();
+                SetKeyBind(KeyCode.RightShift);
             }
             else if (Input.GetKey(KeyCode.Mouse0))
             {
-                base.SubmitSetting($"{(int)KeyCode.Mouse0}");
-
-                StopListening();
+                SetKeyBind(KeyCode.Mouse0);
             }
             else if (Input.GetKey(KeyCode.Mouse1))
             {
-                base.SubmitSetting($"{(int)KeyCode.Mouse1}");
-
-                StopListening();
+                SetKeyBind(KeyCode.Mouse1);
             }
             else if (Input.GetKey(KeyCode.Mouse2))
             {
-                base.SubmitSetting($"{(int)KeyCode.Mouse2}");
-
-                StopListening();
+                SetKeyBind(KeyCode.Mouse2);
             }
             else if (Input.GetKey(KeyCode.Mouse3))
             {
-                base.SubmitSetting($"{(int)KeyCode.Mouse3}");
-
-                StopListening();
+                SetKeyBind(KeyCode.Mouse3);
             }
             else if (Input.GetKey(KeyCode.Mouse4))
             {
-                base.SubmitSetting($"{(int)KeyCode.Mouse4}");
-
-                StopListening();
+                SetKeyBind(KeyCode.Mouse4);
             }
         }
 

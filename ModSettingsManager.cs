@@ -8,13 +8,13 @@ using BepInEx;
 using EntityStates.AncientWispMonster;
 using On.RoR2;
 using On.RoR2.UI;
+using R2API;
 using R2API.Utils;
 using RoR2.ConVar;
 using UnityEngine;
 
 using static RiskOfOptions.ExtensionMethods;
 using ConCommandArgs = RoR2.ConCommandArgs;
-using Console = RoR2.Console;
 
 #pragma warning disable 618
 
@@ -36,11 +36,25 @@ namespace RiskOfOptions
         {
             On.RoR2.Console.Awake += AddToConsoleAwake;
 
+            LoadAssets();
+
+            Thunderstore.Init();
+
             BaseSettingsControlOverride.Init();
 
             SettingsMenu.Init();
 
             On.RoR2.PauseManager.CCTogglePause += PauseManagerOnCCTogglePause;
+        }
+
+        private static void LoadAssets()
+        {
+            using (var assetStream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"RiskOfOptions.Resources.riskofoptions"))
+            {
+                var MainAssetBundle = AssetBundle.LoadFromStream(assetStream);
+
+                ResourcesAPI.AddProvider(new AssetBundleResourcesProvider($"@RiskOfOptions", MainAssetBundle));
+            }
         }
 
         private static void PauseManagerOnCCTogglePause(PauseManager.orig_CCTogglePause orig, ConCommandArgs args)
@@ -82,13 +96,21 @@ namespace RiskOfOptions
             OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer].OnValueChangedKeyCode = unityAction;
         }
 
+        public static RiskOfOption GetOption(string name, string categoryName = "Main")
+        {
+            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
+            Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
+
+            return OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer];
+        }
+
         private static void AddToConsoleAwake(On.RoR2.Console.orig_Awake orig, RoR2.Console self)
         {
             orig(self);
 
             foreach (var mo in OptionContainers.SelectMany(container => container.GetModOptionsCached()))
             {
-                mo.ConVar.SetString(mo.DefaultValue);
+                mo.ConVar.SetString(mo.ConVar.defaultValue);
 
                 RoR2.Console.instance.InvokeMethod("RegisterConVarInternal", new object[] { mo.ConVar });
                 Debug.Log($"{mo.ConVar.name} Option registered to console.");
@@ -122,7 +144,7 @@ namespace RiskOfOptions
         {
             ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
 
-            OptionContainers[OptionContainers.GetContainerIndex(modInfo.ModGuid, modInfo.ModName, true)].ModName = title;
+            OptionContainers[OptionContainers.GetContainerIndex(modInfo.ModGuid, modInfo.ModName, true)].Title = title;
         }
 
         //public static void AddModIcon()
@@ -154,29 +176,69 @@ namespace RiskOfOptions
 
             OptionContainers.Add(ref mo);
         }
+        /// <summary>
+        /// Not yet implemented!
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="categoryName"></param>
+        /// <param name="optionsToOverride"></param>
+        public static void AddOverride(string name, string categoryName, OptionInfo[] optionsToOverride)
+        {
+            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
+            //Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
 
-        public static void AddOption(string name, string description, bool defaultValue, string categoryName = "")
+            OptionInfo overridingOption = new OptionInfo()
+            {
+                Name = name,
+                CategoryName = categoryName
+            };
+
+            foreach (var container in OptionContainers)
+            {
+                if (container.ModGuid == modInfo.ModGuid)
+                {
+                    foreach (var option in container.GetModOptionsCached())
+                    {
+                        foreach (var optionInfo in optionsToOverride)
+                        {
+                            if (string.Equals(option.Name, optionInfo.Name, StringComparison.InvariantCultureIgnoreCase) && string.Equals(option.CategoryName, optionInfo.CategoryName, StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                option.overridingOption = overridingOption;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void AddCheckBox(string name, string description, bool defaultValue, string categoryName = "")
         {
             ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
 
-            RegisterOption(new RiskOfOption(modInfo.ModGuid, modInfo.ModName, RiskOfOption.OptionType.Bool, name, description, defaultValue.ToString(), categoryName));
+            RegisterOption(new RiskOfOption(modInfo.ModGuid, modInfo.ModName, RiskOfOption.OptionType.Bool, name, description, $"{(defaultValue? "1" : "0")}", categoryName));
+
+            //return new OptionInfo() {Name = name, CategoryName = (categoryName != "") ? categoryName : "Main"};
         }
 
-        public static void AddOption(string name, string description, float defaultValue, string categoryName = "")
+        public static void AddSlider(string name, string description, float defaultValue, string categoryName = "")
         {
             ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
 
             RegisterOption(new RiskOfOption(modInfo.ModGuid, modInfo.ModName, RiskOfOption.OptionType.Slider, name, description, defaultValue.ToString(CultureInfo.InvariantCulture), categoryName));
+
+            //return new OptionInfo() { Name = name, CategoryName = (categoryName != "") ? categoryName : "Main" };
         }
 
-        public static void AddOption(string name, string description, KeyCode defaultValue, string categoryName = "")
+        public static void AddKeyBind(string name, string description, KeyCode defaultValue, string categoryName = "")
         {
             ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
 
             RegisterOption(new RiskOfOption(modInfo.ModGuid, modInfo.ModName, RiskOfOption.OptionType.Keybinding, name, description, $"{(int)defaultValue}", categoryName));
+
+            //return new OptionInfo() { Name = name, CategoryName = (categoryName != "") ? categoryName : "Main" };
         }
 
-        public static void CreateCategory(string name, string description)
+        public static void CreateCategory(string name)
         {
             ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
 
@@ -193,10 +255,7 @@ namespace RiskOfOptions
                 }
             }
 
-            OptionCategory newCategory = new OptionCategory(name, modInfo.ModGuid)
-            {
-                Description = description
-            };
+            OptionCategory newCategory = new OptionCategory(name, modInfo.ModGuid);
 
             OptionContainers[OptionContainers.GetContainerIndex(modInfo.ModGuid, modInfo.ModName)].Add(ref newCategory);
         }
@@ -256,11 +315,23 @@ namespace RiskOfOptions
                     modGuid = container.ModGuid,
                     modName = container.ModName
                 });
+                //Debug.Log($"Search terms for {container.ModGuid} are:" +
+                //          $"\n {modSearchEntries[modSearchEntries.Count - 1].fullName}" +
+                //          $"\n {modSearchEntries[modSearchEntries.Count - 1].fullNameWithUnderscores}" +
+                //          $"\n {modSearchEntries[modSearchEntries.Count - 1].fullNameWithoutSpaces}" +
+                //          $"\n {modSearchEntries[modSearchEntries.Count - 1].nameWithUnderscores}" +
+                //          $"\n {modSearchEntries[modSearchEntries.Count - 1].nameWithoutSpaces}");
             }
 
             return modSearchEntries.ToArray();
         }
 
+
+        public struct OptionInfo
+        {
+            public string Name;
+            public string CategoryName;
+        }
         #region ModOption Legacy Stuff
 
         [Obsolete("Usage of ModOption is depreciated, use RiskOfOption instead.")]

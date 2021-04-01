@@ -21,7 +21,7 @@ namespace RiskOfOptions
 
         private int _lastAmount = 0;
 
-        public OptionCategory(string categoryName, string modGuid, string description = "")
+        public OptionCategory(string categoryName, string modGuid)
         {
             this.Name = categoryName;
             this.ModGuid = modGuid;
@@ -36,11 +36,6 @@ namespace RiskOfOptions
             DescriptionToken = $"{OptionToken}.DESCRIPTION_TOKEN";
 
             LanguageAPI.Add(NameToken, Name);
-
-            if (description != "")
-            {
-                LanguageAPI.Add(NameToken, description);
-            }
         }
 
         internal List<RiskOfOption> GetModOptionsCached()

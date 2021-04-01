@@ -4,11 +4,14 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Timers;
 using SimpleJSON;
 using UnityEngine.Events;
 using System.Threading;
+using On.Unity;
+using UnityEngine;
 
 namespace RiskOfOptions
 {
@@ -20,10 +23,14 @@ namespace RiskOfOptions
 
         private static List<ModIconInfo> _modIcons;
 
-        internal static void AddStartupEvent()
+        public static Sprite defaultIcon;
+
+        internal static void Init()
         {
             _modIcons = new List<ModIconInfo>();
 
+
+            defaultIcon = Resources.Load<Sprite>("@RiskOfOptions:assets/RiskOfOptions/missing_icon.png");
 
             Debug.Log($"Adding Startup Event");
             ModSettingsManager.addStartupListener(GrabIcons);
@@ -68,7 +75,7 @@ namespace RiskOfOptions
             List<ModSearchEntry> searchEntries = new List<ModSearchEntry>();
             foreach (var modSearchEntry in modStrings)
             {
-                string path = $"{GetMyGamesPath()}{modSearchEntry.modGuid.Replace(".", "_")}-Icon.png";
+                string path = $"{GetIconsPath()}{modSearchEntry.modGuid.Replace(".", "_")}-Icon.png";
                 if (!File.Exists(path) && !_modIcons.Contains(modSearchEntry))
                 {
                     searchEntries.Add(modSearchEntry);
@@ -113,6 +120,13 @@ namespace RiskOfOptions
         private static List<ModIconInfo> FetchModIconsFromList(JSONNode json, ModSearchEntry[] modStrings)
         {
             List<ModIconInfo> icons = new List<ModIconInfo>();
+
+            if (json == typeof(JSONNull))
+            {
+                icons.AddRange(modStrings.Select(modSearchEntry => new ModIconInfo() {Icon = "", modGuid = modSearchEntry.modGuid}));
+
+                return icons;
+            }
 
             for (int i = 0; i < json.Count; i++)
             {
@@ -195,9 +209,11 @@ namespace RiskOfOptions
             {
                 string downloadLink = icons[i].Icon;
 
+                //Debug.Log($"Downloading icon for {icons[i].modGuid}, from: {downloadLink}");
+
                 using (WebClient client = new WebClient())
                 {
-                    string localPath = $"{GetMyGamesPath()}{icons[i].modGuid.Replace(".", "_")}-Icon.png";
+                    string localPath = $"{GetIconsPath()}{icons[i].modGuid.Replace(".", "_")}-Icon.png";
                     client.DownloadFile(new Uri(downloadLink), localPath);
 
                     ModIconInfo modIconInfo = new ModIconInfo()
@@ -213,6 +229,16 @@ namespace RiskOfOptions
             return icons;
         }
 
+        private static string GetIconsPath()
+        {
+            string path = GetMyGamesPath();
+
+            if (!Directory.Exists($"{path}\\icons"))
+                Directory.CreateDirectory($"{path}\\icons");
+
+            return $"{path}icons\\";
+        }
+
         private static string GetMyGamesPath()
         {
             string documents = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
@@ -223,33 +249,60 @@ namespace RiskOfOptions
             if (!Directory.Exists($"{documents}\\My Games\\Risk Of Options"))
                 Directory.CreateDirectory($"{documents}\\My Games\\Risk Of Options");
 
-            if (!Directory.Exists($"{documents}\\My Games\\Risk Of Options\\icons"))
-                Directory.CreateDirectory($"{documents}\\My Games\\Risk Of Options\\icons");
-
-            return $"{documents}\\My Games\\Risk Of Options\\icons\\";
+            return $"{documents}\\My Games\\Risk Of Options\\";
         }
 
         private static JSONNode FetchModList()
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://thunderstore.io/api/v1/package/");
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://thunderstore.io/api/v1/");
 
-            request.ContentType = "application/json";
-            request.Accept = "application/json";
+            request.Method = WebRequestMethods.Http.Head;
 
-            request.Method = WebRequestMethods.Http.Get;
+            JSONNode json = new JSONNull();
 
-            WebResponse response = request.GetResponse();
-
-
-            JSONNode json;
-
-            using (StreamReader reader = new StreamReader(response.GetResponseStream() ?? throw new InvalidOperationException()))
+            if (request.GetResponse() is HttpWebResponse statusResponse && statusResponse.StatusCode == HttpStatusCode.OK)
             {
-                string jsonText = reader.ReadToEnd();
+                Debug.Log("Thunderstore API is online! Fetching package list.");
 
-                json = JSON.Parse(jsonText);
+                request = (HttpWebRequest)WebRequest.Create("https://thunderstore.io/api/v1/package/");
+
+                request.ContentType = "application/json";
+                request.Accept = "application/json";
+
+                request.Method = WebRequestMethods.Http.Get;
+
+                WebResponse response = request.GetResponse();
+
+                using (StreamReader reader = new StreamReader(response.GetResponseStream() ?? throw new InvalidOperationException()))
+                {
+                    string jsonText = reader.ReadToEnd();
+
+                    Debug.Log("Finished downloading the package list from the Thunderstore API.");
+
+                    using (StreamWriter sw = new StreamWriter($"{GetMyGamesPath()}thunderstore-packagelist.json", false))
+                    {
+                        sw.Write(jsonText);
+                    }
+
+                    Debug.Log("Cached package list for later use.");
+
+                    json = JSON.Parse(jsonText);
+                }
             }
+            else
+            {
+                Debug.Log("Thunderstore API couldn't be accessed! Attempting to use cached package list.");
 
+                if (!File.Exists($"{GetMyGamesPath()}thunderstore-packagelist.json"))
+                {
+                    Debug.Log("Failed to load cached package list and Thunderstore API is inaccessible. All non-cached auto generated icons will be replaced with placeholders.");
+                    return json;
+                }
+                using (StreamReader reader = new StreamReader($"{GetMyGamesPath()}thunderstore-packagelist.json"))
+                {
+                    json = JSON.Parse(reader.ReadToEnd());
+                }
+            }
             return json;
         }
 
