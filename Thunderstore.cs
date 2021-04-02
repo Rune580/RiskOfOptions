@@ -21,14 +21,17 @@ namespace RiskOfOptions
 
         internal static bool doneFetching = false;
 
+        internal static bool loadingFromQueue = false;
+
         private static List<ModIconInfo> _modIcons;
+
+        private static List<ModIconInfo> _iconQueue;
 
         public static Sprite defaultIcon;
 
         internal static void Init()
         {
             _modIcons = new List<ModIconInfo>();
-
 
             defaultIcon = Resources.Load<Sprite>("@RiskOfOptions:assets/RiskOfOptions/missing_icon.png");
 
@@ -43,9 +46,27 @@ namespace RiskOfOptions
             iconFetchThread.Start();
         }
 
-        internal static void AddIcon(ModIconInfo modIconInfo)
+        internal static void AddIcon(string modGuid, Sprite icon)
         {
-            _modIcons.Add(modIconInfo);
+            if (!doneFetching && !loadingFromQueue)
+            {
+                if (_iconQueue == null)
+                    _iconQueue = new List<ModIconInfo>();
+
+                _iconQueue.Add(new ModIconInfo()
+                {
+                    modGuid = modGuid,
+                    Icon = icon
+                });
+            }
+            else if (doneFetching && !loadingFromQueue)
+            {
+                _modIcons.Add(new ModIconInfo()
+                {
+                    modGuid = modGuid,
+                    Icon = icon
+                });
+            }
         }
 
 
@@ -66,8 +87,7 @@ namespace RiskOfOptions
                 }
             }
 
-
-            throw new Exception($"No mod icon could be found for: {modGuid}");
+            return new ModIconInfo();
         }
 
         internal static ModSearchEntry[] RemoveIfIconExists(ModSearchEntry[] modStrings)
@@ -82,10 +102,11 @@ namespace RiskOfOptions
                 }
                 else
                 {
+                    //Debug.Log($"Found existing icon for {modSearchEntry.modGuid}, path: {path}");
                     _modIcons.Add(new ModIconInfo()
                     {
                         modGuid = modSearchEntry.modGuid,
-                        Icon = path
+                        IconPath = path
                     });
                 }
             }
@@ -106,13 +127,52 @@ namespace RiskOfOptions
 
             if (searchEntries.Length > 0)
             {
-                _modIcons = FetchModIconsFromList(FetchModList(), searchEntries);
+                List<ModIconInfo> onlineIconInfos = FetchModIconsFromList(FetchModList(), searchEntries);
+
+                //Debug.Log($"{onlineIconInfos.Count} Online Icons found.");
+
+                foreach (var onlineIconInfo in onlineIconInfos)
+                {
+                    _modIcons.Add(onlineIconInfo);
+                }
+                onlineIconInfos.Clear();
             }
 
-            stopwatch.Stop();
-            Debug.Log($"Finished after {stopwatch.Elapsed} seconds");
+            //Debug.Log(_modIcons.Count);
+
+            foreach (var modIconInfo in _modIcons)
+            {
+                //Debug.Log($"modGuid: {modIconInfo.modGuid}, IconPath: {modIconInfo.IconPath}, Icon {modIconInfo.Icon}");
+            }
+
+            //Debug.Log(loadingFromQueue);
+
+            
+
+            if (_iconQueue != null)
+            {
+                loadingFromQueue = true;
+
+                //Debug.Log(loadingFromQueue);
+
+                //Debug.Log($"Loading icons from queue. {_iconQueue.Count} Icons in queue");
+
+                foreach (var modIconInfo in _iconQueue)
+                {
+                    _modIcons.Add(modIconInfo);
+                }
+
+                _iconQueue.Clear();
+
+                //Debug.Log($"Finished loading from queue");
+
+                loadingFromQueue = false;
+            }
 
             doneFetching = true;
+
+            stopwatch.Stop();
+            //Debug.Log($"Finished after {stopwatch.Elapsed} seconds");
 
             IconMutex.ReleaseMutex();
         }
@@ -123,7 +183,7 @@ namespace RiskOfOptions
 
             if (json == typeof(JSONNull))
             {
-                icons.AddRange(modStrings.Select(modSearchEntry => new ModIconInfo() {Icon = "", modGuid = modSearchEntry.modGuid}));
+                icons.AddRange(modStrings.Select(modSearchEntry => new ModIconInfo() {IconPath = "", modGuid = modSearchEntry.modGuid}));
 
                 return icons;
             }
@@ -139,13 +199,15 @@ namespace RiskOfOptions
                     string fullName = json[i]["full_name"];
                     string name = json[i]["name"];
 
+                    //Debug.Log($"Starting search for {modString}");
+
                     // Exact Match Search
                     if (string.Equals(fullName, modString.fullName, StringComparison.InvariantCultureIgnoreCase))
                     {
                         ModIconInfo modIconInfo = new ModIconInfo
                         {
                             modGuid = modString.modGuid,
-                            Icon = json[i]["versions"][0]["icon"]
+                            IconPath = json[i]["versions"][0]["icon"]
                         };
 
                         icons.Add(modIconInfo);
@@ -157,7 +219,7 @@ namespace RiskOfOptions
                         ModIconInfo modIconInfo = new ModIconInfo
                         {
                             modGuid = modString.modGuid,
-                            Icon = json[i]["versions"][0]["icon"]
+                            IconPath = json[i]["versions"][0]["icon"]
                         };
 
                         icons.Add(modIconInfo);
@@ -169,7 +231,7 @@ namespace RiskOfOptions
                         ModIconInfo modIconInfo = new ModIconInfo
                         {
                             modGuid = modString.modGuid,
-                            Icon = json[i]["versions"][0]["icon"]
+                            IconPath = json[i]["versions"][0]["icon"]
                         };
 
                         icons.Add(modIconInfo);
@@ -183,7 +245,7 @@ namespace RiskOfOptions
                         ModIconInfo modIconInfo = new ModIconInfo
                         {
                             modGuid = modString.modGuid,
-                            Icon = json[i]["versions"][0]["icon"]
+                            IconPath = json[i]["versions"][0]["icon"]
                         };
 
                         icons.Add(modIconInfo);
@@ -195,19 +257,23 @@ namespace RiskOfOptions
                         ModIconInfo modIconInfo = new ModIconInfo
                         {
                             modGuid = modString.modGuid,
-                            Icon = json[i]["versions"][0]["icon"]
+                            IconPath = json[i]["versions"][0]["icon"]
                         };
 
                         icons.Add(modIconInfo);
 
                         break;
                     }
+
+                    //Debug.Log($"Finished search for {modString}");
                 }
             }
 
+            Debug.Log("Downloading Icons");
+
             for (int i = 0; i < icons.Count; i++)
             {
-                string downloadLink = icons[i].Icon;
+                string downloadLink = icons[i].IconPath;
 
                 //Debug.Log($"Downloading icon for {icons[i].modGuid}, from: {downloadLink}");
 
@@ -218,13 +284,15 @@ namespace RiskOfOptions
 
                     ModIconInfo modIconInfo = new ModIconInfo()
                     {
-                        Icon = localPath,
+                        IconPath = localPath,
                         modGuid = icons[i].modGuid
                     };
 
                     icons[i] = modIconInfo;
                 }
             }
+
+            Debug.Log("Finished downloading Icons");
 
             return icons;
         }
@@ -325,7 +393,8 @@ namespace RiskOfOptions
         internal struct ModIconInfo
         {
             internal string modGuid;
-            internal string Icon;
+            internal string IconPath;
+            internal Sprite Icon;
         }
     }
 }

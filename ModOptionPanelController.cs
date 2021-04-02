@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using LeTai.Asset.TranslucentImage;
 using RoR2;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -24,6 +25,8 @@ namespace RiskOfOptions
         public GameObject modListPanel;
         public GameObject modListHighlight;
 
+        public GameObject warningPanel;
+
         private GameObject _modDescriptionPanel;
         private GameObject _categoryHeader;
         private GameObject _optionsPanel;
@@ -33,7 +36,11 @@ namespace RiskOfOptions
         private GameObject _checkBoxPrefab;
         private GameObject _sliderPrefab;
         private GameObject _keybindPrefab;
-        
+
+        private OverrideController[] _controllers;
+
+        public Color warningColor = Color.red;
+
 
         public void Start()
         {
@@ -199,12 +206,12 @@ namespace RiskOfOptions
             Prefabs.MoCanvas.name = "SettingsSubPanel, Mod Options";
 
 
-
             modListPanel = GameObject.Instantiate(Prefabs.MoPanelPrefab, Prefabs.MoCanvas.transform);
 
             modListPanel.GetComponent<RectTransform>().anchorMax = new Vector2(0.25f, 1f);
 
             modListPanel.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").GetComponent<VerticalLayoutGroup>().spacing = 6;
+            modListPanel.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").GetComponent<RectTransform>().anchorMin = new Vector2(0f, 0.2f);
 
             modListPanel.SetActive(true);
 
@@ -240,10 +247,29 @@ namespace RiskOfOptions
 
             GameObject.Instantiate(Prefabs.Gdp, mdpVerticalLayout);
 
-
             _modDescriptionPanel.SetActive(true);
 
             _modDescriptionPanel.name = "Mod Description Panel";
+
+
+
+            warningPanel = GameObject.Instantiate(Prefabs.Gdp, modListPanel.transform);
+
+            warningPanel.GetComponent<RectTransform>().anchorMin = new Vector2(0f, 0f);
+            warningPanel.GetComponent<RectTransform>().anchorMax = new Vector2(1f, 0.2f);
+
+            GameObject warningBlur = GameObject.Instantiate(modListPanel.transform.Find("Scroll View").Find("BlurPanel").gameObject, warningPanel.transform);
+            GameObject warningImage = GameObject.Instantiate(modListPanel.transform.Find("Scroll View").Find("ImagePanel").gameObject, warningPanel.transform);
+
+            warningBlur.GetComponent<TranslucentImage>().color = warningColor;
+            warningImage.GetComponent<UnityEngine.UI.Image>().color = warningColor;
+
+            warningPanel.SetActive(true);
+
+            warningPanel.name = "Warning Panel";
+
+
+
 
             _categoryHeader = GameObject.Instantiate(Prefabs.MoPanelPrefab, Prefabs.MoCanvas.transform);
 
@@ -519,7 +545,7 @@ namespace RiskOfOptions
                 {
                     navigationController.ChooseHeaderByButton(newCategoryButton.GetComponentInChildren<HGButton>());
 
-                    LoadOptionListFromCategory(containerIndex, categoryIndex, canvas);
+                    LoadOptionListFromCategory(containerIndex, categoryIndex, container.GetCategoriesCached().Count, canvas);
                 }));
 
                 newCategoryButton.name = $"Category Button, {container.GetCategoriesCached()[i].Name}";
@@ -542,17 +568,21 @@ namespace RiskOfOptions
 
             navigationController.InvokeMethod("RebuildHeaders");
 
-            // fix this you ass!
+            ch.transform.Find("Scroll View").Find("Scrollbar Horizontal").gameObject.GetComponent<CustomScrollbar>().onValueChanged.AddListener(new UnityAction<float>(delegate(float value)
+                {
+                    Debug.Log(value);
+                }));
 
-
-            ch.transform.Find("Scroll View").Find("Scrollbar Horizontal").gameObject.GetComponent<CustomScrollbar>().value = 0;
-
-            LoadOptionListFromCategory(containerIndex, navigationController.currentHeaderIndex, canvas);
+            LoadOptionListFromCategory(containerIndex, navigationController.currentHeaderIndex, navigationController.headers.Length, canvas);
         }
 
-        internal void LoadOptionListFromCategory(int containerIndex, int categoryIndex, Transform canvas)
+        internal void LoadOptionListFromCategory(int containerIndex, int categoryIndex, int categories, Transform canvas)
         {
             UnloadExistingOptionButtons(canvas.Find("Options Panel"));
+
+            canvas.Find("Category Headers").Find("Scroll View").Find("Scrollbar Horizontal").gameObject.GetComponent<CustomScrollbar>().value = (1f / ((float)categories) - 1) * ((float)categoryIndex);
+
+            canvas.Find("Option Description Panel").GetComponentInChildren<HGTextMeshProUGUI>().SetText("");
 
             OptionCategory category = ModSettingsManager.OptionContainers[containerIndex].GetCategoriesCached()[categoryIndex];
 
@@ -626,10 +656,21 @@ namespace RiskOfOptions
                             }));
                         }
 
-
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
+                }
+
+                if (option.OptionOverride != null)
+                {
+                    OverrideController overrideController = button.AddComponent<OverrideController>();
+
+                    overrideController.modGuid = option.ModGuid;
+
+                    overrideController.overridingName = option.OptionOverride.Name;
+                    overrideController.overridingCategoryName = option.OptionOverride.CategoryName;
+
+                    overrideController.CheckForOverride();
                 }
 
                 button.GetComponentInChildren<HGButton>().hoverToken = option.DescriptionToken;
@@ -640,6 +681,17 @@ namespace RiskOfOptions
                 }));
 
                 button.SetActive(true);
+            }
+        }
+
+        public void UpdateExistingOptionButtons()
+        {
+            if (_controllers == null || _controllers.Length == 0)
+                _controllers = GetComponentsInChildren<OverrideController>();
+
+            foreach (var controller in _controllers)
+            {
+                controller.CheckForOverride();
             }
         }
 
@@ -698,6 +750,8 @@ namespace RiskOfOptions
 
         internal void UnloadExistingOptionButtons(Transform op)
         {
+            _controllers = Array.Empty<OverrideController>();
+
             BaseSettingsControl[] activeOptionButtons = op.GetComponentsInChildren<BaseSettingsControl>();
 
             if (activeOptionButtons.Length <= 0)

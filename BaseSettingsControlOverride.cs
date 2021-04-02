@@ -19,7 +19,7 @@ namespace RiskOfOptions
 
         private static string GetCurrentValueRoo(On.RoR2.UI.BaseSettingsControl.orig_GetCurrentValue orig, RoR2.UI.BaseSettingsControl self)
         {
-            return (int)self.settingSource <= 1 ? orig(self) : ModSettingsManager.GetOption(self.settingName).Value;
+            return (int)self.settingSource <= 1 ? orig(self) : RoR2.Console.instance.FindConVar(self.settingName).GetString();
         }
 
         private static void SubmitSettingRoo(On.RoR2.UI.BaseSettingsControl.orig_SubmitSetting orig, RoR2.UI.BaseSettingsControl self, string newValue)
@@ -39,13 +39,17 @@ namespace RiskOfOptions
                 RoR2Application.onNextUpdate += () => { self.InvokeMethod("OnUpdateControls"); };
 
 
-            
+
+
 
 
 
 
             // Temporary shit Saves to console for now....
             RoR2.Console.instance.FindConVar(tempOption.ConsoleToken).AttemptSetString(newValue);
+
+            if (self.GetType() == typeof(RoR2.UI.CarouselController))
+                self.GetComponentInParent<ModOptionPanelController>().UpdateExistingOptionButtons();
         }
     }
 }

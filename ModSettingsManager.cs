@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using BepInEx;
+using BepInEx.Logging;
 using EntityStates.AncientWispMonster;
 using On.RoR2;
 using On.RoR2.UI;
 using R2API;
 using R2API.Utils;
+using RiskOfOptions.OptionOverrides;
 using RoR2.ConVar;
 using UnityEngine;
 
@@ -24,12 +27,15 @@ namespace RiskOfOptions
     {
         internal static List<OptionContainer> OptionContainers = new List<OptionContainer>();
 
-
         private static List<UnityEngine.Events.UnityAction> Listeners = new List<UnityEngine.Events.UnityAction>();
 
         internal static readonly string StartingText = "risk_of_options";
 
         internal static bool doingKeybind = false;
+
+        private static bool _initilized = false;
+
+        private static List<(string, string, string)> _overrideQueue;
 
 
         public static void Init()
@@ -104,6 +110,13 @@ namespace RiskOfOptions
             return OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer];
         }
 
+        internal static RiskOfOption GetOption(string name, string categoryName, string modGuid)
+        {
+            Indexes indexes = OptionContainers.GetIndexes(modGuid, name, categoryName);
+
+            return OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer];
+        }
+
         private static void AddToConsoleAwake(On.RoR2.Console.orig_Awake orig, RoR2.Console self)
         {
             orig(self);
@@ -128,6 +141,8 @@ namespace RiskOfOptions
             {
                 item.Invoke();
             }
+
+            _initilized = true;
         }
 
         // ReSharper disable once InconsistentNaming
@@ -147,15 +162,15 @@ namespace RiskOfOptions
             OptionContainers[OptionContainers.GetContainerIndex(modInfo.ModGuid, modInfo.ModName, true)].Title = title;
         }
 
-        //public static void AddModIcon()
-        //{
-        //    Throw
-        //}
+        public static void SetModIcon(Sprite iconSprite)
+        {
+            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
+
+            Thunderstore.AddIcon(modInfo.ModGuid, iconSprite);
+        }
 
         public static void RegisterOption(RiskOfOption mo)
         {
-            //mo.Value = mo.DefaultValue;
-
             switch (mo.optionType)
             {
                 case RiskOfOption.OptionType.Slider:
@@ -176,66 +191,35 @@ namespace RiskOfOptions
 
             OptionContainers.Add(ref mo);
         }
-        /// <summary>
-        /// Not yet implemented!
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="categoryName"></param>
-        /// <param name="optionsToOverride"></param>
-        public static void AddOverride(string name, string categoryName, OptionInfo[] optionsToOverride)
+
+        public static void AddCheckBox(string name, string description, bool defaultValue, string categoryName = "", CheckBoxOverride checkBoxOverride = null)
         {
-            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
-            //Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
+            if (_initilized)
+                throw new Exception($"AddCheckBox {name}, under Category {categoryName}, was called after initlization of RiskOfOptions. \n This usually means you are calling this outside of Awake()");
 
-            OptionInfo overridingOption = new OptionInfo()
-            {
-                Name = name,
-                CategoryName = categoryName
-            };
-
-            foreach (var container in OptionContainers)
-            {
-                if (container.ModGuid == modInfo.ModGuid)
-                {
-                    foreach (var option in container.GetModOptionsCached())
-                    {
-                        foreach (var optionInfo in optionsToOverride)
-                        {
-                            if (string.Equals(option.Name, optionInfo.Name, StringComparison.InvariantCultureIgnoreCase) && string.Equals(option.CategoryName, optionInfo.CategoryName, StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                option.overridingOption = overridingOption;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        public static void AddCheckBox(string name, string description, bool defaultValue, string categoryName = "")
-        {
             ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
 
-            RegisterOption(new RiskOfOption(modInfo.ModGuid, modInfo.ModName, RiskOfOption.OptionType.Bool, name, description, $"{(defaultValue? "1" : "0")}", categoryName));
-
-            //return new OptionInfo() {Name = name, CategoryName = (categoryName != "") ? categoryName : "Main"};
+            RegisterOption(new RiskOfOption(modInfo.ModGuid, modInfo.ModName, RiskOfOption.OptionType.Bool, name, description, $"{(defaultValue? "1" : "0")}", categoryName, checkBoxOverride));
         }
 
-        public static void AddSlider(string name, string description, float defaultValue, string categoryName = "")
+        public static void AddSlider(string name, string description, float defaultValue, string categoryName = "", SliderOverride sliderOverride = null)
         {
+            if (_initilized)
+                throw new Exception($"AddSlider {name}, under Category {categoryName}, was called after initlization of RiskOfOptions. \n This usually means you are calling this outside of Awake()");
+
             ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
 
-            RegisterOption(new RiskOfOption(modInfo.ModGuid, modInfo.ModName, RiskOfOption.OptionType.Slider, name, description, defaultValue.ToString(CultureInfo.InvariantCulture), categoryName));
-
-            //return new OptionInfo() { Name = name, CategoryName = (categoryName != "") ? categoryName : "Main" };
+            RegisterOption(new RiskOfOption(modInfo.ModGuid, modInfo.ModName, RiskOfOption.OptionType.Slider, name, description, defaultValue.ToString(CultureInfo.InvariantCulture), categoryName, sliderOverride));
         }
 
-        public static void AddKeyBind(string name, string description, KeyCode defaultValue, string categoryName = "")
+        public static void AddKeyBind(string name, string description, KeyCode defaultValue, string categoryName = "", string overrideName = "", string overrideCategory = "", bool oppositeOfOverride = false)
         {
+            if (_initilized)
+                throw new Exception($"AddKeyBind {name}, under Category {categoryName}, was called after initlization of RiskOfOptions. \n This usually means you are calling this outside of Awake()");
+
             ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
 
             RegisterOption(new RiskOfOption(modInfo.ModGuid, modInfo.ModName, RiskOfOption.OptionType.Keybinding, name, description, $"{(int)defaultValue}", categoryName));
-
-            //return new OptionInfo() { Name = name, CategoryName = (categoryName != "") ? categoryName : "Main" };
         }
 
         public static void CreateCategory(string name)
@@ -259,6 +243,7 @@ namespace RiskOfOptions
 
             OptionContainers[OptionContainers.GetContainerIndex(modInfo.ModGuid, modInfo.ModName)].Add(ref newCategory);
         }
+
 
         internal static void CreateCategory(string name, string description, string modGuid, string modName)
         {
@@ -326,12 +311,13 @@ namespace RiskOfOptions
             return modSearchEntries.ToArray();
         }
 
+        //internal struct OptionOverrideInfo
+        //{
+        //    internal string name;
+        //    internal string categoryName;
+        //    internal string modGuid;
+        //}
 
-        public struct OptionInfo
-        {
-            public string Name;
-            public string CategoryName;
-        }
         #region ModOption Legacy Stuff
 
         [Obsolete("Usage of ModOption is depreciated, use RiskOfOption instead.")]

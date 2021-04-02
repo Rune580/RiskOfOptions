@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using R2API.Utils;
+using RiskOfOptions.OptionOverrides;
 
 namespace RiskOfOptions
 {
@@ -43,10 +44,28 @@ namespace RiskOfOptions
 
             //ModSettingsManager.CreateCategory("Etc", "yeah");
 
+            //CheckBoxOverride checkBoxOverride = new CheckBoxOverride()
+            //{
+            //    Name = "Enable Music",
+            //    CategoryName = "Audio",
+            //    OverrideOnTrue = false,
+            //    ValueToReturnWhenOverriden = false
+            //};
 
-            //ModSettingsManager.AddCheckBox("Test CheckBox", "This is a Description", true);
+            //SliderOverride musicOverride = new SliderOverride()
+            //{
+            //    Name = "Enable Music",
+            //    CategoryName = "Audio",
+            //    OverrideOnTrue = false,
+            //    ValueToReturnWhenOverriden = 0f
+            //};
 
-            //ModSettingsManager.AddSlider("Test Slider", "This is another Description", 0f, "Audio");
+
+            //ModSettingsManager.AddCheckBox("Enable Music", "This is a Description", true, "Audio");
+
+            //ModSettingsManager.AddCheckBox("Test CheckBox", "fuck me dude", true, "Audio", checkBoxOverride);
+
+            //ModSettingsManager.AddSlider("Music Slider", "This is another Description", 50f, "Audio", musicOverride);
 
             //ModSettingsManager.AddKeyBind("Test KeyBind", "This is yet another Description", UnityEngine.KeyCode.G, "Controls");
 

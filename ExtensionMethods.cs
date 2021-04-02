@@ -182,10 +182,21 @@ namespace RiskOfOptions
 
         internal static Indexes GetIndexes(this List<OptionContainer> containers, string modGuid, string optionName, string categoryName = "Main")
         {
-            Indexes indexes = default;
+            Indexes indexes = new Indexes()
+            {
+                ContainerIndex = -1,
+                OptionIndexInContainer = -1
+            };
 
-            indexes.ContainerIndex = containers.GetContainerIndex(modGuid);
-            indexes.OptionIndexInContainer = containers[indexes.ContainerIndex].GetModOptionsCached().GetOptionIndex(optionName, categoryName);
+            try
+            {
+                indexes.ContainerIndex = containers.GetContainerIndex(modGuid);
+                indexes.OptionIndexInContainer = containers[indexes.ContainerIndex].GetModOptionsCached().GetOptionIndex(optionName, categoryName);
+            }
+            catch
+            {
+                // Not in containers yet.
+            }
 
             return indexes;
         }

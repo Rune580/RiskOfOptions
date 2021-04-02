@@ -23,13 +23,6 @@ namespace RiskOfOptions
         {
             _image.sprite = Thunderstore.defaultIcon;
 
-            Debug.Log(Thunderstore.defaultIcon);
-
-            if (Thunderstore.defaultIcon)
-            {
-                Debug.Log(Thunderstore.defaultIcon.name);
-            }
-
             StartCoroutine(SetTexture());
         }
 
@@ -45,9 +38,11 @@ namespace RiskOfOptions
 
             var modIconInfo = Thunderstore.GetModIcon(modGuid);
 
-            if (modIconInfo.Icon != string.Empty)
+            //Debug.Log($"modGuid: {modIconInfo.modGuid}, IconPath: {modIconInfo.IconPath}, Icon {modIconInfo.Icon}");
+
+            if (!modIconInfo.Icon && modIconInfo.IconPath != string.Empty)
             {
-                UnityWebRequest www = new UnityWebRequest($"file://{modIconInfo.Icon}");
+                UnityWebRequest www = new UnityWebRequest($"file://{modIconInfo.IconPath}");
 
                 DownloadHandlerTexture downloadHandler = new DownloadHandlerTexture(true);
 
@@ -58,6 +53,10 @@ namespace RiskOfOptions
                 yield return new WaitUntil(() => downloadHandler.isDone);
 
                 _image.sprite = Sprite.Create(downloadHandler.texture, new Rect(0f, 0f, downloadHandler.texture.width, downloadHandler.texture.height), new Vector2(0.5f, 0.5f));
+            }
+            else if (modIconInfo.Icon)
+            {
+                _image.sprite = modIconInfo.Icon;
             }
         }
     }
