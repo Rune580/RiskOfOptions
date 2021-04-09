@@ -6,6 +6,7 @@ using R2API.Utils;
 using RoR2;
 
 using static RiskOfOptions.ExtensionMethods;
+using BaseSettingsControl = RoR2.UI.BaseSettingsControl;
 
 namespace RiskOfOptions
 {
@@ -19,13 +20,16 @@ namespace RiskOfOptions
 
         private static string GetCurrentValueRoo(On.RoR2.UI.BaseSettingsControl.orig_GetCurrentValue orig, RoR2.UI.BaseSettingsControl self)
         {
-            return (int)self.settingSource <= 1 ? orig(self) : RoR2.Console.instance.FindConVar(self.settingName).GetString();
+            return self.settingSource == BaseSettingsControl.SettingSource.ConVar || self.settingSource == BaseSettingsControl.SettingSource.UserProfilePref ? orig(self) : RoR2.Console.instance.FindConVar(self.settingName).GetString();
         }
 
         private static void SubmitSettingRoo(On.RoR2.UI.BaseSettingsControl.orig_SubmitSetting orig, RoR2.UI.BaseSettingsControl self, string newValue)
         {
-            if ((int)self.settingSource <= 1)
+            if (self.settingSource == BaseSettingsControl.SettingSource.ConVar || self.settingSource == BaseSettingsControl.SettingSource.UserProfilePref)
+            {
                 orig(self, newValue);
+                return;
+            }
 
             var tempOption = ModSettingsManager.GetOption(self.settingName);
 

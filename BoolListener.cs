@@ -1,4 +1,5 @@
-﻿using RoR2.UI;
+﻿using System;
+using RoR2.UI;
 using UnityEngine;
 
 namespace RiskOfOptions
@@ -7,18 +8,22 @@ namespace RiskOfOptions
     {
         public UnityEngine.Events.UnityAction<bool> onValueChangedBool;
 
-        private bool _previousValue = false;
+        private bool _previousValue;
+
+        public bool isOverriden = false;
 
         private CarouselController _cc;
 
-        private void Start()
+        private void Awake()
         {
             _cc = gameObject.GetComponentInChildren<CarouselController>();
+
+            _previousValue = _cc.GetCurrentValue() == "1";
         }
 
-        private void Update()
+        private void LateUpdate()
         {
-            if (!_cc)
+            if (!_cc || isOverriden)
                 return;
 
             bool currentValue = false;
@@ -32,6 +37,7 @@ namespace RiskOfOptions
 
             if (_previousValue != currentValue)
             {
+                Debug.Log($"Bool listener fired off from {gameObject.name}, Outgoing Value {currentValue}");
                 onValueChangedBool.Invoke(currentValue);
             }
 

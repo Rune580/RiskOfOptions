@@ -44,13 +44,13 @@ namespace RiskOfOptions.OptionComponents
                 foreach (var button in buttons)
                 {
                     button.interactable = false;
-                    //var listener = button.GetComponent<BoolListener>();
+                    var listener = button.GetComponent<BoolListener>();
 
-                    //if (listener != null)
-                    //{
-                    //    listener.onValueChangedBool.Invoke(((CheckBoxOverride) tempOption.OptionOverride)
-                    //        .ValueToReturnWhenOverriden);
-                    //}
+                    if (listener != null)
+                    {
+                        listener.isOverriden = true;
+                        listener.onValueChangedBool.Invoke(((CheckBoxOverride)tempOption.OptionOverride).ValueToReturnWhenOverriden);
+                    }
                 }
 
                 foreach (var slider in sliders)
@@ -67,12 +67,13 @@ namespace RiskOfOptions.OptionComponents
                 {
                     button.interactable = true;
 
-                    //var listener = button.GetComponent<BoolListener>();
+                    var listener = button.GetComponent<BoolListener>();
 
-                    //if (listener != null)
-                    //{
-                    //    listener.onValueChangedBool.Invoke(tempOption.GetBool());
-                    //}
+                    if (listener != null)
+                    {
+                        listener.onValueChangedBool.Invoke(tempOption.GetBool());
+                        listener.isOverriden = false;
+                    }
                 }
 
                 foreach (var slider in sliders)
