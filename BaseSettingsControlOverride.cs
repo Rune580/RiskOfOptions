@@ -10,9 +10,10 @@ using BaseSettingsControl = RoR2.UI.BaseSettingsControl;
 
 namespace RiskOfOptions
 {
-    public static class BaseSettingsControlOverride
+    internal static class BaseSettingsControlOverride
     {
-        public static void Init()
+        internal static Dictionary<string, string> _restartOptions = new Dictionary<string, string>();
+        internal static void Init()
         {
             On.RoR2.UI.BaseSettingsControl.SubmitSetting += SubmitSettingRoo;
             On.RoR2.UI.BaseSettingsControl.GetCurrentValue += GetCurrentValueRoo;
@@ -33,6 +34,23 @@ namespace RiskOfOptions
 
             var tempOption = ModSettingsManager.GetOption(self.settingName);
 
+            if (tempOption.RestartRequired)
+            {
+                if (_restartOptions.ContainsKey(tempOption.OptionToken))
+                {
+                    if (_restartOptions[tempOption.OptionToken] == newValue)
+                    {
+                        _restartOptions.Remove(tempOption.OptionToken);
+                    }
+                }
+                else
+                {
+                    _restartOptions.Add(tempOption.OptionToken, tempOption.GetValue());
+                }
+            }
+
+            self.GetComponentInParent<ModOptionPanelController>().CheckIfRestartNeeded();
+
             Indexes indexes = ModSettingsManager.OptionContainers.GetIndexes(tempOption.ModGuid, tempOption.Name, tempOption.CategoryName);
 
             ModSettingsManager.OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer].Value = newValue;
@@ -51,6 +69,8 @@ namespace RiskOfOptions
 
             // Temporary shit Saves to console for now....
             RoR2.Console.instance.FindConVar(tempOption.ConsoleToken).AttemptSetString(newValue);
+
+
 
             if (self.GetType() == typeof(RoR2.UI.CarouselController))
                 self.GetComponentInParent<ModOptionPanelController>().UpdateExistingOptionButtons();

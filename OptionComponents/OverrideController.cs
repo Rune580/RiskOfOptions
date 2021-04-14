@@ -49,7 +49,7 @@ namespace RiskOfOptions.OptionComponents
                     if (listener != null)
                     {
                         listener.isOverriden = true;
-                        listener.onValueChangedBool.Invoke(((CheckBoxOverride)tempOption.OptionOverride).ValueToReturnWhenOverriden);
+                        listener.Invoke(((CheckBoxOverride)tempOption.OptionOverride).ValueToReturnWhenOverriden);
                     }
                 }
 
@@ -71,7 +71,7 @@ namespace RiskOfOptions.OptionComponents
 
                     if (listener != null)
                     {
-                        listener.onValueChangedBool.Invoke(tempOption.GetBool());
+                        listener.Invoke(tempOption.GetBool());
                         listener.isOverriden = false;
                     }
                 }

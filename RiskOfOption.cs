@@ -24,6 +24,10 @@ namespace RiskOfOptions
 
         public OptionOverride OptionOverride;
 
+        public bool Visibility;
+
+        public bool RestartRequired;
+
         public string CategoryName { get; internal set; }
 
         internal BaseConVar ConVar;
@@ -39,12 +43,15 @@ namespace RiskOfOptions
             Keybinding
         }
 
-        internal RiskOfOption(string modGuid, string modName, OptionType optionType, string name, string description, string defaultValue, string categoryName = "", OptionOverride optionOverride = null)
+        internal RiskOfOption(string modGuid, string modName, OptionType optionType, string name, string description, string defaultValue, string categoryName, OptionOverride optionOverride, bool visibility, bool restartRequired)
         {
             this.optionType = optionType;
             Name = name;
             Description = description;
             DefaultValue = defaultValue;
+
+            Visibility = visibility;
+            RestartRequired = restartRequired;
 
             if (categoryName == "")
             {
@@ -54,8 +61,6 @@ namespace RiskOfOptions
             if (optionOverride != null)
             {
                 OptionOverride = optionOverride;
-
-                //ModSettingsManager.AddOverride(OptionOverride.Name, OptionOverride.CategoryName, modGuid);
             }
 
             CategoryName = categoryName;
@@ -73,36 +78,6 @@ namespace RiskOfOptions
 
             RegisterTokens();
         }
-
-        //private RiskOfOption(OptionType optionType, string name, string description, string defaultValue, string categoryName = "")
-        //{
-        //    this.optionType = optionType;
-        //    Name = name;
-        //    Description = description;
-        //    DefaultValue = defaultValue;
-
-        //    if (categoryName == "")
-        //    {
-        //        categoryName = "Main";
-        //    }
-
-        //    CategoryName = categoryName;
-
-        //    ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
-
-        //    ModGuid = modInfo.ModGuid;
-        //    ModName = modInfo.ModName;
-
-        //    OptionToken = $"{ModSettingsManager.StartingText}.{ModGuid}.{ModName}.category_{categoryName}.{name}.{optionType}".ToUpper().Replace(" ", "_");
-
-        //    ConsoleToken = OptionToken.ToLower();
-
-        //    NameToken = $"{OptionToken}.NAME_TOKEN";
-
-        //    DescriptionToken = $"{OptionToken}.DESCRIPTION_TOKEN";
-
-        //    RegisterTokens();
-        //}
 
         internal void RegisterTokens()
         {

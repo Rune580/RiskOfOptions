@@ -4,13 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Timers;
 using SimpleJSON;
-using UnityEngine.Events;
 using System.Threading;
-using On.Unity;
 using UnityEngine;
 
 namespace RiskOfOptions

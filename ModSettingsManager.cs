@@ -35,8 +35,6 @@ namespace RiskOfOptions
 
         private static bool _initilized = false;
 
-        private static List<(string, string, string)> _overrideQueue;
-
 
         public static void Init()
         {
@@ -169,6 +167,14 @@ namespace RiskOfOptions
             Thunderstore.AddIcon(modInfo.ModGuid, iconSprite);
         }
 
+        public static void SetVisibility(string name, string categoryName, bool visibility)
+        {
+            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
+            Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
+
+            OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer].Visibility = visibility;
+        }
+
         public static void RegisterOption(RiskOfOption mo)
         {
             switch (mo.optionType)
@@ -192,34 +198,54 @@ namespace RiskOfOptions
             OptionContainers.Add(ref mo);
         }
 
-        public static void AddCheckBox(string name, string description, bool defaultValue, string categoryName = "", CheckBoxOverride checkBoxOverride = null)
+        public static void AddCheckBox(string name, string description, bool defaultValue, string categoryName, CheckBoxOverride checkBoxOverride, bool visibility = true, bool restartRequired = false)
         {
             if (_initilized)
-                throw new Exception($"AddCheckBox {name}, under Category {categoryName}, was called after initlization of RiskOfOptions. \n This usually means you are calling this outside of Awake()");
+                throw new Exception($"AddCheckBox {name}, under Category {categoryName}, was called after initilization of RiskOfOptions. \n This usually means you are calling this outside of Awake()");
 
             ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
 
-            RegisterOption(new RiskOfOption(modInfo.ModGuid, modInfo.ModName, RiskOfOption.OptionType.Bool, name, description, $"{(defaultValue? "1" : "0")}", categoryName, checkBoxOverride));
+            RegisterOption(new RiskOfOption(modInfo.ModGuid, modInfo.ModName, RiskOfOption.OptionType.Bool, name, description, $"{(defaultValue ? "1" : "0")}", categoryName, checkBoxOverride, visibility, restartRequired));
         }
 
-        public static void AddSlider(string name, string description, float defaultValue, string categoryName = "", SliderOverride sliderOverride = null)
+        public static void AddCheckBox(string name, string description, bool defaultValue, string categoryName, bool visibility = true, bool restartRequired = false)
         {
             if (_initilized)
-                throw new Exception($"AddSlider {name}, under Category {categoryName}, was called after initlization of RiskOfOptions. \n This usually means you are calling this outside of Awake()");
+                throw new Exception($"AddCheckBox {name}, under Category {categoryName}, was called after initilization of RiskOfOptions. \n This usually means you are calling this outside of Awake()");
 
             ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
 
-            RegisterOption(new RiskOfOption(modInfo.ModGuid, modInfo.ModName, RiskOfOption.OptionType.Slider, name, description, defaultValue.ToString(CultureInfo.InvariantCulture), categoryName, sliderOverride));
+            RegisterOption(new RiskOfOption(modInfo.ModGuid, modInfo.ModName, RiskOfOption.OptionType.Bool, name, description, $"{(defaultValue ? "1" : "0")}", categoryName, null, visibility, restartRequired));
         }
 
-        public static void AddKeyBind(string name, string description, KeyCode defaultValue, string categoryName = "", string overrideName = "", string overrideCategory = "", bool oppositeOfOverride = false)
+        public static void AddSlider(string name, string description, float defaultValue, string categoryName, SliderOverride sliderOverride, bool visibility = true, bool restartRequired = false)
         {
             if (_initilized)
-                throw new Exception($"AddKeyBind {name}, under Category {categoryName}, was called after initlization of RiskOfOptions. \n This usually means you are calling this outside of Awake()");
+                throw new Exception($"AddSlider {name}, under Category {categoryName}, was called after initilization of RiskOfOptions. \n This usually means you are calling this outside of Awake()");
 
             ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
 
-            RegisterOption(new RiskOfOption(modInfo.ModGuid, modInfo.ModName, RiskOfOption.OptionType.Keybinding, name, description, $"{(int)defaultValue}", categoryName));
+            RegisterOption(new RiskOfOption(modInfo.ModGuid, modInfo.ModName, RiskOfOption.OptionType.Slider, name, description, defaultValue.ToString(CultureInfo.InvariantCulture), categoryName, sliderOverride, visibility, restartRequired));
+        }
+
+        public static void AddSlider(string name, string description, float defaultValue, string categoryName, bool visibility = true, bool restartRequired = false)
+        {
+            if (_initilized)
+                throw new Exception($"AddSlider {name}, under Category {categoryName}, was called after initilization of RiskOfOptions. \n This usually means you are calling this outside of Awake()");
+
+            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
+
+            RegisterOption(new RiskOfOption(modInfo.ModGuid, modInfo.ModName, RiskOfOption.OptionType.Slider, name, description, defaultValue.ToString(CultureInfo.InvariantCulture), categoryName, null, visibility, restartRequired));
+        }
+
+        public static void AddKeyBind(string name, string description, KeyCode defaultValue, string categoryName, bool visibility = true)
+        {
+            if (_initilized)
+                throw new Exception($"AddKeyBind {name}, under Category {categoryName}, was called after initilization of RiskOfOptions. \n This usually means you are calling this outside of Awake()");
+
+            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
+
+            RegisterOption(new RiskOfOption(modInfo.ModGuid, modInfo.ModName, RiskOfOption.OptionType.Keybinding, name, description, $"{(int)defaultValue}", categoryName, null, visibility, false));
         }
 
         public static void CreateCategory(string name)
@@ -340,7 +366,7 @@ namespace RiskOfOptions
             OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer].OnValueChangedBool = unityAction;
         }
 
-        [Obsolete("ModOptions are handled internally now. Please use the other constructors.", false)]
+        [Obsolete("ModOptions are handled internally now. Please use AddCheckBox, AddSlider, etc", false)]
         // ReSharper disable once UnusedMember.Global
         // ReSharper disable once InconsistentNaming
         public static void addOption(ModOption mo)
@@ -349,7 +375,7 @@ namespace RiskOfOptions
 
             ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
 
-            RegisterOption(new RiskOfOption(modInfo.ModGuid, modInfo.ModName, (RiskOfOption.OptionType)mo.optionType, mo.name, mo.description, mo.defaultValue, ""));
+            RegisterOption(new RiskOfOption(modInfo.ModGuid, modInfo.ModName, (RiskOfOption.OptionType)mo.optionType, mo.name, mo.description, mo.defaultValue, "", null, true, true));
         }
 
         [Obsolete("ModOption is obsolete, please use RiskOfOption instead.")]

@@ -3,6 +3,7 @@ using R2API.Utils;
 using RoR2.UI;
 using RoR2.UI.SkinControllers;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -42,11 +43,15 @@ namespace RiskOfOptions
         public Color warningColor = Color.red;
 
 
+        private IEnumerator _animateRoutine;
+
+
         public void Start()
         {
             CreatePrefabs();
             CreatePanel();
             AddPanelsToSettings();
+            CheckIfRestartNeeded();
         }
         private void CreatePrefabs()
         {
@@ -205,13 +210,13 @@ namespace RiskOfOptions
 
             Prefabs.MoCanvas.name = "SettingsSubPanel, Mod Options";
 
-
             modListPanel = GameObject.Instantiate(Prefabs.MoPanelPrefab, Prefabs.MoCanvas.transform);
 
             modListPanel.GetComponent<RectTransform>().anchorMax = new Vector2(0.25f, 1f);
 
             modListPanel.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").GetComponent<VerticalLayoutGroup>().spacing = 6;
-            modListPanel.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").GetComponent<RectTransform>().anchorMin = new Vector2(0f, 0.2f);
+
+            //modListPanel.transform.Find("Scroll View").GetComponent<RectTransform>().anchorMin = new Vector2(0f, 0.194f);
 
             modListPanel.SetActive(true);
 
@@ -256,19 +261,45 @@ namespace RiskOfOptions
             warningPanel = GameObject.Instantiate(Prefabs.Gdp, modListPanel.transform);
 
             warningPanel.GetComponent<RectTransform>().anchorMin = new Vector2(0f, 0f);
-            warningPanel.GetComponent<RectTransform>().anchorMax = new Vector2(1f, 0.2f);
+            warningPanel.GetComponent<RectTransform>().anchorMax = new Vector2(1f, 0f);
+
+            warningPanel.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -9f);
 
             GameObject warningBlur = GameObject.Instantiate(modListPanel.transform.Find("Scroll View").Find("BlurPanel").gameObject, warningPanel.transform);
             GameObject warningImage = GameObject.Instantiate(modListPanel.transform.Find("Scroll View").Find("ImagePanel").gameObject, warningPanel.transform);
 
+            warningPanel.transform.Find("ContentSizeFitter").SetAsLastSibling();
+
+            warningPanel.AddComponent<RectMask2D>();
+
             warningBlur.GetComponent<TranslucentImage>().color = warningColor;
             warningImage.GetComponent<UnityEngine.UI.Image>().color = warningColor;
 
-            warningPanel.SetActive(true);
-
             warningPanel.name = "Warning Panel";
 
+            warningPanel.SetActive(false);
 
+
+
+            GameObject restartIconGameObject = new GameObject();
+
+            restartIconGameObject.name = "RestartIcon";
+
+            RectTransform restartIconRectTransform = restartIconGameObject.AddComponent<RectTransform>();
+            restartIconGameObject.AddComponent<CanvasRenderer>();
+            restartIconGameObject.AddComponent<UnityEngine.UI.Image>().preserveAspect = true;
+
+            restartIconRectTransform.anchorMin = new Vector2(0.04f, 0.13f);
+            restartIconRectTransform.anchorMax = new Vector2(0.19f, 0.86f);
+
+            restartIconRectTransform.anchoredPosition = Vector2.zero;
+            restartIconRectTransform.sizeDelta = Vector2.zero;
+
+            restartIconRectTransform.pivot = new Vector2(0.5f, 0.5f);
+
+            restartIconGameObject.transform.SetParent(warningPanel.transform.Find("ContentSizeFitter"));
+
+            restartIconGameObject.transform.SetAsLastSibling();
 
 
             _categoryHeader = GameObject.Instantiate(Prefabs.MoPanelPrefab, Prefabs.MoCanvas.transform);
@@ -596,6 +627,9 @@ namespace RiskOfOptions
 
                 BaseSettingsControl.SettingSource roo = (BaseSettingsControl.SettingSource) 2;
 
+                if (!option.Visibility)
+                    continue;
+
                 switch (option.optionType)
                 {
                     case RiskOfOption.OptionType.Bool:
@@ -609,7 +643,10 @@ namespace RiskOfOptions
                         controller.settingSource = roo;
 
                         if (option.OnValueChangedBool != null)
-                            button.AddComponent<BoolListener>().onValueChangedBool = option.OnValueChangedBool;
+                        {
+                            button.AddComponent<BoolListener>().AddListener(option.OnValueChangedBool);
+                        }
+                            
 
                         button.name = $"Mod Option CheckBox, {option.Name}";
                         break;
@@ -682,6 +719,105 @@ namespace RiskOfOptions
 
                 button.SetActive(true);
             }
+        }
+
+        internal void CheckIfRestartNeeded()
+        {
+            if (BaseSettingsControlOverride._restartOptions.Count > 0)
+            {
+                ShowRestartWarning();
+            }
+            else
+            {
+                HideRestartWarning();
+            }
+        }
+
+        public void ShowRestartWarning()
+        {
+            RectTransform modListScrollViewRT = transform.Find("SafeArea").Find("SubPanelArea").Find("SettingsSubPanel, Mod Options(Clone)").Find("Mod List Panel").Find("Scroll View").GetComponent<RectTransform>();
+            RectTransform warningPanelRT = transform.Find("SafeArea").Find("SubPanelArea").Find("SettingsSubPanel, Mod Options(Clone)").Find("Mod List Panel").Find("Warning Panel").GetComponent<RectTransform>();
+
+            warningPanelRT.gameObject.SetActive(true);
+
+            warningPanelRT.GetComponentInChildren<HGTextMeshProUGUI>().SetText($"Restart Required!");
+
+            if (_animateRoutine != null)
+                StopCoroutine(_animateRoutine);
+
+            HGTextMeshProUGUI warningText = warningPanelRT.GetComponentInChildren<HGTextMeshProUGUI>();
+
+            Color showColor = new Color(warningText.color.r, warningText.color.b, warningText.color.g);
+
+            _animateRoutine = AnimateWarningPanel(modListScrollViewRT, new Vector2(0f, 0.094f), warningPanelRT, new Vector2(1f, 0.1f), showColor);
+
+            StartCoroutine(_animateRoutine);
+
+        }
+
+        public void HideRestartWarning()
+        {
+            RectTransform modListScrollViewRT = transform.Find("SafeArea").Find("SubPanelArea").Find("SettingsSubPanel, Mod Options(Clone)").Find("Mod List Panel").Find("Scroll View").GetComponent<RectTransform>();
+            RectTransform warningPanelRT = transform.Find("SafeArea").Find("SubPanelArea").Find("SettingsSubPanel, Mod Options(Clone)").Find("Mod List Panel").Find("Warning Panel").GetComponent<RectTransform>();
+
+            if (_animateRoutine != null)
+                StopCoroutine(_animateRoutine);
+
+            HGTextMeshProUGUI warningText = warningPanelRT.GetComponentInChildren<HGTextMeshProUGUI>();
+
+            Color hideColor = new Color(warningText.color.r, warningText.color.b, warningText.color.g, 0f);
+
+            _animateRoutine = AnimateWarningPanel(modListScrollViewRT, new Vector2(0f, 0f), warningPanelRT, new Vector2(1f, 0f), hideColor);
+
+            StartCoroutine(_animateRoutine);
+        }
+
+        private IEnumerator AnimateWarningPanel(RectTransform modListTransform, Vector2 newModListPos, RectTransform warningTransform, Vector2 newWarningPos, Color textColor)
+        {
+            bool animating = true;
+
+            float animSpeed = 2.25f;
+
+            HGTextMeshProUGUI warningText = warningTransform.GetComponentInChildren<HGTextMeshProUGUI>();
+
+            while (animating)
+            {
+                //modListTransform.anchorMin = Vector2.Lerp(modListTransform.anchorMin, newModListPos, animSpeed * Time.deltaTime);
+
+                //warningTransform.anchorMax = Vector2.Lerp(warningTransform.anchorMax, newWarningPos, animSpeed * Time.deltaTime);
+
+                modListTransform.anchorMin = SmoothStep(modListTransform.anchorMin, newModListPos, (animSpeed * 5.25f) * Time.deltaTime);
+
+                warningTransform.anchorMax = SmoothStep(warningTransform.anchorMax, newWarningPos, (animSpeed * 5.25f) * Time.deltaTime);
+
+                switch (textColor.a)
+                {
+                    case 1f:
+                        warningText.color = Color.Lerp(warningText.color, textColor, (animSpeed * 2) * Time.deltaTime);
+                        break;
+                    case 0f:
+                        warningText.color = Color.Lerp(warningText.color, textColor, (animSpeed * 4) * Time.deltaTime);
+                        break;
+                }
+                
+
+                if (modListTransform.anchorMin == newModListPos && warningTransform.anchorMax == newWarningPos && warningText.color == textColor)
+                {
+                    animating = false;
+                }
+
+                yield return new WaitForEndOfFrame();
+            }
+        }
+
+        private Vector2 SmoothStep(Vector2 a, Vector2 b, float t)
+        {
+            Vector2 c = Vector2.zero;
+
+            c.x = Mathf.SmoothStep(a.x, b.x, t);
+            c.y = Mathf.SmoothStep(a.y, b.y, t);
+
+            return c;
         }
 
         public void UpdateExistingOptionButtons()

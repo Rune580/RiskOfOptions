@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using R2API.Utils;
 using RiskOfOptions.OptionOverrides;
+using UnityEngine.Events;
 
 namespace RiskOfOptions
 {
@@ -30,9 +31,9 @@ namespace RiskOfOptions
 
             //ModSettingsManager.CreateCategory("Audio");
 
-            //ModSettingsManager.CreateCategory("Controls");
+            ModSettingsManager.CreateCategory("Controls");
 
-            //ModSettingsManager.CreateCategory("Enemies");
+            ModSettingsManager.CreateCategory("Enemies");
 
             //ModSettingsManager.CreateCategory("Dick", "yeah");
 
@@ -61,13 +62,22 @@ namespace RiskOfOptions
             //};
 
 
-            //ModSettingsManager.AddCheckBox("Enable Music", "This is a Description", true, "Audio");
+            ModSettingsManager.AddCheckBox("Enable Test KeyBind", "This is a Description", false, "Controls");
 
             //ModSettingsManager.AddCheckBox("Test CheckBox", "fuck me dude", true, "Audio", checkBoxOverride);
 
             //ModSettingsManager.AddSlider("Music Slider", "This is another Description", 50f, "Audio", musicOverride);
 
-            //ModSettingsManager.AddKeyBind("Test KeyBind", "This is yet another Description", UnityEngine.KeyCode.G, "Controls");
+            ModSettingsManager.AddKeyBind("Test KeyBind", "This is yet another Description", UnityEngine.KeyCode.G, "Controls", false);
+
+            ModSettingsManager.AddListener(new UnityAction<bool>(delegate(bool lig)
+            {
+                ModSettingsManager.SetVisibility("Test KeyBind", "Controls", lig);
+            }), "Enable Test KeyBind", "Controls");
+
+
+            ModSettingsManager.AddCheckBox("Enable Enemy stuff", "This is a Description", false, "Enemies", true, true);
+            ModSettingsManager.AddCheckBox("Do something that doesn't need a restart", "This is a Description", false, "Enemies", true, false);
 
             //ModSettingsManager.AddOption("Emote Wheel", "Coming up with all of these examples is getting hard.", UnityEngine.KeyCode.C, "Controls");
 
