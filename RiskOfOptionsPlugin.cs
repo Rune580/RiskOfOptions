@@ -1,6 +1,8 @@
 ﻿using BepInEx;
 using R2API.Utils;
 using RiskOfOptions.OptionOverrides;
+using TMPro;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace RiskOfOptions
@@ -27,7 +29,7 @@ namespace RiskOfOptions
 
             //ModSettingsManager.setPanelTitle("Example Title Bitch");
 
-            //ModSettingsManager.setPanelDescription("Example Description");
+            ModSettingsManager.setPanelDescription("Example Description");
 
             //ModSettingsManager.CreateCategory("Audio");
 
@@ -76,8 +78,14 @@ namespace RiskOfOptions
             }), "Enable Test KeyBind", "Controls");
 
 
-            ModSettingsManager.AddCheckBox("Enable Enemy stuff", "This is a Description", false, "Enemies", true, true);
-            ModSettingsManager.AddCheckBox("Do something that doesn't need a restart", "This is a Description", false, "Enemies", true, false);
+            ModSettingsManager.AddCheckBox("Enable Enemy stuff", "This is a Description", false, "Enemies", true);
+            ModSettingsManager.AddCheckBox("Do something that doesn't need a restart", "This is a Description", false, "Enemies");
+
+
+            //TMP_Asset asset = ScriptableObject.CreateInstance<TMP_Asset>();
+
+            //asset.
+
 
             //ModSettingsManager.AddOption("Emote Wheel", "Coming up with all of these examples is getting hard.", UnityEngine.KeyCode.C, "Controls");
 

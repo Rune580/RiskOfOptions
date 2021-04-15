@@ -44,7 +44,7 @@ namespace RiskOfOptions
 
         public float degreesPerSecond = 2f;
 
-
+        private bool warningShown = false;
 
         private IEnumerator _animateRoutine;
 
@@ -505,7 +505,7 @@ namespace RiskOfOptions
 
                 newModButton.GetComponentInChildren<HGTextMeshProUGUI>().text = container.Title;
 
-                newModButton.GetComponent<RooModListButton>().description = container.Description;
+                newModButton.GetComponent<RooModListButton>().description = container.GetDescriptionAsString();
                 newModButton.GetComponent<RooModListButton>().tmp = _modDescriptionPanel.GetComponentInChildren<HGTextMeshProUGUI>();
 
                 newModButton.GetComponent<RooModListButton>().containerIndex = i;
@@ -735,11 +735,11 @@ namespace RiskOfOptions
                     overrideController.CheckForOverride();
                 }
 
-                button.GetComponentInChildren<HGButton>().hoverToken = option.DescriptionToken;
+                button.GetComponentInChildren<HGButton>().hoverToken = option.OptionToken;
 
                 button.GetComponentInChildren<HGButton>().onSelect.AddListener(new UnityAction(delegate()
                 {
-                    canvas.Find("Option Description Panel").GetComponentInChildren<HGTextMeshProUGUI>().SetText(option.Description);
+                    canvas.Find("Option Description Panel").GetComponentInChildren<HGTextMeshProUGUI>().SetText(option.GetDescriptionAsString());
                 }));
 
                 button.SetActive(true);
@@ -750,11 +750,16 @@ namespace RiskOfOptions
         {
             if (BaseSettingsControlOverride._restartOptions.Count > 0)
             {
+                if (warningShown)
+                    return;
+
                 ShowRestartWarning();
+                warningShown = true;
             }
             else
             {
                 HideRestartWarning();
+                warningShown = false;
             }
         }
 
@@ -849,8 +854,6 @@ namespace RiskOfOptions
 
                     warningText.color = textColor;
                     restartIcon.color = textColor;
-
-                    animating = false;
                 }
 
                 yield return new WaitForEndOfFrame();

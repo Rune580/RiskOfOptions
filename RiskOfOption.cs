@@ -43,7 +43,7 @@ namespace RiskOfOptions
             Keybinding
         }
 
-        internal RiskOfOption(string modGuid, string modName, OptionType optionType, string name, string description, string defaultValue, string categoryName, OptionOverride optionOverride, bool visibility, bool restartRequired)
+        internal RiskOfOption(string modGuid, string modName, OptionType optionType, string name, object[] description, string defaultValue, string categoryName, OptionOverride optionOverride, bool visibility, bool restartRequired)
         {
             this.optionType = optionType;
             Name = name;
@@ -74,15 +74,32 @@ namespace RiskOfOptions
 
             NameToken = $"{OptionToken}.NAME_TOKEN";
 
-            DescriptionToken = $"{OptionToken}.DESCRIPTION_TOKEN";
-
             RegisterTokens();
         }
 
         internal void RegisterTokens()
         {
             LanguageAPI.Add(NameToken, Name);
-            LanguageAPI.Add(DescriptionToken, Description);
+        }
+
+        public string GetDescriptionAsString()
+        {
+            string temp = "";
+
+            foreach (var o in Description)
+            {
+                switch (o)
+                {
+                    case string _:
+                        temp += o.ToString();
+                        break;
+                    case Sprite sprite:
+                        temp += $"<Image:{sprite.name}>";
+                        break;
+                }
+            }
+
+            return temp;
         }
 
         public bool GetBool()
@@ -163,12 +180,12 @@ namespace RiskOfOptions
 
         public static bool operator ==(RiskOfOption a, RiskOfOption b)
         {
-            return a?.DescriptionToken == b?.DescriptionToken;
+            return a?.OptionToken == b?.OptionToken;
         }
 
         public static bool operator !=(RiskOfOption a, RiskOfOption b)
         {
-            return a?.DescriptionToken != b?.DescriptionToken;
+            return a?.OptionToken != b?.OptionToken;
         }
     }
 }

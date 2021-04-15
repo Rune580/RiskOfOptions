@@ -19,12 +19,7 @@ namespace RiskOfOptions
         /// <summary>
         /// The description displayed in the mod options menu.
         /// </summary>
-        public string Description;
-
-        /// <summary>
-        /// The description token used for the LanguageAPI and for internal use.
-        /// </summary>
-        public string DescriptionToken;
+        public object[] Description;
 
         public string OptionToken { get; protected set; }
 

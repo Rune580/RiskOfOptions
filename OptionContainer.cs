@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
+using Object = System.Object;
 
 namespace RiskOfOptions
 {
@@ -21,7 +22,7 @@ namespace RiskOfOptions
         public string Name { get; internal set; }
         public string NameToken { get; internal set; }
 
-        public string Description { get; internal set; }
+        public Object[] Description { get; internal set; }
 
         public string DescriptionToken { get; internal set; }
 
@@ -43,6 +44,25 @@ namespace RiskOfOptions
             this.Title = this.ModName;
 
             Options = new List<OptionBase>();
+        }
+        public string GetDescriptionAsString()
+        {
+            string temp = "";
+
+            foreach (var o in Description)
+            {
+                switch (o)
+                {
+                    case string _:
+                        temp += o.ToString();
+                        break;
+                    case Sprite sprite:
+                        temp += $"<Image:{sprite.name}>";
+                        break;
+                }
+            }
+
+            return temp;
         }
 
         internal List<RiskOfOption> GetModOptionsCached()
