@@ -2,6 +2,7 @@
 
 namespace RiskOfOptions
 {
+    [BepInDependency("com.bepis.r2api")]
     [BepInPlugin(GUID, MODNAME, VERSION)]
     public sealed class RiskOfOptionsPlugin : BaseUnityPlugin
     {
@@ -9,7 +10,7 @@ namespace RiskOfOptions
             MODNAME = "Risk of Options",
             AUTHOR = "rune580",
             GUID = "com." + AUTHOR + "." + "riskofoptions",
-            VERSION = "1.0.2";
+            VERSION = "1.0.3";
 
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Awake is automatically called by Unity")]
