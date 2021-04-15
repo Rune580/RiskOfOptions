@@ -42,6 +42,9 @@ namespace RiskOfOptions
 
         public Color warningColor = Color.red;
 
+        public float degreesPerSecond = 2f;
+
+
 
         private IEnumerator _animateRoutine;
 
@@ -268,6 +271,20 @@ namespace RiskOfOptions
             GameObject warningBlur = GameObject.Instantiate(modListPanel.transform.Find("Scroll View").Find("BlurPanel").gameObject, warningPanel.transform);
             GameObject warningImage = GameObject.Instantiate(modListPanel.transform.Find("Scroll View").Find("ImagePanel").gameObject, warningPanel.transform);
 
+            //GameObject.DestroyImmediate(warningPanel.transform.Find("ContentSizeFitter").GetComponent<ContentSizeFitter>());
+            //GameObject.DestroyImmediate(warningPanel.transform.Find("ContentSizeFitter").GetComponent<VerticalLayoutGroup>());
+
+            warningPanel.transform.Find("ContentSizeFitter").GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+
+            RectTransform warningDescriptionRectTransform = warningPanel.transform.Find("ContentSizeFitter").Find("DescriptionText").GetComponent<RectTransform>();
+
+            warningDescriptionRectTransform.anchorMin = new Vector2(0.1f, 0);
+            warningDescriptionRectTransform.anchorMax = new Vector2(1, 0.5f);
+
+            LayoutElement warningDescriptionLayoutElement = warningDescriptionRectTransform.gameObject.AddComponent<LayoutElement>();
+
+            warningDescriptionLayoutElement.ignoreLayout = true;
+
             warningPanel.transform.Find("ContentSizeFitter").SetAsLastSibling();
 
             warningPanel.AddComponent<RectMask2D>();
@@ -287,15 +304,23 @@ namespace RiskOfOptions
 
             RectTransform restartIconRectTransform = restartIconGameObject.AddComponent<RectTransform>();
             restartIconGameObject.AddComponent<CanvasRenderer>();
-            restartIconGameObject.AddComponent<UnityEngine.UI.Image>().preserveAspect = true;
 
-            restartIconRectTransform.anchorMin = new Vector2(0.04f, 0.13f);
-            restartIconRectTransform.anchorMax = new Vector2(0.19f, 0.86f);
+            LayoutElement restartIconLayoutElement = restartIconGameObject.AddComponent<LayoutElement>();
+            restartIconLayoutElement.ignoreLayout = true;
 
-            restartIconRectTransform.anchoredPosition = Vector2.zero;
-            restartIconRectTransform.sizeDelta = Vector2.zero;
+            Image restartIcon = restartIconGameObject.AddComponent<UnityEngine.UI.Image>();
+            restartIcon.sprite = Resources.Load<Sprite>("@RiskOfOptions:assets/RiskOfOptions/ror2RestartSymbol.png");
+            restartIcon.preserveAspect = true;
 
             restartIconRectTransform.pivot = new Vector2(0.5f, 0.5f);
+
+            restartIconRectTransform.localScale = new Vector3(0.9f, 0.9f, 0.9f);
+
+            restartIconRectTransform.anchorMin = new Vector2(0.0f, 0.0f);
+            restartIconRectTransform.anchorMax = new Vector2(0.11f, 0.0f);
+
+            restartIconRectTransform.anchoredPosition = new Vector2(0, -6);
+            restartIconRectTransform.sizeDelta = new Vector2(0, 32);
 
             restartIconGameObject.transform.SetParent(warningPanel.transform.Find("ContentSizeFitter"));
 
@@ -749,7 +774,7 @@ namespace RiskOfOptions
 
             Color showColor = new Color(warningText.color.r, warningText.color.b, warningText.color.g);
 
-            _animateRoutine = AnimateWarningPanel(modListScrollViewRT, new Vector2(0f, 0.094f), warningPanelRT, new Vector2(1f, 0.1f), showColor);
+            _animateRoutine = AnimateWarningPanel(modListScrollViewRT, new Vector2(0f, 0.074f), warningPanelRT, new Vector2(1f, 0.08f), showColor, degreesPerSecond, 720f);
 
             StartCoroutine(_animateRoutine);
 
@@ -767,18 +792,24 @@ namespace RiskOfOptions
 
             Color hideColor = new Color(warningText.color.r, warningText.color.b, warningText.color.g, 0f);
 
-            _animateRoutine = AnimateWarningPanel(modListScrollViewRT, new Vector2(0f, 0f), warningPanelRT, new Vector2(1f, 0f), hideColor);
+            _animateRoutine = AnimateWarningPanel(modListScrollViewRT, new Vector2(0f, 0f), warningPanelRT, new Vector2(1f, 0f), hideColor, degreesPerSecond, -360f);
 
             StartCoroutine(_animateRoutine);
         }
 
-        private IEnumerator AnimateWarningPanel(RectTransform modListTransform, Vector2 newModListPos, RectTransform warningTransform, Vector2 newWarningPos, Color textColor)
+        private IEnumerator AnimateWarningPanel(RectTransform modListTransform, Vector2 newModListPos, RectTransform warningTransform, Vector2 newWarningPos, Color textColor, float angleIncrement, float maxAngleRotation)
         {
             bool animating = true;
 
             float animSpeed = 2.25f;
 
             HGTextMeshProUGUI warningText = warningTransform.GetComponentInChildren<HGTextMeshProUGUI>();
+
+            Image restartIcon = warningText.transform.parent.Find("RestartIcon").GetComponent<Image>();
+
+            RectTransform restartRectTransform = restartIcon.GetComponent<RectTransform>();
+
+            float max = Mathf.Abs(maxAngleRotation);
 
             while (animating)
             {
@@ -790,24 +821,50 @@ namespace RiskOfOptions
 
                 warningTransform.anchorMax = SmoothStep(warningTransform.anchorMax, newWarningPos, (animSpeed * 5.25f) * Time.deltaTime);
 
+                float angle = Mathf.Clamp(Mathf.Lerp(angleIncrement * Time.deltaTime, max, 1f * Time.deltaTime), 90 * Time.deltaTime, Math.Abs(maxAngleRotation));
+
+                if (angle > 90 * Time.deltaTime)
+                {
+                    max -= angle;
+                }
+
+                restartRectTransform.localRotation *= Quaternion.AngleAxis(maxAngleRotation > 0 ? angle : -angle, Vector3.forward);
+
                 switch (textColor.a)
                 {
                     case 1f:
                         warningText.color = Color.Lerp(warningText.color, textColor, (animSpeed * 2) * Time.deltaTime);
+                        restartIcon.color = Color.Lerp(restartIcon.color, textColor, (animSpeed * 2) * Time.deltaTime);
                         break;
                     case 0f:
                         warningText.color = Color.Lerp(warningText.color, textColor, (animSpeed * 4) * Time.deltaTime);
+                        restartIcon.color = Color.Lerp(restartIcon.color, textColor, (animSpeed * 4) * Time.deltaTime);
                         break;
                 }
-                
 
-                if (modListTransform.anchorMin == newModListPos && warningTransform.anchorMax == newWarningPos && warningText.color == textColor)
+                if (CloseEnough(modListTransform.anchorMin, newModListPos) && CloseEnough(warningTransform.anchorMax, newWarningPos) && CloseEnough(warningText.color, textColor) && CloseEnough(restartIcon.color, textColor))
                 {
+                    modListTransform.anchorMin = newModListPos;
+                    warningTransform.anchorMax = newWarningPos;
+
+                    warningText.color = textColor;
+                    restartIcon.color = textColor;
+
                     animating = false;
                 }
 
                 yield return new WaitForEndOfFrame();
             }
+        }
+
+        private bool CloseEnough(Vector2 a, Vector2 b)
+        {
+            return Mathf.Abs(a.x - b.x) < 0.00001f && Mathf.Abs(a.y - b.y) < 0.00001f;
+        }
+
+        private bool CloseEnough(Color a, Color b)
+        {
+            return Mathf.Abs(a.r - b.r) < 0.0001f && Mathf.Abs(a.g - b.g) < 0.0001f && Mathf.Abs(a.b - b.b) < 0.0001f && Mathf.Abs(a.a - b.a) < 0.0001f;
         }
 
         private Vector2 SmoothStep(Vector2 a, Vector2 b, float t)
