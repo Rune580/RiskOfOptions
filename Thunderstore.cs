@@ -90,7 +90,7 @@ namespace RiskOfOptions
             List<ModSearchEntry> searchEntries = new List<ModSearchEntry>();
             foreach (var modSearchEntry in modStrings)
             {
-                string path = $"{GetIconsPath()}{modSearchEntry.modGuid.Replace(".", "_")}-Icon.png";
+                string path = $"{PathUtils.GetIconsPath()}{modSearchEntry.modGuid.Replace(".", "_")}-Icon.png";
                 if (!File.Exists(path) && !_modIcons.Contains(modSearchEntry))
                 {
                     searchEntries.Add(modSearchEntry);
@@ -274,7 +274,7 @@ namespace RiskOfOptions
 
                 using (WebClient client = new WebClient())
                 {
-                    string localPath = $"{GetIconsPath()}{icons[i].modGuid.Replace(".", "_")}-Icon.png";
+                    string localPath = $"{PathUtils.GetIconsPath()}{icons[i].modGuid.Replace(".", "_")}-Icon.png";
                     client.DownloadFile(new Uri(downloadLink), localPath);
 
                     ModIconInfo modIconInfo = new ModIconInfo()
@@ -292,28 +292,7 @@ namespace RiskOfOptions
             return icons;
         }
 
-        private static string GetIconsPath()
-        {
-            string path = GetMyGamesPath();
-
-            if (!Directory.Exists($"{path}\\icons"))
-                Directory.CreateDirectory($"{path}\\icons");
-
-            return $"{path}icons\\";
-        }
-
-        private static string GetMyGamesPath()
-        {
-            string documents = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
-
-            if (!Directory.Exists($"{documents}\\My Games"))
-                Directory.CreateDirectory($"{documents}\\My Games");
-
-            if (!Directory.Exists($"{documents}\\My Games\\Risk Of Options"))
-                Directory.CreateDirectory($"{documents}\\My Games\\Risk Of Options");
-
-            return $"{documents}\\My Games\\Risk Of Options\\";
-        }
+        
 
         private static JSONNode FetchModList()
         {
@@ -342,7 +321,7 @@ namespace RiskOfOptions
 
                     Debug.Log("Finished downloading the package list from the Thunderstore API.");
 
-                    using (StreamWriter sw = new StreamWriter($"{GetMyGamesPath()}thunderstore-packagelist.json", false))
+                    using (StreamWriter sw = new StreamWriter($"{PathUtils.GetMyGamesPath()}thunderstore-packagelist.json", false))
                     {
                         sw.Write(jsonText);
                     }
@@ -356,12 +335,12 @@ namespace RiskOfOptions
             {
                 Debug.Log("Thunderstore API couldn't be accessed! Attempting to use cached package list.");
 
-                if (!File.Exists($"{GetMyGamesPath()}thunderstore-packagelist.json"))
+                if (!File.Exists($"{PathUtils.GetMyGamesPath()}thunderstore-packagelist.json"))
                 {
                     Debug.Log("Failed to load cached package list and Thunderstore API is inaccessible. All non-cached auto generated icons will be replaced with placeholders.");
                     return json;
                 }
-                using (StreamReader reader = new StreamReader($"{GetMyGamesPath()}thunderstore-packagelist.json"))
+                using (StreamReader reader = new StreamReader($"{PathUtils.GetMyGamesPath()}thunderstore-packagelist.json"))
                 {
                     json = JSON.Parse(reader.ReadToEnd());
                 }

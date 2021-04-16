@@ -1,12 +1,6 @@
-﻿using R2API;
-using RoR2.UI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace RiskOfOptions
+namespace RiskOfOptions.OptionComponents
 {
     class GenericDescriptionController : MonoBehaviour
     {

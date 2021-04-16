@@ -1,23 +1,20 @@
-﻿using R2API;
-using R2API.Utils;
-using RoR2.UI;
-using RoR2.UI.SkinControllers;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using LeTai.Asset.TranslucentImage;
+using R2API;
+using R2API.Utils;
+using RiskOfOptions.Containers;
+using RiskOfOptions.Options;
 using RoR2;
+using RoR2.UI;
+using RoR2.UI.SkinControllers;
 using UnityEngine;
-using UnityEngine.Serialization;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
-using RiskOfOptions.OptionComponents;
-using UnityEngine.Events;
-using UnityEngine.Networking;
-
-namespace RiskOfOptions
+namespace RiskOfOptions.OptionComponents
 {
     public class ModOptionPanelController : MonoBehaviour
     {
@@ -36,7 +33,7 @@ namespace RiskOfOptions
 
         private GameObject _checkBoxPrefab;
         private GameObject _sliderPrefab;
-        private GameObject _keybindPrefab;
+        private GameObject _keyBindPrefab;
 
         private OverrideController[] _controllers;
 
@@ -44,7 +41,7 @@ namespace RiskOfOptions
 
         public float degreesPerSecond = 2f;
 
-        private bool warningShown = false;
+        private bool _warningShown = false;
 
         private IEnumerator _animateRoutine;
 
@@ -81,20 +78,20 @@ namespace RiskOfOptions
 
             _checkBoxPrefab = GameObject.Instantiate(Prefabs.ModButtonPrefab);
             _sliderPrefab = GameObject.Instantiate(verticalLayout.transform.Find("SettingsEntryButton, Slider (Master Volume)").gameObject);
-            _keybindPrefab = GameObject.Instantiate(subPanelArea.Find("SettingsSubPanel, Controls (M&KB)").Find("Scroll View").Find("Viewport").Find("VerticalLayout").Find("SettingsEntryButton, Binding (Jump)").gameObject);
+            _keyBindPrefab = GameObject.Instantiate(subPanelArea.Find("SettingsSubPanel, Controls (M&KB)").Find("Scroll View").Find("Viewport").Find("VerticalLayout").Find("SettingsEntryButton, Binding (Jump)").gameObject);
 
             #region KeybindPrefabCleaning
 
-            GameObject.DestroyImmediate(_keybindPrefab.GetComponentInChildren<InputBindingControl>());
-            GameObject.DestroyImmediate(_keybindPrefab.GetComponentInChildren<InputBindingDisplayController>());
+            GameObject.DestroyImmediate(_keyBindPrefab.GetComponentInChildren<InputBindingControl>());
+            GameObject.DestroyImmediate(_keyBindPrefab.GetComponentInChildren<InputBindingDisplayController>());
 
-            _keybindPrefab.AddComponent<KeybindController>();
+            _keyBindPrefab.AddComponent<KeybindController>();
 
             #endregion
 
             _checkBoxPrefab.SetActive(false);
             _sliderPrefab.SetActive(false);
-            _keybindPrefab.SetActive(false);
+            _keyBindPrefab.SetActive(false);
 
             GameObject.DestroyImmediate(Prefabs.ModButtonPrefab.GetComponentInChildren<CarouselController>());
             GameObject.DestroyImmediate(Prefabs.ModButtonPrefab.GetComponentInChildren<ButtonSkinController>());
@@ -648,80 +645,17 @@ namespace RiskOfOptions
             {
                 var option = category.GetModOptionsCached()[i];
 
-                GameObject button;
-
-                BaseSettingsControl.SettingSource roo = (BaseSettingsControl.SettingSource) 2;
 
                 if (!option.Visibility)
                     continue;
 
-                switch (option.optionType)
+                GameObject button = option switch
                 {
-                    case RiskOfOption.OptionType.Bool:
-                        button = GameObject.Instantiate(_checkBoxPrefab, verticalLayoutTransform);
-
-                        var controller = button.GetComponentInChildren<CarouselController>();
-
-                        controller.settingName = option.ConsoleToken;
-                        controller.nameToken = option.NameToken;
-
-                        controller.settingSource = roo;
-
-                        if (option.OnValueChangedBool != null)
-                        {
-                            button.AddComponent<BoolListener>().AddListener(option.OnValueChangedBool);
-                        }
-                            
-
-                        button.name = $"Mod Option CheckBox, {option.Name}";
-                        break;
-                    case RiskOfOption.OptionType.Slider:
-                        button = GameObject.Instantiate(_sliderPrefab, verticalLayoutTransform);
-
-                        var slider = button.GetComponentInChildren<SettingsSlider>();
-
-                        slider.settingName = option.ConsoleToken;
-                        slider.nameToken = option.NameToken;
-
-                        slider.settingSource = roo;
-
-                        if (option.OnValueChangedFloat != null)
-                            slider.slider.onValueChanged.AddListener(option.OnValueChangedFloat);
-
-                        button.name = $"Mod Option Slider, {option.Name}";
-                        break;
-                    case RiskOfOption.OptionType.Keybinding:
-                        button = GameObject.Instantiate(_keybindPrefab, verticalLayoutTransform);
-
-                        var keybindController = button.GetComponentInChildren<KeybindController>();
-
-                        keybindController.settingName = option.ConsoleToken;
-                        keybindController.nameToken = option.NameToken;
-
-                        keybindController.settingSource = roo;
-
-                        if (option.OnValueChangedKeyCode != null)
-                            keybindController.onValueChangedKeyCode = option.OnValueChangedKeyCode;
-
-                        button.transform.Find("ButtonText").GetComponent<HGTextMeshProUGUI>().SetText(option.Name);
-
-                        button.name = $"Mod Option KeyBind, {option.Name}";
-
-                        foreach (var hgButton in button.GetComponentsInChildren<HGButton>())
-                        {
-                            hgButton.onClick.RemoveAllListeners();
-
-                            var kbController = keybindController;
-                            hgButton.onClick.AddListener(new UnityAction(delegate()
-                            {
-                                kbController.StartListening();
-                            }));
-                        }
-
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                    CheckBoxOption checkBoxOption => option.CreateOptionGameObject(option, _checkBoxPrefab, verticalLayoutTransform),
+                    SliderOption sliderOption => option.CreateOptionGameObject(option, _sliderPrefab, verticalLayoutTransform),
+                    KeyBindOption keyBindOption => option.CreateOptionGameObject(option, _keyBindPrefab, verticalLayoutTransform),
+                    _ => throw new ArgumentOutOfRangeException()
+                };
 
                 if (option.OptionOverride != null)
                 {
@@ -750,16 +684,16 @@ namespace RiskOfOptions
         {
             if (BaseSettingsControlOverride._restartOptions.Count > 0)
             {
-                if (warningShown)
+                if (_warningShown)
                     return;
 
                 ShowRestartWarning();
-                warningShown = true;
+                _warningShown = true;
             }
             else
             {
                 HideRestartWarning();
-                warningShown = false;
+                _warningShown = false;
             }
         }
 

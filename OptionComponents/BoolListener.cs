@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using RoR2.UI;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace RiskOfOptions
+namespace RiskOfOptions.OptionComponents
 {
     public class BoolListener : MonoBehaviour
     {

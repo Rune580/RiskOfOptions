@@ -5,6 +5,8 @@ using System.Reflection;
 using BepInEx;
 using R2API;
 using R2API.Utils;
+using RiskOfOptions.Containers;
+using RiskOfOptions.Options;
 using RoR2.ConVar;
 using RoR2.UI;
 using RoR2.UI.SkinControllers;

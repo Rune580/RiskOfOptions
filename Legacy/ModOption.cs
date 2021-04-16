@@ -1,16 +1,14 @@
-﻿using BepInEx;
-using RoR2.ConVar;
+﻿using System;
 using System.Reflection;
+using RoR2.ConVar;
 using UnityEngine;
-using System;
-
 using static RiskOfOptions.ExtensionMethods;
 // ReSharper disable InconsistentNaming
 // ReSharper disable UnusedMember.Global
 // ReSharper disable IdentifierTypo
 #pragma warning disable 660,661
 
-namespace RiskOfOptions
+namespace RiskOfOptions.Legacy
 {
     [Obsolete("ModOption is now obsolete. please use addOption(...)")]
     public class ModOption

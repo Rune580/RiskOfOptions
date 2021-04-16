@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using RiskOfOptions.Options;
 using UnityEngine;
 using Object = System.Object;
 
-namespace RiskOfOptions
+namespace RiskOfOptions.Containers
 {
     /// <summary>
     /// Store options from a specific mod in one container.
@@ -26,14 +26,7 @@ namespace RiskOfOptions
 
         public string DescriptionToken { get; internal set; }
 
-
-        internal List<OptionBase> Options;
-
-        private int _lastAmount = 0;
-
-        private List<RiskOfOption> _modOptions;
-
-        private List<OptionCategory> _categories;
+        private readonly OptionStorage _options;
 
         public OptionContainer(string modGuid, string modName)
         {
@@ -43,7 +36,7 @@ namespace RiskOfOptions
 
             this.Title = this.ModName;
 
-            Options = new List<OptionBase>();
+            _options = new OptionStorage();
         }
         public string GetDescriptionAsString()
         {
@@ -67,45 +60,31 @@ namespace RiskOfOptions
 
         internal List<RiskOfOption> GetModOptionsCached()
         {
-            if (_modOptions != null && Options.Count == _lastAmount)
-                return _modOptions;
-
-            _modOptions = Options.Where(a => a.GetType() == typeof(RiskOfOption)).Cast<RiskOfOption>().ToList();
-
-            _lastAmount = Options.Count;
-
-            return _modOptions;
+            return _options.GetModOptionsCached();
         }
 
         internal List<OptionCategory> GetCategoriesCached()
         {
-            if (_categories != null && Options.Count == _lastAmount)
-                return _categories;
-
-            _categories = Options.Where(a => a.GetType() == typeof(OptionCategory)).Cast<OptionCategory>().ToList();
-
-            _lastAmount = Options.Count;
-
-            return _categories;
+            return _options.GetCategoriesCached();
         }
 
         internal void Add(ref OptionBase option)
         {
-            Options.Add(option);
+            _options.Add(ref option);
         }
 
         internal void Add(ref RiskOfOption option)
         {
-            Options.Add(option);
+            _options.Add(ref option);
         }
         internal void Add(ref OptionCategory option)
         {
-            Options.Add(option);
+            _options.Add(ref option);
         }
 
         internal void Insert(ref OptionCategory option)
         {
-            Options.Insert(0, option);
+            _options.Insert(ref option);
         }
     }
 }

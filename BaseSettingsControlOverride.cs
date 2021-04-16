@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using On.RoR2.UI;
 using R2API.Utils;
+using RiskOfOptions.OptionComponents;
 using RoR2;
 
 using static RiskOfOptions.ExtensionMethods;
@@ -45,7 +46,7 @@ namespace RiskOfOptions
                 }
                 else
                 {
-                    _restartOptions.Add(tempOption.OptionToken, tempOption.GetValue());
+                    _restartOptions.Add(tempOption.OptionToken, tempOption.GetValueAsString());
                 }
             }
 
@@ -53,7 +54,7 @@ namespace RiskOfOptions
 
             Indexes indexes = ModSettingsManager.OptionContainers.GetIndexes(tempOption.ModGuid, tempOption.Name, tempOption.CategoryName);
 
-            ModSettingsManager.OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer].Value = newValue;
+            ModSettingsManager.OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer].SetValue(newValue);
 
             //Debug.Log($"{tempOption.Name} set to : {newValue}");
 

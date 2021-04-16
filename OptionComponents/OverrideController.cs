@@ -1,4 +1,5 @@
 ﻿using System;
+using RiskOfOptions.Interfaces;
 using RiskOfOptions.OptionOverrides;
 using RoR2.UI;
 using UnityEngine;
@@ -39,18 +40,20 @@ namespace RiskOfOptions.OptionComponents
 
             var overridingOption = ModSettingsManager.GetOption(overridingName, overridingCategoryName, modGuid);
 
-            if ((overridingOption.GetBool() && tempOption.OptionOverride.OverrideOnTrue) || (!overridingOption.GetBool() && !tempOption.OptionOverride.OverrideOnTrue))
+            if (!(overridingOption is IBoolProvider overrideBoolProvider))
+                return;
+
+            if ((overrideBoolProvider.Value && tempOption.OptionOverride.OverrideOnTrue) || (!overrideBoolProvider.Value && !tempOption.OptionOverride.OverrideOnTrue))
             {
                 foreach (var button in buttons)
                 {
                     button.interactable = false;
                     var listener = button.GetComponent<BoolListener>();
 
-                    if (listener != null)
-                    {
-                        listener.isOverriden = true;
-                        listener.Invoke(((CheckBoxOverride)tempOption.OptionOverride).ValueToReturnWhenOverriden);
-                    }
+                    if (listener == null)
+                        continue;
+                    listener.isOverriden = true;
+                    listener.Invoke(((CheckBoxOverride)tempOption.OptionOverride).ValueToReturnWhenOverriden);
                 }
 
                 foreach (var slider in sliders)
@@ -69,11 +72,14 @@ namespace RiskOfOptions.OptionComponents
 
                     var listener = button.GetComponent<BoolListener>();
 
-                    if (listener != null)
-                    {
-                        listener.Invoke(tempOption.GetBool());
-                        listener.isOverriden = false;
-                    }
+                    if (listener == null)
+                        continue;
+
+                    if ((!(tempOption is IBoolProvider tempBoolProvider)))
+                        continue;
+
+                    listener.Invoke(tempBoolProvider.Value);
+                    listener.isOverriden = false;
                 }
 
                 foreach (var slider in sliders)

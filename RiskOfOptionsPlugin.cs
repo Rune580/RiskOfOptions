@@ -29,9 +29,9 @@ namespace RiskOfOptions
 
             //ModSettingsManager.setPanelTitle("Example Title Bitch");
 
-            ModSettingsManager.setPanelDescription("Example Description");
+            ModSettingsManager.SetPanelDescription("Example Description");
 
-            //ModSettingsManager.CreateCategory("Audio");
+            ModSettingsManager.CreateCategory("Audio");
 
             ModSettingsManager.CreateCategory("Controls");
 
@@ -63,12 +63,12 @@ namespace RiskOfOptions
             //    ValueToReturnWhenOverriden = 0f
             //};
 
-
+            Debug.Log(1);
             ModSettingsManager.AddCheckBox("Enable Test KeyBind", "This is a Description", false, "Controls");
-
+            Debug.Log(2);
             //ModSettingsManager.AddCheckBox("Test CheckBox", "fuck me dude", true, "Audio", checkBoxOverride);
 
-            //ModSettingsManager.AddSlider("Music Slider", "This is another Description", 50f, "Audio", musicOverride);
+            ModSettingsManager.AddSlider("Music Slider", "This is another Description", 50f, 10f, 69f, "Audio");
 
             ModSettingsManager.AddKeyBind("Test KeyBind", "This is yet another Description", UnityEngine.KeyCode.G, "Controls", false);
 
