@@ -19,7 +19,9 @@ namespace RiskOfOptions
 
         internal static string GetStoragePath()
         {
-            return "";
+            string path = GetMyGamesPath();
+
+            return $"{path}\\options.dat";
         }
 
         internal static string GetMyGamesPath()

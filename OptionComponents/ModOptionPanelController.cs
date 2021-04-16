@@ -906,6 +906,9 @@ namespace RiskOfOptions.OptionComponents
 
             initilized = false;
 
+            GameObject.DestroyImmediate(_checkBoxPrefab);
+            GameObject.DestroyImmediate(_sliderPrefab);
+            GameObject.DestroyImmediate(_keyBindPrefab);
             GameObject.DestroyImmediate(modListPanel);
             GameObject.DestroyImmediate(_modDescriptionPanel);
             GameObject.DestroyImmediate(_categoryHeader);
@@ -913,6 +916,8 @@ namespace RiskOfOptions.OptionComponents
             GameObject.DestroyImmediate(_optionDescriptionPanel);
             GameObject.DestroyImmediate(_categoryHeaderHighlight);
             GameObject.DestroyImmediate(modListHighlight);
+
+            OptionSerializer.Save(ModSettingsManager.OptionContainers.ToArray());
         }
 
         public void OnEnable()
