@@ -85,6 +85,11 @@ namespace RiskOfOptions.Options
             return Value.ToString(CultureInfo.InvariantCulture);
         }
 
+        public override string GetInternalValueAsString()
+        {
+            return _value.ToString(CultureInfo.InvariantCulture);
+        }
+
         public override void SetValue(string newValue)
         {
             Value = float.Parse(newValue);

@@ -29,13 +29,17 @@ namespace RiskOfOptions
 
             //ModSettingsManager.setPanelTitle("Example Title Bitch");
 
+            
+
             ModSettingsManager.SetPanelDescription("Example Description");
 
-            ModSettingsManager.CreateCategory("Audio");
+            ModSettingsManager.CreateCategory("Test Sliders");
 
-            ModSettingsManager.CreateCategory("Controls");
+            //ModSettingsManager.CreateCategory("Audio");
 
-            ModSettingsManager.CreateCategory("Enemies");
+            //ModSettingsManager.CreateCategory("Controls");
+
+            //ModSettingsManager.CreateCategory("Enemies");
 
             //ModSettingsManager.CreateCategory("Dick", "yeah");
 
@@ -63,23 +67,27 @@ namespace RiskOfOptions
             //    ValueToReturnWhenOverriden = 0f
             //};
 
-            Debug.Log(1);
-            ModSettingsManager.AddCheckBox("Enable Test KeyBind", "This is a Description", false, "Controls");
-            Debug.Log(2);
+            //ModSettingsManager.AddCheckBox("Enable Test KeyBind", "This is a Description", false, "Controls");
             //ModSettingsManager.AddCheckBox("Test CheckBox", "fuck me dude", true, "Audio", checkBoxOverride);
 
-            ModSettingsManager.AddSlider("Music Slider", "This is another Description", 50f, 10f, 69f, "Audio");
+            //ModSettingsManager.AddSlider("Music Slider", "This is another Description", 50f, 10f, 69f, "Audio");
 
-            ModSettingsManager.AddKeyBind("Test KeyBind", "This is yet another Description", UnityEngine.KeyCode.G, "Controls", false);
+            ModSettingsManager.AddStepSlider("FOV Slider Test", "FOV Test Slider Description", 90, 50, 110, 1f, "Test Sliders");
 
-            ModSettingsManager.AddListener(new UnityAction<bool>(delegate(bool lig)
-            {
-                ModSettingsManager.SetVisibility("Test KeyBind", "Controls", lig);
-            }), "Enable Test KeyBind", "Controls");
+            ModSettingsManager.AddStepSlider("Other Test Step Slider", "Test slider from 1 to 2 with increments of 0.05f", 1.5f, 1, 2, 0.05f, "Test Sliders");
+
+            ModSettingsManager.AddStepSlider("More Visible Step Slider", "Test slider from 0 to 200 with increments of 20", 60, 0, 200, 20, "Test Sliders");
+
+            //ModSettingsManager.AddKeyBind("Test KeyBind", "This is yet another Description", UnityEngine.KeyCode.G, "Controls", false);
+
+            //ModSettingsManager.AddListener(new UnityAction<bool>(delegate(bool lig)
+            //{
+            //    ModSettingsManager.SetVisibility("Test KeyBind", "Controls", lig);
+            //}), "Enable Test KeyBind", "Controls");
 
 
-            ModSettingsManager.AddCheckBox("Enable Enemy stuff", "This is a Description", false, "Enemies", true);
-            ModSettingsManager.AddCheckBox("Do something that doesn't need a restart", "This is a Description", false, "Enemies");
+            //ModSettingsManager.AddCheckBox("Enable Enemy stuff", "This is a Description", false, "Enemies", true);
+            //ModSettingsManager.AddCheckBox("Do something that doesn't need a restart", "This is a Description", false, "Enemies");
 
 
             //TMP_Asset asset = ScriptableObject.CreateInstance<TMP_Asset>();

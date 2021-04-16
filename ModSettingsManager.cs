@@ -91,11 +91,15 @@ namespace RiskOfOptions
 
             foreach (var option in OptionContainers.SelectMany(container => container.GetModOptionsCached()))
             {
-                option.ConVar.SetString(option.ConVar.defaultValue);
+                option.ConVar.SetString(option.GetInternalValueAsString());
+
 
                 self.InvokeMethod("RegisterConVarInternal", new object[] { option.ConVar });
-                Debug.Log($"{option.ConVar.name} Option registered to console.");
+
+                //Debug.Log($"{option.ConVar.name} Option registered to console.");
             }
+
+            Debug.Log($"Finished registering to console!");
 
             _initilized = true;
         }
@@ -115,7 +119,7 @@ namespace RiskOfOptions
             Listeners.Add(unityAction);
         }
 
-        public static void AddListener(UnityEngine.Events.UnityAction<bool> unityAction, string name, string categoryName = "Main", bool restartRequired = false)
+        public static void AddListener(UnityEngine.Events.UnityAction<bool> unityAction, string name, string categoryName = "Main")
         {
             ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
             Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
@@ -124,7 +128,7 @@ namespace RiskOfOptions
                 boolProvider.OnValueChangedBool = unityAction;
         }
 
-        public static void AddListener(UnityEngine.Events.UnityAction<float> unityAction, string name, string categoryName = "Main", bool restartRequired = false)
+        public static void AddListener(UnityEngine.Events.UnityAction<float> unityAction, string name, string categoryName = "Main")
         {
             ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
             Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
@@ -133,7 +137,7 @@ namespace RiskOfOptions
                 floatProvider.OnValueChangedFloat = unityAction;
         }
 
-        public static void AddListener(UnityEngine.Events.UnityAction<KeyCode> unityAction, string name, string categoryName = "Main", bool restartRequired = false)
+        public static void AddListener(UnityEngine.Events.UnityAction<KeyCode> unityAction, string name, string categoryName = "Main")
         {
             ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
             Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
@@ -203,7 +207,6 @@ namespace RiskOfOptions
 
         public static void RegisterOption(RiskOfOption option)
         {
-            Debug.Log("before convar");
             option.ConVar = option switch
             {
                 IBoolProvider boolProvider => new BoolConVar(option.ConsoleToken, RoR2.ConVarFlags.None, option.DefaultValue, option.GetDescriptionAsString()),
@@ -216,6 +219,13 @@ namespace RiskOfOptions
             {
                 CreateCategory(option.CategoryName, option.ModGuid, option.ModName);
             }
+
+            string loadedValue = OptionSerializer.Load(option.ConsoleToken);
+
+
+            if (!string.IsNullOrEmpty(loadedValue))
+                option.SetValue(loadedValue);
+
 
             OptionContainers.Add(ref option);
         }
@@ -290,6 +300,42 @@ namespace RiskOfOptions
 
         #endregion
 
+        #region StepSlider with string descriptions
+
+        public static void AddStepSlider(string name, string description, float defaultValue, float min, float max, float increment, string categoryName, SliderOverride sliderOverride, bool restartRequired = false, bool visibility = true)
+        {
+            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
+
+            AddStepSlider(modInfo, name, new object[] { description }, defaultValue, min, max, increment, categoryName, sliderOverride, restartRequired, visibility);
+        }
+
+        public static void AddStepSlider(string name, string description, float defaultValue, float min, float max, float increment, string categoryName, bool restartRequired = false, bool visibility = true)
+        {
+            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
+
+            AddStepSlider(modInfo, name, new object[] { description }, defaultValue, min, max, increment, categoryName, null, restartRequired, visibility);
+        }
+
+        #endregion
+
+        #region StepSlider with description array
+
+        public static void AddStepSlider(string name, object[] description, float defaultValue, float min, float max, float increment, string categoryName, SliderOverride sliderOverride, bool restartRequired = false, bool visibility = true)
+        {
+            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
+
+            AddStepSlider(modInfo, name, description, defaultValue, min, max, increment, categoryName, sliderOverride, restartRequired, visibility);
+        }
+
+        public static void AddStepSlider(string name, object[] description, float defaultValue, float min, float max, float increment, string categoryName, bool restartRequired = false, bool visibility = true)
+        {
+            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
+
+            AddStepSlider(modInfo, name, description, defaultValue, min, max, increment, categoryName, null, restartRequired, visibility);
+        }
+
+        #endregion
+
 
         public static void AddKeyBind(string name, string description, KeyCode defaultValue, string categoryName, bool visibility = true)
         {
@@ -329,7 +375,7 @@ namespace RiskOfOptions
             if (_initilized)
                 throw new Exception($"AddStepSlider {name}, under Category {categoryName}, was called after initialization of RiskOfOptions. \n This usually means you are calling this after Awake()");
 
-            //RegisterOption(new StepSliderOption(modInfo.ModGuid, modInfo.ModName));
+            RegisterOption(new StepSliderOption(modInfo.ModGuid, modInfo.ModName, name, description, defaultValue.ToString(CultureInfo.InvariantCulture), min, max, increment, categoryName, sliderOverride, visibility, restartRequired));
         }
 
         private static void AddKeyBind(ModInfo modInfo, string name, object[] description, KeyCode defaultValue, string categoryName, bool visibility = true)

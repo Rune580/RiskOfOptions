@@ -10,7 +10,7 @@ using static RiskOfOptions.ExtensionMethods;
 
 namespace RiskOfOptions.Legacy
 {
-    [Obsolete("ModOption is now obsolete. please use addOption(...)")]
+    [Obsolete("ModOption is now obsolete. ModSettingsManager has a few functions that replicate this behaviour. \n try doing `ModSettingsManager.Add` and see what comes up")]
     public class ModOption
     {
         public OptionType optionType;

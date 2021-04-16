@@ -79,6 +79,11 @@ namespace RiskOfOptions.Options
             return $"{(Value ? "1" : "0")}";
         }
 
+        public override string GetInternalValueAsString()
+        {
+            return $"{(_value ? "1" : "0")}";
+        }
+
         public override void SetValue(string newValue)
         {
             Value = (int.Parse(newValue) == 1);

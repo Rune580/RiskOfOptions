@@ -15,7 +15,6 @@ namespace RiskOfOptions.Options
         public UnityAction<KeyCode> OnValueChangedKeyCode { get; set; }
 
         private KeyCode _value;
-        
 
         internal KeyBindOption(string modGuid, string modName, string name, object[] description, string defaultValue, string categoryName, OptionOverride optionOverride, bool visibility, bool restartRequired)
             : base(modGuid, modName, name, description, defaultValue, categoryName, optionOverride, visibility, restartRequired)
@@ -68,6 +67,11 @@ namespace RiskOfOptions.Options
         public override string GetValueAsString()
         {
             return $"{(int)Value}";
+        }
+
+        public override string GetInternalValueAsString()
+        {
+            return $"{(int)_value}";
         }
 
         public override void SetValue(string newValue)

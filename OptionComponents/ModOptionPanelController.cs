@@ -652,6 +652,7 @@ namespace RiskOfOptions.OptionComponents
                 GameObject button = option switch
                 {
                     CheckBoxOption checkBoxOption => option.CreateOptionGameObject(option, _checkBoxPrefab, verticalLayoutTransform),
+                    StepSliderOption stepSliderOption => option.CreateOptionGameObject(option, _sliderPrefab, verticalLayoutTransform),
                     SliderOption sliderOption => option.CreateOptionGameObject(option, _sliderPrefab, verticalLayoutTransform),
                     KeyBindOption keyBindOption => option.CreateOptionGameObject(option, _keyBindPrefab, verticalLayoutTransform),
                     _ => throw new ArgumentOutOfRangeException()

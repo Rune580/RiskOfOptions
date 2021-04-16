@@ -22,7 +22,7 @@ namespace RiskOfOptions.OptionComponents
 
         protected new void Awake()
         {
-            base.settingSource = (BaseSettingsControl.SettingSource) 2;
+            settingSource = (BaseSettingsControl.SettingSource) 2;
 
             if (base.settingName == "")
                 return;
@@ -76,7 +76,7 @@ namespace RiskOfOptions.OptionComponents
                 return;
             }
 
-            base.SubmitSetting($"{(int)Event.current.keyCode}");
+            SubmitSetting($"{(int)Event.current.keyCode}");
 
             StopListening();
 
@@ -85,7 +85,7 @@ namespace RiskOfOptions.OptionComponents
 
         private void SetKeyBind(KeyCode keyCode)
         {
-            base.SubmitSetting($"{(int)keyCode}");
+            SubmitSetting($"{(int)keyCode}");
             onValueChangedKeyCode?.Invoke(keyCode);
 
             StopListening();
