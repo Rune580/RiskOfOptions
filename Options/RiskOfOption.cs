@@ -187,5 +187,20 @@ namespace RiskOfOptions.Options
         {
             throw new NotImplementedException();
         }
+
+        public virtual bool GetBool()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual float GetFloat()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual KeyCode GetKeyCode()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

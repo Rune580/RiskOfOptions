@@ -161,8 +161,6 @@ namespace RiskOfOptions
             return OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer];
         }
 
-        
-
 
         public static void SetPanelDescription(string description)
         {

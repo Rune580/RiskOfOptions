@@ -86,6 +86,8 @@ namespace RiskOfOptions
                 _stringBuilders.Add(optionData.ModGuid, new StringBuilder());
             }
 
+            int i = 0;
+
             foreach (var modGuid in _stringBuilders.Keys)
             {
                 _stringBuilders[modGuid].AppendLine($"[{modGuid}]");
@@ -96,9 +98,18 @@ namespace RiskOfOptions
                     _stringBuilders[modGuid].AppendLine($"{optionData.ConsoleToken} : {optionData.Value}");
                 }
 
-                _stringBuilders[modGuid].AppendLine("}");
+                _stringBuilders[modGuid].Append("}");
 
-                sb.AppendLine(_stringBuilders[modGuid].ToString());
+                if (i == _stringBuilders.Count - 1)
+                {
+                    sb.Append(_stringBuilders[modGuid].ToString());
+                }
+                else
+                {
+                    sb.AppendLine(_stringBuilders[modGuid].ToString());
+                }
+
+                i++;
             }
 
             _stringBuilders.Clear();

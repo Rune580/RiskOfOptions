@@ -94,5 +94,10 @@ namespace RiskOfOptions.Options
         {
             Value = float.Parse(newValue);
         }
+
+        public override float GetFloat()
+        {
+            return Value;
+        }
     }
 }

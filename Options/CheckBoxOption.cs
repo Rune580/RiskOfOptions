@@ -88,5 +88,10 @@ namespace RiskOfOptions.Options
         {
             Value = (int.Parse(newValue) == 1);
         }
+
+        public override bool GetBool()
+        {
+            return Value;
+        }
     }
 }

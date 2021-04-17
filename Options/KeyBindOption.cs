@@ -78,5 +78,10 @@ namespace RiskOfOptions.Options
         {
             Value = (KeyCode)int.Parse(newValue);
         }
+
+        public override KeyCode GetKeyCode()
+        {
+            return Value;
+        }
     }
 }
