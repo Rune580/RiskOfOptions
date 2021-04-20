@@ -102,10 +102,6 @@ namespace RiskOfOptions.OptionComponents
 
             ModSettingsManager.doingKeybind = _listening;
 
-            //_keybindLabel.SetText(".");
-
-            //RoR2Application.unscaledTimeTimers.CreateTimer(1f, UpdateKeyBindTextDuringListen);
-
             _timeoutTimer = 5f;
 
             DisplayDialogBox();
@@ -214,28 +210,6 @@ namespace RiskOfOptions.OptionComponents
             onValueChangedKeyCode?.Invoke(keyCode);
 
             StopListening();
-        }
-
-        private void UpdateKeyBindTextDuringListen()
-        {
-            if (!_listening)
-                return;
-
-            if (_count > 3)
-                _count = 1;
-
-            string text = "";
-
-            for (int i = 0; i < _count; i++)
-            {
-                text += ".";
-            }
-
-            _count++;
-
-            _keybindLabel.SetText(text);
-
-            RoR2Application.unscaledTimeTimers.CreateTimer(1f, UpdateKeyBindTextDuringListen);
         }
 
         private void SetDisplay()

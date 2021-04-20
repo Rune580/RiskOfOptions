@@ -34,6 +34,7 @@ namespace RiskOfOptions.OptionComponents
         private GameObject _checkBoxPrefab;
         private GameObject _sliderPrefab;
         private GameObject _keyBindPrefab;
+        private GameObject _dropDownPrefab;
 
         private OverrideController[] _controllers;
 

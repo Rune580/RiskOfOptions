@@ -115,6 +115,9 @@ namespace RiskOfOptions
                         case KeyBindOption keyBindOption:
                             keyBindOption.OnValueChangedKeyCode?.Invoke(option.GetValue<KeyCode>());
                             break;
+                        case DropDownOption dropDownOption:
+                            dropDownOption.OnValueChangedChoice?.Invoke(option.GetValue<int>());
+                            break;
                     }
                 }
             }
@@ -228,6 +231,7 @@ namespace RiskOfOptions
                 IBoolProvider boolProvider => new BoolConVar(option.ConsoleToken, RoR2.ConVarFlags.None, option.DefaultValue, option.GetDescriptionAsString()),
                 IFloatProvider floatProvider => new FloatConVar(option.ConsoleToken, RoR2.ConVarFlags.None, option.DefaultValue, option.GetDescriptionAsString()),
                 IKeyCodeProvider keyCodeProvider => new KeyConVar(option.ConsoleToken, RoR2.ConVarFlags.None, option.DefaultValue, option.GetDescriptionAsString()),
+                IIntProvider intProvider => new IntConVar(option.ConsoleToken, RoR2.ConVarFlags.None, option.DefaultValue, option.GetDescriptionAsString()),
                 _ => throw new Exception($"Option {option.Name} somehow managed to not implement a provider interface! please contact me on github or discord.")
             };
 
@@ -247,10 +251,11 @@ namespace RiskOfOptions
 
         public static void AddOption(OptionConstructorBase option)
         {
-            if (_initilized)
-                throw new Exception($"An AddOption() was called with the option name: {option.Name}, after initialization of RiskOfOptions. \n This usually means you are calling this after Awake()");
-
             ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
+
+            if (_initilized)
+                throw new Exception($"An AddOption() was called with the option name: {option.Name} from the mod {modInfo.ModName}, after initialization of RiskOfOptions. \n This usually means you are calling this after Awake()");
+
 
             switch (option)
             {
@@ -274,165 +279,14 @@ namespace RiskOfOptions
                     RegisterOption(new KeyBindOption(modInfo.ModGuid, modInfo.ModName, keyBind.Name, keyBind.descriptionArray,
                         keyBind.value, keyBind.CategoryName, keyBind.IsVisible, keyBind.OnValueChanged, keyBind.InvokeValueChangedEventOnStart));
                     break;
+                case DropDown dropDown:
+                    RegisterOption(new DropDownOption(modInfo.ModGuid, modInfo.ModName, dropDown.Name,
+                        dropDown.descriptionArray, dropDown.value, dropDown.CategoryName, dropDown.Choices,
+                        dropDown.IsVisible, dropDown.RestartRequired, dropDown.OnValueChanged,
+                        dropDown.InvokeValueChangedEventOnStart));
+                    break;
             }
         }
-
-
-        //#region CheckBox with string descriptions
-        //public static void AddCheckBox(string name, string description, bool defaultValue, string categoryName, CheckBoxOverride checkBoxOverride, bool restartRequired = false, bool visibility = true)
-        //{
-        //    ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
-
-        //    AddCheckBox(modInfo, name, new object[] { description }, defaultValue, categoryName, checkBoxOverride, restartRequired, visibility);
-        //}
-
-        //public static void AddCheckBox(string name, string description, bool defaultValue, string categoryName, bool restartRequired = false, bool visibility = true)
-        //{
-        //    ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
-
-        //    AddCheckBox(modInfo, name, new object[] { description }, defaultValue, categoryName, null, restartRequired, visibility);
-        //}
-
-        //#endregion
-
-        //#region CheckBox with description array
-        //public static void AddCheckBox(string name, object[] description, bool defaultValue, string categoryName, CheckBoxOverride checkBoxOverride, bool restartRequired = false, bool visibility = true)
-        //{
-        //    ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
-
-        //    AddCheckBox(modInfo, name, description, defaultValue, categoryName, checkBoxOverride, restartRequired, visibility);
-        //}
-
-        //public static void AddCheckBox(string name, object[] description, bool defaultValue, string categoryName, bool restartRequired = false, bool visibility = true)
-        //{
-        //    ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
-
-        //    AddCheckBox(modInfo, name, description, defaultValue, categoryName, null, restartRequired, visibility);
-        //}
-
-        //#endregion
-
-        //#region Slider with string descriptions
-
-        //public static void AddSlider(string name, string description, float defaultValue, float min, float max, string categoryName, SliderOverride sliderOverride, bool restartRequired = false, bool visibility = true)
-        //{
-        //    ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
-
-        //    AddSlider(modInfo, name, new object[] { description }, defaultValue, min, max, categoryName, sliderOverride, restartRequired, visibility);
-        //}
-
-        //public static void AddSlider(string name, string description, float defaultValue, float min, float max, string categoryName, bool restartRequired = false, bool visibility = true)
-        //{
-        //    ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
-
-        //    AddSlider(modInfo, name, new object[] { description }, defaultValue, min, max, categoryName, null, restartRequired, visibility);
-        //}
-
-        //#endregion
-
-        //#region Slider with description array
-
-        //public static void AddSlider(string name, object[] description, float defaultValue, float min, float max, string categoryName, SliderOverride sliderOverride, bool restartRequired = false, bool visibility = true)
-        //{
-        //    ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
-
-        //    AddSlider(modInfo, name, description , defaultValue, min, max, categoryName, sliderOverride, restartRequired, visibility);
-        //}
-
-        //public static void AddSlider(string name, object[] description, float defaultValue, float min, float max, string categoryName, bool restartRequired = false, bool visibility = true)
-        //{
-        //    ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
-
-        //    AddSlider(modInfo, name, description, defaultValue, min, max, categoryName, null, restartRequired, visibility);
-        //}
-
-        //#endregion
-
-        //#region StepSlider with string descriptions
-
-        //public static void AddStepSlider(string name, string description, float defaultValue, float min, float max, float increment, string categoryName, SliderOverride sliderOverride, bool restartRequired = false, bool visibility = true)
-        //{
-        //    ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
-
-        //    AddStepSlider(modInfo, name, new object[] { description }, defaultValue, min, max, increment, categoryName, sliderOverride, restartRequired, visibility);
-        //}
-
-        //public static void AddStepSlider(string name, string description, float defaultValue, float min, float max, float increment, string categoryName, bool restartRequired = false, bool visibility = true)
-        //{
-        //    ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
-
-        //    AddStepSlider(modInfo, name, new object[] { description }, defaultValue, min, max, increment, categoryName, null, restartRequired, visibility);
-        //}
-
-        //#endregion
-
-        //#region StepSlider with description array
-
-        //public static void AddStepSlider(string name, object[] description, float defaultValue, float min, float max, float increment, string categoryName, SliderOverride sliderOverride, bool restartRequired = false, bool visibility = true)
-        //{
-        //    ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
-
-        //    AddStepSlider(modInfo, name, description, defaultValue, min, max, increment, categoryName, sliderOverride, restartRequired, visibility);
-        //}
-
-        //public static void AddStepSlider(string name, object[] description, float defaultValue, float min, float max, float increment, string categoryName, bool restartRequired = false, bool visibility = true)
-        //{
-        //    ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
-
-        //    AddStepSlider(modInfo, name, description, defaultValue, min, max, increment, categoryName, null, restartRequired, visibility);
-        //}
-
-        //#endregion
-
-
-        //public static void AddKeyBind(string name, string description, KeyCode defaultValue, string categoryName, bool visibility = true)
-        //{
-        //    ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
-
-        //    AddKeyBind(modInfo, name, new object[] { description }, defaultValue, categoryName, visibility);
-        //}
-
-        //public static void AddKeyBind(string name, object[] description, KeyCode defaultValue, string categoryName, bool visibility = true)
-        //{
-        //    ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
-
-        //    AddKeyBind(modInfo, name, description, defaultValue, categoryName, visibility);
-        //}
-
-
-        //private static void AddCheckBox(ModInfo modInfo, string name, object[] description, bool defaultValue,
-        //    string categoryName, CheckBoxOverride checkBoxOverride, bool restartRequired, bool visibility)
-        //{
-        //    if (_initilized)
-        //        throw new Exception($"AddCheckBox {name}, under Category {categoryName}, was called after initialization of RiskOfOptions. \n This usually means you are calling this after Awake()");
-        //    RegisterOption(new CheckBoxOption(modInfo.ModGuid, modInfo.ModName, name, description, $"{(defaultValue ? "1" : "0")}", categoryName, checkBoxOverride, visibility, restartRequired));
-        //}
-
-        //private static void AddSlider(ModInfo modInfo, string name, object[] description, float defaultValue,
-        //    float min, float max, string categoryName, SliderOverride sliderOverride, bool restartRequired = false, bool visibility = true)
-        //{
-        //    if (_initilized)
-        //        throw new Exception($"AddSlider {name}, under Category {categoryName}, was called after initialization of RiskOfOptions. \n This usually means you are calling this after Awake()");
-
-        //    RegisterOption(new SliderOption(modInfo.ModGuid, modInfo.ModName, name, description, defaultValue.ToString(CultureInfo.InvariantCulture), min, max, categoryName, sliderOverride, visibility));
-        //}
-
-        //private static void AddStepSlider(ModInfo modInfo, string name, object[] description, float defaultValue,
-        //    float min, float max, float increment, string categoryName, SliderOverride sliderOverride, bool restartRequired = false, bool visibility = true)
-        //{
-        //    if (_initilized)
-        //        throw new Exception($"AddStepSlider {name}, under Category {categoryName}, was called after initialization of RiskOfOptions. \n This usually means you are calling this after Awake()");
-
-        //    RegisterOption(new StepSliderOption(modInfo.ModGuid, modInfo.ModName, name, description, defaultValue.ToString(CultureInfo.InvariantCulture), min, max, increment, categoryName, sliderOverride, visibility));
-        //}
-
-        //private static void AddKeyBind(ModInfo modInfo, string name, object[] description, KeyCode defaultValue, string categoryName, bool visibility = true)
-        //{
-        //    if (_initilized)
-        //        throw new Exception($"AddKeyBind {name}, under Category {categoryName}, was called after initialization of RiskOfOptions. \n This usually means you are calling this after Awake()");
-
-        //    RegisterOption(new KeyBindOption(modInfo.ModGuid, modInfo.ModName, name, description, $"{(int)defaultValue}", categoryName, visibility));
-        //}
 
         public static void CreateCategory(string name)
         {
