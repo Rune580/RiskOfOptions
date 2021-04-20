@@ -29,7 +29,7 @@ namespace RiskOfOptions
 
             //ModSettingsManager.setPanelTitle("Example Title Bitch");
 
-            
+
 
             ModSettingsManager.SetPanelDescription("Example Description");
 

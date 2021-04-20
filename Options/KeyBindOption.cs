@@ -79,9 +79,14 @@ namespace RiskOfOptions.Options
             Value = (KeyCode)int.Parse(newValue);
         }
 
-        public override KeyCode GetKeyCode()
+        public override T GetValue<T>()
         {
-            return Value;
+            if (typeof(T) != typeof(KeyCode))
+            {
+                throw new Exception($"{Name} can only return a KeyCode! {typeof(T)} is not a valid return type!");
+            }
+
+            return (T)Convert.ChangeType(Value, typeof(T));
         }
     }
 }

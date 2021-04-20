@@ -89,9 +89,14 @@ namespace RiskOfOptions.Options
             Value = (int.Parse(newValue) == 1);
         }
 
-        public override bool GetBool()
+        public override T GetValue<T>()
         {
-            return Value;
+            if (typeof(T) != typeof(bool))
+            {
+                throw new Exception($"{Name} can only return a bool! {typeof(T)} is not a valid return type!");
+            }
+
+            return (T) Convert.ChangeType(Value, typeof(T));
         }
     }
 }

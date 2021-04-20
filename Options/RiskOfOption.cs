@@ -23,11 +23,8 @@ namespace RiskOfOptions.Options
 
         public BaseConVar ConVar;
 
-        //internal string Value;
-
         internal const BaseSettingsControl.SettingSource RooSettingSource = (BaseSettingsControl.SettingSource)2;
 
-        //internal bool isOverride = false;
 
 
         internal RiskOfOption(string modGuid, string modName, string name, object[] description, string defaultValue, string categoryName, OptionOverride optionOverride, bool visibility, bool restartRequired)
@@ -82,81 +79,6 @@ namespace RiskOfOptions.Options
             return temp;
         }
 
-        //public bool GetBool()
-        //{
-        //    if (optionType != OptionType.Bool)
-        //    {
-        //        throw new Exception($"Option {Name} is not a Bool!");
-        //    }
-
-        //    if (OptionOverride != null)
-        //    {
-        //        Indexes indexes = ModSettingsManager.OptionContainers.GetIndexes(ModGuid, OptionOverride.Name, OptionOverride.CategoryName);
-
-        //        bool overrideValue = ModSettingsManager.OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer].GetBool();
-
-        //        if ((overrideValue && OptionOverride.OverrideOnTrue) || (!overrideValue && !OptionOverride.OverrideOnTrue))
-        //        {
-        //            Value = $"{(((CheckBoxOverride)OptionOverride).ValueToReturnWhenOverriden ? "1" : "0")}";
-        //            return ((CheckBoxOverride) OptionOverride).ValueToReturnWhenOverriden;
-        //        }
-        //    }
-
-        //    return ConVar != null ? (int.Parse(ConVar.GetString()) == 1) : bool.Parse(Value);
-        //}
-
-        //public float GetFloat()
-        //{
-        //    if (optionType != OptionType.Slider)
-        //    {
-        //        throw new Exception($"Option {Name} is not a Slider!");
-        //    }
-
-        //    if (OptionOverride != null)
-        //    {
-        //        Indexes indexes = ModSettingsManager.OptionContainers.GetIndexes(ModGuid, OptionOverride.Name, OptionOverride.CategoryName);
-
-        //        bool overrideValue = ModSettingsManager.OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer].GetBool();
-
-        //        if ((overrideValue && OptionOverride.OverrideOnTrue) || (!overrideValue && !OptionOverride.OverrideOnTrue))
-        //        {
-        //            Value = ((SliderOverride)OptionOverride).ValueToReturnWhenOverriden.ToString(CultureInfo.InvariantCulture);
-        //            return ((SliderOverride)OptionOverride).ValueToReturnWhenOverriden;
-        //        }
-        //    }
-
-        //    return float.Parse(ConVar != null ? ConVar.GetString() : Value);
-        //}
-
-        //public KeyCode GetKeyCode()
-        //{
-        //    if (optionType != OptionType.Keybinding)
-        //    {
-        //        throw new Exception($"Option {Name} is not a KeyCode!");
-        //    }
-
-        //    if (ConVar != null)
-        //    {
-        //        return (KeyCode)int.Parse(ConVar.GetString());
-        //    }
-
-        //    return (KeyCode)int.Parse(Value);
-        //}
-
-        //public string GetValue()
-        //{
-        //    switch (optionType)
-        //    {
-        //        case OptionType.Bool:
-        //            return $"{(GetBool() ? "1" : "0")}";
-        //        case OptionType.Slider:
-        //            return GetFloat().ToString(CultureInfo.InvariantCulture);
-        //        case OptionType.Keybinding:
-        //            return $"{(int) GetKeyCode()}";
-        //    }
-
-        //    throw new Exception("Option doesn't have value");
-        //}
 
         public static bool operator ==(RiskOfOption a, RiskOfOption b)
         {
@@ -188,17 +110,7 @@ namespace RiskOfOptions.Options
             throw new NotImplementedException();
         }
 
-        public virtual bool GetBool()
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual float GetFloat()
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual KeyCode GetKeyCode()
+        public virtual T GetValue<T>()
         {
             throw new NotImplementedException();
         }

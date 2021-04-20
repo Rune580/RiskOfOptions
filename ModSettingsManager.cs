@@ -112,13 +112,6 @@ namespace RiskOfOptions
             orig(args);
         }
 
-        // ReSharper disable once UnusedMember.Global
-        // ReSharper disable once InconsistentNaming
-        public static void addStartupListener(UnityEngine.Events.UnityAction unityAction)
-        {
-            Listeners.Add(unityAction);
-        }
-
         public static void AddListener(UnityEngine.Events.UnityAction<bool> unityAction, string name, string categoryName = "Main")
         {
             ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
@@ -478,6 +471,15 @@ namespace RiskOfOptions
         //}
 
         #region ModOption Legacy Stuff
+
+        // ReSharper disable once UnusedMember.Global
+        // ReSharper disable once InconsistentNaming
+        [Obsolete("There is no longer a need to have a startup listener.\n" +
+                  " Since option values are available immediately after adding them, there is no longer a need to wait until RiskOfOptions is finished initializing.")]
+        public static void addStartupListener(UnityEngine.Events.UnityAction unityAction)
+        {
+            Listeners.Add(unityAction);
+        }
 
         // ReSharper disable once UnusedMember.Global
         // ReSharper disable once InconsistentNaming
