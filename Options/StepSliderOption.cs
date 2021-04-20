@@ -50,9 +50,6 @@ namespace RiskOfOptions.Options
 
             stepSlider.settingSource = RooSettingSource;
 
-            if (OnValueChangedFloat != null)
-                stepSlider.AddListener(OnValueChangedFloat);
-
             stepSlider.minValue = 0;
             stepSlider.maxValue = 100;
 

@@ -19,6 +19,8 @@
         internal string value;
         protected OptionConstructorBase()
         {
+            Name = "";
+            CategoryName = "";
             Description = "";
             IsVisible = true;
             InvokeValueChangedEventOnStart = false;

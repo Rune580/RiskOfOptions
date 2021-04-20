@@ -13,8 +13,6 @@ namespace RiskOfOptions.OptionComponents
     // ReSharper disable once IdentifierTypo
     public class KeybindController : BaseSettingsControl
     {
-        public UnityEngine.Events.UnityAction<KeyCode> onValueChangedKeyCode;
-
         private bool _listening = false;
         private int _count;
         private float _timeoutTimer;
@@ -46,7 +44,7 @@ namespace RiskOfOptions.OptionComponents
 
             SetDisplay();
 
-            onValueChangedKeyCode?.Invoke(((KeyCode)int.Parse(base.GetCurrentValue())));
+            //onValueChangedKeyCode?.Invoke(((KeyCode)int.Parse(base.GetCurrentValue())));
         }
 
         protected override void Update()
@@ -201,13 +199,13 @@ namespace RiskOfOptions.OptionComponents
 
             StopListening();
 
-            onValueChangedKeyCode?.Invoke((KeyCode)int.Parse(base.GetCurrentValue()));
+            //onValueChangedKeyCode?.Invoke((KeyCode)int.Parse(base.GetCurrentValue()));
         }
 
         private void SetKeyBind(KeyCode keyCode)
         {
             SubmitSetting($"{(int)keyCode}");
-            onValueChangedKeyCode?.Invoke(keyCode);
+            //onValueChangedKeyCode?.Invoke(keyCode);
 
             StopListening();
         }

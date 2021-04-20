@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using BepInEx.Configuration;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace RiskOfOptions.OptionConstructors
@@ -12,8 +13,11 @@ namespace RiskOfOptions.OptionConstructors
 
         public UnityAction<KeyCode> OnValueChanged;
 
+        public ConfigEntry<KeyboardShortcut> ConfigEntry;
+
         public KeyBind()
         {
+            ConfigEntry = null;
             OnValueChanged = null;
             DefaultValue = KeyCode.None;
         }

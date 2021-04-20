@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using BepInEx.Configuration;
 using RiskOfOptions.Interfaces;
 using RiskOfOptions.OptionComponents;
 using RiskOfOptions.OptionOverrides;
@@ -14,16 +15,21 @@ namespace RiskOfOptions.Options
 {
     public class CheckBoxOption : RiskOfOption, IBoolProvider
     {
-        public UnityAction<bool> OnValueChangedBool { get; set; }
+        public List<UnityAction<bool>> Events { get; set; } = new List<UnityAction<bool>>();
 
         private bool _value;
+
+        internal ConfigEntry<bool> configEntry;
 
         internal CheckBoxOption(string modGuid, string modName, string name, object[] description, string defaultValue, string categoryName, OptionOverride optionOverride, bool visibility, bool restartRequired, UnityAction<bool> unityAction, bool invokeEventOnStart)
             : base(modGuid, modName, name, description, defaultValue, categoryName, optionOverride, visibility, restartRequired, invokeEventOnStart)
         {
             Value = (int.Parse(defaultValue) == 1);
 
-            OnValueChangedBool = unityAction;
+            if (unityAction != null)
+            {
+                Events.Add(unityAction);
+            }
 
             OptionToken = $"{ModSettingsManager.StartingText}.{modGuid}.{modName}.category_{categoryName.Replace(".", "")}.{name}.checkbox".ToUpper().Replace(" ", "_");
 
@@ -51,7 +57,25 @@ namespace RiskOfOptions.Options
 
                 return _value;
             }
-            set => _value = value;
+            set
+            {
+                if (_value == value)
+                    return;
+
+                _value = value;
+
+                if (configEntry != null)
+                {
+                    configEntry.Value = Value;
+                }
+
+                InvokeListeners();
+            }
+        }
+
+        public void AddListener(UnityAction<bool> unityAction)
+        {
+            Events.Add(unityAction);
         }
 
         public override GameObject CreateOptionGameObject(RiskOfOption option, GameObject prefab, Transform parent)
@@ -65,15 +89,25 @@ namespace RiskOfOptions.Options
 
             controller.settingSource = RooSettingSource;
 
-            if (OnValueChangedBool != null)
-            {
-                button.AddComponent<BoolListener>().AddListener(OnValueChangedBool);
-            }
-
-
             button.name = $"Mod Option CheckBox, {option.Name}";
 
             return button;
+        }
+
+        public override void InvokeListeners()
+        {
+            foreach (var action in Events)
+            {
+                action.Invoke(Value);
+            }
+        }
+
+        public void InvokeListeners(bool value)
+        {
+            foreach (var action in Events)
+            {
+                action.Invoke(value);
+            }
         }
 
         public override string GetValueAsString()

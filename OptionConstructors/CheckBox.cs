@@ -1,4 +1,6 @@
-﻿using RiskOfOptions.OptionOverrides;
+﻿using System;
+using BepInEx.Configuration;
+using RiskOfOptions.OptionOverrides;
 using UnityEngine.Events;
 
 namespace RiskOfOptions.OptionConstructors
@@ -12,8 +14,11 @@ namespace RiskOfOptions.OptionConstructors
         public bool RestartRequired;
         public CheckBoxOverride Override;
         public UnityAction<bool> OnValueChanged;
+
+        public ConfigEntry<bool> ConfigEntry;
         public CheckBox()
         {
+            ConfigEntry = null;
             OnValueChanged = null;
             DefaultValue = false;
             RestartRequired = false;

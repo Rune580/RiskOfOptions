@@ -55,11 +55,6 @@ namespace RiskOfOptions.OptionComponents
             slider.onValueChanged.AddListener(OnSliderValueChanged);
         }
 
-        public void AddListener(UnityAction<float> unityAction)
-        {
-            slider.onValueChanged.AddListener(unityAction);
-        }
-
         private void OnSliderValueChanged(float newValue)
         {
             if (inUpdateControls)

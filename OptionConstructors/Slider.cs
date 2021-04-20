@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using BepInEx.Configuration;
 using RiskOfOptions.OptionOverrides;
 using UnityEngine.Events;
 
@@ -16,8 +17,10 @@ namespace RiskOfOptions.OptionConstructors
         public bool DisplayAsPercentage = true;
         public SliderOverride Override;
         public UnityAction<float> OnValueChanged;
+        public ConfigEntry<float> ConfigEntry;
         public Slider()
         {
+            ConfigEntry = null;
             DefaultValue = 0;
             Min = 0;
             Max = 100;

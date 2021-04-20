@@ -21,7 +21,34 @@ namespace RiskOfOptions
             {
                 foreach (var option in container.GetModOptionsCached())
                 {
-                    _cache.SaveOption(option);
+                    bool isConfig = false;
+
+                    switch (option)
+                    {
+                        case CheckBoxOption checkBoxOption:
+                            if (checkBoxOption.configEntry != null)
+                            {
+                                isConfig = true;
+                            }
+                            break;
+                        case SliderOption sliderOption:
+                            if (sliderOption.configEntry != null)
+                            {
+                                isConfig = true;
+                            }
+                            break;
+                        case KeyBindOption keyBindOption:
+                            if (keyBindOption.configEntry != null)
+                            {
+                                isConfig = true;
+                            }
+                            break;
+                    }
+
+                    if (!isConfig)
+                    {
+                        _cache.SaveOption(option);
+                    }
                 }
             }
 

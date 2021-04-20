@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine.Events;
 
 namespace RiskOfOptions.Interfaces
 {
     internal interface IBoolProvider
     {
-        public UnityEngine.Events.UnityAction<bool> OnValueChangedBool { get; set; }
+        public List<UnityAction<bool>> Events { get; set; }
 
         public bool Value { get; set; }
     }

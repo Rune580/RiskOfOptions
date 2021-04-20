@@ -1,4 +1,6 @@
-﻿using BepInEx;
+﻿using System;
+using BepInEx;
+using BepInEx.Configuration;
 using R2API.Utils;
 using RiskOfOptions.OptionConstructors;
 using RiskOfOptions.OptionOverrides;
@@ -20,6 +22,11 @@ namespace RiskOfOptions
             GUID = "com." + AUTHOR + "." + "riskofoptions",
             VERSION = "2.0.0"; // Yes this update is big enough that I feel it deserves a major version change.
 
+        private ConfigEntry<KeyboardShortcut> testKeyboard;
+        private ConfigEntry<bool> testBool;
+        private ConfigEntry<float> testFloat;
+        private ConfigEntry<float> testFloatStepped;
+
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Awake is automatically called by Unity")]
         private void Awake()
@@ -30,17 +37,17 @@ namespace RiskOfOptions
 
             //ModSettingsManager.setPanelTitle("Example Title Bitch");
 
-
-
             ModSettingsManager.SetPanelDescription("Example Description");
+
+            ModSettingsManager.CreateCategory("Test BepInEx Config");
 
             ModSettingsManager.CreateCategory("Test Sliders");
 
-            ModSettingsManager.CreateCategory("Testing new System");
+            ModSettingsManager.CreateCategory("Testing New System");
 
-            ModSettingsManager.AddOption(new CheckBox(){ Name = "Test", CategoryName = "Testing new System", DefaultValue = true, Description = "Lig ball", OnValueChanged = DoVisibility, InvokeValueChangedEventOnStart = true});
+            ModSettingsManager.AddOption(new CheckBox(){ Name = "Test", CategoryName = "Testing New System", DefaultValue = true, Description = "Lig ball", OnValueChanged = DoVisibility, InvokeValueChangedEventOnStart = true });
 
-            ModSettingsManager.AddOption(new KeyBind(){ Name = "Test KeyBind" , CategoryName = "Testing new System", DefaultValue = KeyCode.G, Description = "This is yet another Description", IsVisible = false });
+            ModSettingsManager.AddOption(new KeyBind(){ Name = "Test KeyBind" , CategoryName = "Testing New System", DefaultValue = KeyCode.G, Description = "This is yet another Description", IsVisible = false });
 
             ModSettingsManager.AddOption(new Slider() { Name = "Music Slider", CategoryName = "Test Sliders", DefaultValue = 50f, Min = 10, Max = 69, Description = "This is another Description", DisplayAsPercentage = false});
 
@@ -48,14 +55,38 @@ namespace RiskOfOptions
             ModSettingsManager.AddOption(new StepSlider() { Name = "Other Test Step Slider", CategoryName = "Test Sliders", DefaultValue = 1.5f, Min = 1, Max = 2, Increment = 0.05f, Description = "Test slider from 1 to 2 with increments of 0.05f" });
             ModSettingsManager.AddOption(new StepSlider() { Name = "More Visible Step Slider", CategoryName = "Test Sliders", DefaultValue = 60, Min = 0, Max = 200, Increment = 25, Description = "Test slider from 0 to 200 with increments of 20", DisplayAsPercentage = true});
 
+            testKeyboard = Config.Bind("Test BepInEx Config", "testKey", new KeyboardShortcut(KeyCode.G), "lig my balls");
 
-            //CheckBoxOverride checkBoxOverride = new CheckBoxOverride()
-            //{
-            //    Name = "Enable Music",
-            //    CategoryName = "Audio",
-            //    OverrideOnTrue = false,
-            //    ValueToReturnWhenOverriden = false
-            //};
+            testBool = Config.Bind("Test BepInEx Config", "testCheckBox", true, "This check box was made from a config");
+
+            testFloat = Config.Bind("Test BepInEx Config", "testSlider", 50f, "lig me dude");
+
+            testFloatStepped = Config.Bind("Test BepInEx Config", "testSliderStepped", 1.5f, "lig me dude 2");
+
+
+            testBool.SettingChanged += ConfigEntryBoolTest;
+
+            testKeyboard.SettingChanged += ConfigEntryKeyBindTest;
+
+            ModSettingsManager.AddOption(new CheckBox() { ConfigEntry = testBool });
+
+            ModSettingsManager.AddOption(new KeyBind() { ConfigEntry = testKeyboard });
+
+            ModSettingsManager.AddOption(new Slider() { ConfigEntry = testFloat, Min = 50, Max = 69 });
+
+            ModSettingsManager.AddOption(new StepSlider() { ConfigEntry = testFloatStepped, Min = 1, Max = 2, Increment = 0.05f });
+
+            ModSettingsManager.AddOption(new CheckBox() { Name = "Test Override", CategoryName = "Testing New System", DefaultValue = false, Description = "Lig ball" });
+
+            CheckBoxOverride checkBoxOverride = new CheckBoxOverride()
+            {
+                Name = "Test Override",
+                CategoryName = "Testing New System",
+                OverrideOnTrue = true,
+                ValueToReturnWhenOverriden = false
+            };
+
+            ModSettingsManager.AddOption(new CheckBox() { Name = "To Be Overridden", CategoryName = "Testing New System", DefaultValue = true, Description = "Lig ball but disabled", Override = checkBoxOverride , OnValueChanged = OverrideTest });
 
             //SliderOverride musicOverride = new SliderOverride()
             //{
@@ -79,9 +110,29 @@ namespace RiskOfOptions
             //ModSettingsManager.AddCheckBox("Do something that doesn't need a restart", "This is a Description", false, "Enemies");
         }
 
+        private void ConfigEntryKeyBindTest(object sender, EventArgs e)
+        {
+            Debug.Log($"Config keyboard event invoked args {e.ToString()}");
+        }
+
+        private void ConfigEntryBoolTest(object sender, EventArgs e)
+        {
+            Debug.Log($"Config bool event invoked args {e.ToString()}");
+        }
+
+        private void ConfigEntryFloatTest(object sender, EventArgs e)
+        {
+            Debug.Log($"Config bool event invoked args {e.ToString()}");
+        }
+
         private void DoVisibility(bool lig)
         {
-            ModSettingsManager.SetVisibility("Test KeyBind", "Testing new System", lig);
+            ModSettingsManager.SetVisibility("Test KeyBind", "Testing New System", lig);
+        }
+        
+        private void OverrideTest(bool lig)
+        {
+            Debug.Log(lig);
         }
     }
 }

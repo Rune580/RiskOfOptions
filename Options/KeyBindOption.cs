@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using BepInEx.Configuration;
+using R2API.Utils;
 using RiskOfOptions.Interfaces;
 using RiskOfOptions.OptionComponents;
 using RiskOfOptions.OptionOverrides;
@@ -12,17 +14,22 @@ namespace RiskOfOptions.Options
 {
     public class KeyBindOption : RiskOfOption, IKeyCodeProvider
     {
-        public UnityAction<KeyCode> OnValueChangedKeyCode { get; set; }
+        public List<UnityAction<KeyCode>> Events { get; set; } = new List<UnityAction<KeyCode>>();
 
         private KeyCode _value;
+
+        internal ConfigEntry<KeyboardShortcut> configEntry;
 
         internal KeyBindOption(string modGuid, string modName, string name, object[] description, string defaultValue, string categoryName, bool visibility, UnityAction<KeyCode> unityAction, bool invokeEventOnStart)
             : base(modGuid, modName, name, description, defaultValue, categoryName, null, visibility, false, invokeEventOnStart)
         {
             Value = (KeyCode)int.Parse(defaultValue);
 
-            OnValueChangedKeyCode = unityAction;
-
+            if (unityAction != null)
+            {
+                Events.Add(unityAction);
+            }
+            
             OptionToken = $"{ModSettingsManager.StartingText}.{modGuid}.{modName}.category_{categoryName.Replace(".", "")}.{name}.keybind".ToUpper().Replace(" ", "_");
 
             RegisterTokens();
@@ -31,7 +38,20 @@ namespace RiskOfOptions.Options
         public KeyCode Value
         {
             get => _value;
-            set => _value = value;
+            set
+            {
+                if (_value == value)
+                    return;
+
+                _value = value;
+
+                if (configEntry != null)
+                {
+                    configEntry.Value = new KeyboardShortcut(Value);
+                }
+
+                InvokeListeners();
+            }
         }
 
         public override GameObject CreateOptionGameObject(RiskOfOption option, GameObject prefab, Transform parent)
@@ -44,9 +64,6 @@ namespace RiskOfOptions.Options
             keyBindController.nameToken = option.NameToken;
 
             keyBindController.settingSource = RooSettingSource;
-
-            if (OnValueChangedKeyCode != null)
-                keyBindController.onValueChangedKeyCode = OnValueChangedKeyCode;
 
             button.transform.Find("ButtonText").GetComponent<HGTextMeshProUGUI>().SetText(option.Name);
 
@@ -64,6 +81,22 @@ namespace RiskOfOptions.Options
             }
 
             return button;
+        }
+
+        public override void InvokeListeners()
+        {
+            foreach (var action in Events)
+            {
+                action.Invoke(Value);
+            }
+        }
+
+        public void InvokeListeners(KeyCode value)
+        {
+            foreach (var action in Events)
+            {
+                action.Invoke(value);
+            }
         }
 
         public override string GetValueAsString()

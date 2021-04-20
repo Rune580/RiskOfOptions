@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using BepInEx;
+using BepInEx.Configuration;
 using BepInEx.Logging;
 using EntityStates.AncientWispMonster;
 using On.RoR2;
@@ -107,13 +109,13 @@ namespace RiskOfOptions
                     switch (option)
                     {
                         case CheckBoxOption checkBoxOption:
-                            checkBoxOption.OnValueChangedBool?.Invoke(option.GetValue<bool>());
+                            checkBoxOption.InvokeListeners(option.GetValue<bool>());
                             break;
                         case SliderOption sliderOption:
-                            sliderOption.OnValueChangedFloat?.Invoke(option.GetValue<float>());
+                            sliderOption.InvokeListeners(option.GetValue<float>());
                             break;
                         case KeyBindOption keyBindOption:
-                            keyBindOption.OnValueChangedKeyCode?.Invoke(option.GetValue<KeyCode>());
+                            keyBindOption.InvokeListeners(option.GetValue<KeyCode>());
                             break;
                         case DropDownOption dropDownOption:
                             dropDownOption.OnValueChangedChoice?.Invoke(option.GetValue<int>());
@@ -141,7 +143,7 @@ namespace RiskOfOptions
             Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
 
             if (OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer] is IBoolProvider boolProvider)
-                boolProvider.OnValueChangedBool = unityAction;
+                boolProvider.Events.Add(unityAction);
         }
 
         public static void AddListener(UnityEngine.Events.UnityAction<float> unityAction, string name, string categoryName = "Main")
@@ -150,7 +152,7 @@ namespace RiskOfOptions
             Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
 
             if (OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer] is IFloatProvider floatProvider)
-                floatProvider.OnValueChangedFloat = unityAction;
+                floatProvider.Events.Add(unityAction);
         }
 
         public static void AddListener(UnityEngine.Events.UnityAction<KeyCode> unityAction, string name, string categoryName = "Main")
@@ -159,7 +161,7 @@ namespace RiskOfOptions
             Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
 
             if (OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer] is IKeyCodeProvider keyCodeProvider)
-                keyCodeProvider.OnValueChangedKeyCode = unityAction;
+                keyCodeProvider.Events.Add(unityAction);
         }
 
         public static RiskOfOption GetOption(string name, string categoryName = "Main")
@@ -260,24 +262,83 @@ namespace RiskOfOptions
             switch (option)
             {
                 case CheckBox checkBox:
+                    if (checkBox.ConfigEntry != null)
+                    {
+                        if (string.IsNullOrEmpty(checkBox.Name))
+                            checkBox.Name = checkBox.ConfigEntry.Definition.Key;
+
+                        if (string.IsNullOrEmpty(checkBox.CategoryName))
+                            checkBox.CategoryName = checkBox.ConfigEntry.Definition.Section;
+
+                        if (string.IsNullOrEmpty((string)checkBox.descriptionArray[0]))
+                            checkBox.Description = checkBox.ConfigEntry.Description.Description;
+
+                        checkBox.DefaultValue = checkBox.ConfigEntry.Value;
+                    }
                     RegisterOption(new CheckBoxOption(modInfo.ModGuid, modInfo.ModName, checkBox.Name,
                         option.descriptionArray, checkBox.value, checkBox.CategoryName,
                         checkBox.Override, checkBox.IsVisible, checkBox.RestartRequired, checkBox.OnValueChanged,
-                        checkBox.InvokeValueChangedEventOnStart));
+                        checkBox.InvokeValueChangedEventOnStart)
+                        {configEntry = checkBox.ConfigEntry});
                     break;
                 case StepSlider stepSlider:
+                    if (stepSlider.ConfigEntry != null)
+                    {
+                        if (string.IsNullOrEmpty(stepSlider.Name))
+                            stepSlider.Name = stepSlider.ConfigEntry.Definition.Key;
+
+                        if (string.IsNullOrEmpty(stepSlider.CategoryName))
+                            stepSlider.CategoryName = stepSlider.ConfigEntry.Definition.Section;
+
+                        if (string.IsNullOrEmpty((string)stepSlider.descriptionArray[0]))
+                            stepSlider.Description = stepSlider.ConfigEntry.Description.Description;
+
+                        stepSlider.DefaultValue = stepSlider.ConfigEntry.Value;
+                    }
                     RegisterOption(new StepSliderOption(modInfo.ModGuid, modInfo.ModName, stepSlider.Name, stepSlider.descriptionArray,
                         stepSlider.value, stepSlider.Min, stepSlider.Max, stepSlider.Increment, stepSlider.CategoryName,
-                        stepSlider.Override, stepSlider.IsVisible, stepSlider.OnValueChanged, stepSlider.InvokeValueChangedEventOnStart));
+                        stepSlider.Override, stepSlider.IsVisible, stepSlider.OnValueChanged, stepSlider.InvokeValueChangedEventOnStart)
+                        {configEntry = stepSlider.ConfigEntry});
                     break;
                 case Slider slider:
+                    if (slider.ConfigEntry != null)
+                    {
+                        if (string.IsNullOrEmpty(slider.Name))
+                            slider.Name = slider.ConfigEntry.Definition.Key;
+
+                        if (string.IsNullOrEmpty(slider.CategoryName))
+                            slider.CategoryName = slider.ConfigEntry.Definition.Section;
+
+                        if (string.IsNullOrEmpty((string)slider.descriptionArray[0]))
+                            slider.Description = slider.ConfigEntry.Description.Description;
+
+                        slider.DefaultValue = slider.ConfigEntry.Value;
+                    }
                     RegisterOption(new SliderOption(modInfo.ModGuid, modInfo.ModName, slider.Name, slider.descriptionArray,
                         slider.value, slider.Min, slider.Max, slider.CategoryName, slider.Override,
-                        slider.IsVisible, slider.OnValueChanged, slider.InvokeValueChangedEventOnStart));
+                        slider.IsVisible, slider.OnValueChanged, slider.InvokeValueChangedEventOnStart)
+                        {configEntry = slider.ConfigEntry});
                     break;
                 case KeyBind keyBind:
+                    if (keyBind.ConfigEntry != null)
+                    {
+                        if (string.IsNullOrEmpty(keyBind.Name))
+                            keyBind.Name = keyBind.ConfigEntry.Definition.Key;
+
+                        if (string.IsNullOrEmpty(keyBind.CategoryName))
+                            keyBind.CategoryName = keyBind.ConfigEntry.Definition.Section;
+
+                        if (string.IsNullOrEmpty((string)keyBind.descriptionArray[0]))
+                            keyBind.Description = keyBind.ConfigEntry.Description.Description;
+
+                        keyBind.DefaultValue = keyBind.ConfigEntry.Value.MainKey;
+
+                        if (keyBind.ConfigEntry.Value.Modifiers.Any())
+                            throw new WarningException($"The KeyBind {keyBind.Name} contains modifier keys! Currently Risk Of Options doesn't support modifier keys!");
+                    }
                     RegisterOption(new KeyBindOption(modInfo.ModGuid, modInfo.ModName, keyBind.Name, keyBind.descriptionArray,
-                        keyBind.value, keyBind.CategoryName, keyBind.IsVisible, keyBind.OnValueChanged, keyBind.InvokeValueChangedEventOnStart));
+                        keyBind.value, keyBind.CategoryName, keyBind.IsVisible, keyBind.OnValueChanged, keyBind.InvokeValueChangedEventOnStart)
+                        {configEntry = keyBind.ConfigEntry});
                     break;
                 case DropDown dropDown:
                     RegisterOption(new DropDownOption(modInfo.ModGuid, modInfo.ModName, dropDown.Name,
@@ -419,7 +480,7 @@ namespace RiskOfOptions
             Indexes indexes = OptionContainers.GetIndexes(modOption.owner, modOption.name);
 
             if (OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer] is IFloatProvider floatProvider)
-                floatProvider.OnValueChangedFloat = unityAction;
+                floatProvider.Events.Add(unityAction);
         }
 
         [Obsolete("Usage of ModOption is depreciated, use RiskOfOption instead.")]
@@ -430,7 +491,7 @@ namespace RiskOfOptions
             Indexes indexes = OptionContainers.GetIndexes(modOption.owner, modOption.name);
 
             if (OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer] is IBoolProvider boolProvider)
-                boolProvider.OnValueChangedBool = unityAction;
+                boolProvider.Events.Add(unityAction);
         }
 
         [Obsolete("ModOptions are handled internally now. Please use AddCheckBox, AddSlider, etc", false)]

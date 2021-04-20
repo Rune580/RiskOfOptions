@@ -668,7 +668,7 @@ namespace RiskOfOptions.OptionComponents
                     overrideController.overridingName = option.OptionOverride.Name;
                     overrideController.overridingCategoryName = option.OptionOverride.CategoryName;
 
-                    overrideController.CheckForOverride();
+                    overrideController.CheckForOverride(true);
                 }
 
                 CanvasGroup canvasGroup = button.AddComponent<CanvasGroup>();

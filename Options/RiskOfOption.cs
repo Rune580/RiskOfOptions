@@ -99,6 +99,11 @@ namespace RiskOfOptions.Options
             throw new NotImplementedException();
         }
 
+        public virtual void InvokeListeners()
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual string GetValueAsString()
         {
             throw new NotImplementedException();
