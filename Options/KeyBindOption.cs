@@ -16,10 +16,12 @@ namespace RiskOfOptions.Options
 
         private KeyCode _value;
 
-        internal KeyBindOption(string modGuid, string modName, string name, object[] description, string defaultValue, string categoryName, OptionOverride optionOverride, bool visibility, bool restartRequired)
-            : base(modGuid, modName, name, description, defaultValue, categoryName, optionOverride, visibility, restartRequired)
+        internal KeyBindOption(string modGuid, string modName, string name, object[] description, string defaultValue, string categoryName, bool visibility, UnityAction<KeyCode> unityAction, bool invokeEventOnStart)
+            : base(modGuid, modName, name, description, defaultValue, categoryName, null, visibility, false, invokeEventOnStart)
         {
             Value = (KeyCode)int.Parse(defaultValue);
+
+            OnValueChangedKeyCode = unityAction;
 
             OptionToken = $"{ModSettingsManager.StartingText}.{modGuid}.{modName}.category_{categoryName.Replace(".", "")}.{name}.keybind".ToUpper().Replace(" ", "_");
 

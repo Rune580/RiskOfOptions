@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using R2API.Utils;
+using RiskOfOptions.OptionConstructors;
 using RiskOfOptions.OptionOverrides;
 using TMPro;
 using UnityEngine;
@@ -35,21 +36,18 @@ namespace RiskOfOptions
 
             ModSettingsManager.CreateCategory("Test Sliders");
 
-            //ModSettingsManager.CreateCategory("Audio");
+            ModSettingsManager.CreateCategory("Testing new System");
 
-            //ModSettingsManager.CreateCategory("Controls");
+            ModSettingsManager.AddOption(new CheckBox(){ Name = "Test", CategoryName = "Testing new System", DefaultValue = true, Description = "Lig ball", OnValueChanged = DoVisibility, InvokeValueChangedEventOnStart = true});
 
-            //ModSettingsManager.CreateCategory("Enemies");
+            ModSettingsManager.AddOption(new KeyBind(){ Name = "Test KeyBind" , CategoryName = "Testing new System", DefaultValue = KeyCode.G, Description = "This is yet another Description", IsVisible = false });
 
-            //ModSettingsManager.CreateCategory("Dick", "yeah");
+            ModSettingsManager.AddOption(new Slider() { Name = "Music Slider", CategoryName = "Test Sliders", DefaultValue = 50f, Min = 10, Max = 69, Description = "This is another Description", DisplayAsPercentage = false});
 
-            //ModSettingsManager.CreateCategory("Balls", "yeah");
+            ModSettingsManager.AddOption(new StepSlider() { Name = "FOV Slider Test", CategoryName = "Test Sliders", DefaultValue = 90, Min = 50, Max = 110, Increment = 1f, Description = "FOV Test Slider Description" });
+            ModSettingsManager.AddOption(new StepSlider() { Name = "Other Test Step Slider", CategoryName = "Test Sliders", DefaultValue = 1.5f, Min = 1, Max = 2, Increment = 0.05f, Description = "Test slider from 1 to 2 with increments of 0.05f" });
+            ModSettingsManager.AddOption(new StepSlider() { Name = "More Visible Step Slider", CategoryName = "Test Sliders", DefaultValue = 60, Min = 0, Max = 200, Increment = 25, Description = "Test slider from 0 to 200 with increments of 20", DisplayAsPercentage = true});
 
-            //ModSettingsManager.CreateCategory("Ligma", "yeah");
-
-            //ModSettingsManager.CreateCategory("Got em", "yeah");
-
-            //ModSettingsManager.CreateCategory("Etc", "yeah");
 
             //CheckBoxOverride checkBoxOverride = new CheckBoxOverride()
             //{
@@ -67,16 +65,7 @@ namespace RiskOfOptions
             //    ValueToReturnWhenOverriden = 0f
             //};
 
-            //ModSettingsManager.AddCheckBox("Enable Test KeyBind", "This is a Description", false, "Controls");
-            //ModSettingsManager.AddCheckBox("Test CheckBox", "fuck me dude", true, "Audio", checkBoxOverride);
-
             //ModSettingsManager.AddSlider("Music Slider", "This is another Description", 50f, 10f, 69f, "Audio");
-
-            ModSettingsManager.AddStepSlider("FOV Slider Test", "FOV Test Slider Description", 90, 50, 110, 1f, "Test Sliders");
-
-            ModSettingsManager.AddStepSlider("Other Test Step Slider", "Test slider from 1 to 2 with increments of 0.05f", 1.5f, 1, 2, 0.05f, "Test Sliders");
-
-            ModSettingsManager.AddStepSlider("More Visible Step Slider", "Test slider from 0 to 200 with increments of 20", 60, 0, 200, 20, "Test Sliders");
 
             //ModSettingsManager.AddKeyBind("Test KeyBind", "This is yet another Description", UnityEngine.KeyCode.G, "Controls", false);
 
@@ -88,36 +77,11 @@ namespace RiskOfOptions
 
             //ModSettingsManager.AddCheckBox("Enable Enemy stuff", "This is a Description", false, "Enemies", true);
             //ModSettingsManager.AddCheckBox("Do something that doesn't need a restart", "This is a Description", false, "Enemies");
+        }
 
-
-            //TMP_Asset asset = ScriptableObject.CreateInstance<TMP_Asset>();
-
-            //asset.
-
-
-            //ModSettingsManager.AddOption("Emote Wheel", "Coming up with all of these examples is getting hard.", UnityEngine.KeyCode.C, "Controls");
-
-
-
-            //ModOption test = new ModOption(ModOption.OptionType.Bool, "test", "test description", "0");
-
-            //ModSettingsManager.addOption(test);
-
-            //OptionCategory category = new OptionCategory("com." + AUTHOR + "." + "riskofoptions");
-
-            //category.Add(ref test);
-
-            //category.debugOptions();
-
-            //test.Name = "s";
-
-            //category.debugOptions();
-
-            //test.Name = "d";
-
-            //category.debugOptions();
-
-            //ModSettingsManager.setSubCategory(ModSettingsManager.getCategory("ligballs"), "ligballs but sub");
+        private void DoVisibility(bool lig)
+        {
+            ModSettingsManager.SetVisibility("Test KeyBind", "Testing new System", lig);
         }
     }
 }

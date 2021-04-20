@@ -19,6 +19,8 @@ namespace RiskOfOptions.Options
 
         public bool RestartRequired;
 
+        internal bool invokeValueChangedEventOnStart;
+
         public string CategoryName { get; internal set; }
 
         public BaseConVar ConVar;
@@ -27,7 +29,7 @@ namespace RiskOfOptions.Options
 
 
 
-        internal RiskOfOption(string modGuid, string modName, string name, object[] description, string defaultValue, string categoryName, OptionOverride optionOverride, bool visibility, bool restartRequired)
+        internal RiskOfOption(string modGuid, string modName, string name, object[] description, string defaultValue, string categoryName, OptionOverride optionOverride, bool visibility, bool restartRequired, bool invokeValueChangedEvent)
         {
             Name = name;
             Description = description;
@@ -35,6 +37,8 @@ namespace RiskOfOptions.Options
 
             Visibility = visibility;
             RestartRequired = restartRequired;
+
+            invokeValueChangedEventOnStart = invokeValueChangedEvent;
 
             if (optionOverride != null)
             {

@@ -5,6 +5,7 @@ using RiskOfOptions.OptionComponents;
 using RiskOfOptions.OptionOverrides;
 using RoR2.UI;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace RiskOfOptions.Options
 {
@@ -12,8 +13,8 @@ namespace RiskOfOptions.Options
     {
         public float Increment;
 
-        internal StepSliderOption(string modGuid, string modName, string name, object[] description, string defaultValue, float min, float max, float increment, string categoryName, OptionOverride optionOverride, bool visibility, bool restartRequired)
-            : base(modGuid, modName, name, description, defaultValue, min, max, categoryName, optionOverride, visibility, restartRequired)
+        internal StepSliderOption(string modGuid, string modName, string name, object[] description, string defaultValue, float min, float max, float increment, string categoryName, OptionOverride optionOverride, bool visibility, UnityAction<float> unityAction, bool invokeEventOnStart)
+            : base(modGuid, modName, name, description, defaultValue, min, max, categoryName, optionOverride, visibility, unityAction, invokeEventOnStart)
         {
             Increment = increment;
 

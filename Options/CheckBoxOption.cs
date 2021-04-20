@@ -18,10 +18,12 @@ namespace RiskOfOptions.Options
 
         private bool _value;
 
-        internal CheckBoxOption(string modGuid, string modName, string name, object[] description, string defaultValue, string categoryName, OptionOverride optionOverride, bool visibility, bool restartRequired)
-            : base(modGuid, modName, name, description, defaultValue, categoryName, optionOverride, visibility, restartRequired)
+        internal CheckBoxOption(string modGuid, string modName, string name, object[] description, string defaultValue, string categoryName, OptionOverride optionOverride, bool visibility, bool restartRequired, UnityAction<bool> unityAction, bool invokeEventOnStart)
+            : base(modGuid, modName, name, description, defaultValue, categoryName, optionOverride, visibility, restartRequired, invokeEventOnStart)
         {
             Value = (int.Parse(defaultValue) == 1);
+
+            OnValueChangedBool = unityAction;
 
             OptionToken = $"{ModSettingsManager.StartingText}.{modGuid}.{modName}.category_{categoryName.Replace(".", "")}.{name}.checkbox".ToUpper().Replace(" ", "_");
 

@@ -21,11 +21,13 @@ namespace RiskOfOptions.Options
         public float Min;
         public float Max;
 
-        internal SliderOption(string modGuid, string modName, string name, object[] description, string defaultValue, float min, float max, string categoryName, OptionOverride optionOverride, bool visibility, bool restartRequired)
-            : base(modGuid, modName, name, description, defaultValue, categoryName, optionOverride, visibility, restartRequired)
+        internal SliderOption(string modGuid, string modName, string name, object[] description, string defaultValue, float min, float max, string categoryName, OptionOverride optionOverride, bool visibility, UnityAction<float> unityAction, bool invokeEventOnStart)
+            : base(modGuid, modName, name, description, defaultValue, categoryName, optionOverride, visibility, false, invokeEventOnStart)
         {
             Min = min;
             Max = max;
+
+            OnValueChangedFloat = unityAction;
 
             Value = float.Parse(defaultValue, CultureInfo.InvariantCulture);
 

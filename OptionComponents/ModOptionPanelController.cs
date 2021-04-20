@@ -52,6 +52,8 @@ namespace RiskOfOptions.OptionComponents
             CreatePanel();
             AddPanelsToSettings();
             CheckIfRestartNeeded();
+
+            ModSettingsManager.instanceModOptionPanelController = this;
         }
         private void CreatePrefabs()
         {
@@ -425,6 +427,8 @@ namespace RiskOfOptions.OptionComponents
             _optionsPanel.GetComponent<RectTransform>().anchorMin = new Vector2(0.275f, 0);
             _optionsPanel.GetComponent<RectTransform>().anchorMax = new Vector2(0.625f, 0.82f);
 
+            _optionsPanel.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").GetComponent<VerticalLayoutGroup>().childForceExpandHeight = false;
+
             _optionsPanel.SetActive(false);
 
             _optionsPanel.name = "Options Panel";
@@ -645,10 +649,6 @@ namespace RiskOfOptions.OptionComponents
             {
                 var option = category.GetModOptionsCached()[i];
 
-
-                if (!option.Visibility)
-                    continue;
-
                 GameObject button = option switch
                 {
                     CheckBoxOption checkBoxOption => option.CreateOptionGameObject(option, _checkBoxPrefab, verticalLayoutTransform),
@@ -670,12 +670,24 @@ namespace RiskOfOptions.OptionComponents
                     overrideController.CheckForOverride();
                 }
 
+                CanvasGroup canvasGroup = button.AddComponent<CanvasGroup>();
+
+                button.AddComponent<OptionIdentity>().optionToken = option.OptionToken;
+
                 button.GetComponentInChildren<HGButton>().hoverToken = option.OptionToken;
 
                 button.GetComponentInChildren<HGButton>().onSelect.AddListener(new UnityAction(delegate()
                 {
                     canvas.Find("Option Description Panel").GetComponentInChildren<HGTextMeshProUGUI>().SetText(option.GetDescriptionAsString());
                 }));
+
+                if (!option.Visibility)
+                {
+                    canvasGroup.alpha = 1;
+                    canvasGroup.blocksRaycasts = false;
+                    button.GetComponent<LayoutElement>().ignoreLayout = true;
+                    continue;
+                }
 
                 button.SetActive(true);
             }
@@ -823,6 +835,23 @@ namespace RiskOfOptions.OptionComponents
             foreach (var controller in _controllers)
             {
                 controller.CheckForOverride();
+            }
+        }
+
+        public void UpdateVisibility(string optionToken, bool visible)
+        {
+            foreach (var optionIdentity in GetComponentsInChildren<OptionIdentity>())
+            {
+                if (optionIdentity.optionToken != optionToken)
+                    continue;
+
+                var canvasGroup = optionIdentity.GetComponent<CanvasGroup>();
+
+                canvasGroup.alpha = visible ? 1 : 0;
+                canvasGroup.blocksRaycasts = visible;
+
+                optionIdentity.GetComponent<LayoutElement>().ignoreLayout = !visible;
+                break;
             }
         }
 
