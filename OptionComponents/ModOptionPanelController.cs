@@ -37,6 +37,12 @@ namespace RiskOfOptions.OptionComponents
         private GameObject _keyBindPrefab;
         private GameObject _dropDownPrefab;
 
+        private GameObject _leftButton;
+        private GameObject _rightButton;
+
+        //private GameObject _leftGlyph;
+        //private GameObject _rightGlyph;
+
         private OverrideController[] _controllers;
 
         public Color warningColor = Color.red;
@@ -61,6 +67,15 @@ namespace RiskOfOptions.OptionComponents
         {
             Transform subPanelArea = transform.Find("SafeArea").Find("SubPanelArea");
             Transform headerArea = transform.Find("SafeArea").Find("HeaderContainer").Find("Header (JUICED)");
+
+            //_leftGlyph = GameObject.Instantiate(headerArea.Find("GenericGlyph (Left)").gameObject);
+            //_rightGlyph = GameObject.Instantiate(headerArea.Find("GenericGlyph (Right)").gameObject);
+
+            //_leftGlyph.SetActive(false);
+            //_rightGlyph.SetActive(false);
+
+            //_leftGlyph.GetComponentInChildren<HGTextMeshProUGUI>().SetText("<sprite=\"tmpsprXboxOneGlyphs\" name=\"texXBoxOneGlyphs_5\">");
+            //_rightGlyph.GetComponentInChildren<HGTextMeshProUGUI>().SetText("<sprite=\"tmpsprXboxOneGlyphs\" name=\"texXBoxOneGlyphs_9\">");
 
             Prefabs.Gdp = GameObject.Instantiate(subPanelArea.Find("GenericDescriptionPanel").gameObject);
 
@@ -145,23 +160,11 @@ namespace RiskOfOptions.OptionComponents
 
             dropDownGameObject.AddComponent<RooDropdown>().colors = _checkBoxPrefab.GetComponent<HGButton>().colors;
 
-            //var choiceItem = dropDownGameObject.transform.Find("Template").Find("Viewport").Find("Content").Find("Item").gameObject;
-            
-            //GameObject.DestroyImmediate(choiceItem.GetComponent<Toggle>());
-
-            //var rooToggle = choiceItem.AddComponent<RooToggle>();
-            //rooToggle.interactable = true;
-            //rooToggle.targetGraphic = choiceItem.transform.Find("Item Background").GetComponent<Image>();
-            //rooToggle.isOn = true;
-            //rooToggle.toggleTransition = Toggle.ToggleTransition.Fade;
-            //rooToggle.graphic = choiceItem.transform.Find("Item Checkmark").GetComponent<Image>();
-
 
             #endregion
             _checkBoxPrefab.SetActive(false);
             _sliderPrefab.SetActive(false);
             _keyBindPrefab.SetActive(false);
-            //_dropDownPrefab.SetActive(false);
 
             if (!RooDropdown.CheckBoxPrefab)
             {
@@ -176,6 +179,8 @@ namespace RiskOfOptions.OptionComponents
             GameObject.DestroyImmediate(Prefabs.ModButtonPrefab.GetComponentInChildren<CarouselController>());
             GameObject.DestroyImmediate(Prefabs.ModButtonPrefab.GetComponentInChildren<ButtonSkinController>());
             GameObject.DestroyImmediate(Prefabs.ModButtonPrefab.transform.Find("CarouselRect").gameObject);
+
+            _leftButton = GameObject.Instantiate(Prefabs.ModButtonPrefab);
 
             // Converting a HGButton to a ROOButton so we can modify it better.
 
@@ -413,20 +418,23 @@ namespace RiskOfOptions.OptionComponents
 
             _categoryHeader.name = "Category Headers";
 
+            //_leftButton = GameObject.Instantiate(_checkBoxPrefab, _categoryHeader.transform.Find("Scroll View"));
 
             GameObject.DestroyImmediate(_categoryHeader.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").gameObject);
             GameObject.DestroyImmediate(_categoryHeader.transform.Find("Scroll View").Find("Scrollbar Vertical").gameObject);
 
-
             GameObject headers = GameObject.Instantiate(headerArea.gameObject, _categoryHeader.transform.Find("Scroll View").Find("Viewport"));
             headers.name = "Categories (JUICED)";
+
+            GameObject.DestroyImmediate(headers.GetComponent<OnEnableEvent>());
+            GameObject.DestroyImmediate(headers.GetComponent<AwakeEvent>());
 
             RectTransform rt = headers.GetComponent<RectTransform>();
 
             rt.pivot = new Vector2(0.5f, 0.5f);
 
             rt.anchorMin = new Vector2(0f, 0.2f);
-            rt.anchorMax = new Vector2(1f, 0.8f);
+            rt.anchorMax = new Vector2(0f, 0.8f);
 
             rt.anchoredPosition = new Vector2(0, 0);
 
@@ -462,23 +470,36 @@ namespace RiskOfOptions.OptionComponents
 
             categoryController.makeSelectedHeaderButtonNoninteractable = true;
 
+            var categoryViewPortHeaderRectTransform = _categoryHeader.transform.Find("Scroll View").Find("Viewport").gameObject.GetComponent<RectTransform>();
 
-            ScrollRect scrollRectScript = _categoryHeader.transform.Find("Scroll View").GetComponent<ScrollRect>();
+            categoryViewPortHeaderRectTransform.anchorMin = new Vector2(0.11f, 0);
+            categoryViewPortHeaderRectTransform.anchorMax = new Vector2(0.89f, 1);
 
-            scrollRectScript.content = headers.GetComponent<RectTransform>();
+            UISkinData skinData = _categoryHeader.transform.Find("Scroll View").GetComponent<ScrollRectSkinController>().skinData;
+            UILayerKey layerKey = _categoryHeader.transform.Find("Scroll View").GetComponent<HGScrollRectHelper>().requiredTopLayer;
 
+            GameObject.DestroyImmediate(_categoryHeader.transform.Find("Scroll View").GetComponent<ScrollRectSkinController>());
+            GameObject.DestroyImmediate(_categoryHeader.transform.Find("Scroll View").GetComponent<HGScrollRectHelper>());
+            GameObject.DestroyImmediate(_categoryHeader.transform.Find("Scroll View").GetComponent<ScrollRect>());
 
-            scrollRectScript.horizontal = true;
-            scrollRectScript.vertical = false;
+            CategoryScrollRect categoryScrollRect = _categoryHeader.transform.Find("Scroll View").gameObject.AddComponent<CategoryScrollRect>();
 
+            categoryScrollRect.inertia = false;
 
-            RectTransform scrollBar = _categoryHeader.transform.Find("Scroll View").Find("Scrollbar Horizontal").gameObject.GetComponent<RectTransform>();
+            categoryScrollRect.content = headers.GetComponent<RectTransform>();
+            categoryScrollRect.content.pivot = new Vector2(0, 0.5f);
 
-            scrollRectScript.horizontalScrollbar = scrollBar.GetComponent<CustomScrollbar>();
+            categoryScrollRect.horizontal = true;
+            categoryScrollRect.vertical = false;
 
-            scrollBar.anchorMin = new Vector2(0, 0);
-            scrollBar.anchorMax = new Vector2(1, 0);
+            categoryScrollRect.movementType = ScrollRect.MovementType.Clamped;
 
+            categoryScrollRect.viewport = categoryViewPortHeaderRectTransform;
+
+            categoryScrollRect.horizontalScrollbar = null;
+
+            _categoryHeader.transform.Find("Scroll View").gameObject.AddComponent<HGScrollRectHelper>().requiredTopLayer = layerKey;
+            _categoryHeader.transform.Find("Scroll View").gameObject.AddComponent<ScrollRectSkinController>().skinData = skinData;
 
             ContentSizeFitter sizeFitter = headers.AddComponent<ContentSizeFitter>();
 
@@ -490,13 +511,14 @@ namespace RiskOfOptions.OptionComponents
 
             HLG.enabled = true;
 
-            HLG.padding = new RectOffset(4, 4, 4, 4);
+            HLG.padding = new RectOffset(8, 8, 4, 4);
             HLG.spacing = 16;
             HLG.childAlignment = TextAnchor.MiddleCenter;
             HLG.childControlWidth = true;
             HLG.childControlHeight = true;
             HLG.childForceExpandWidth = true;
             HLG.childForceExpandHeight = true;
+
 
 
 
@@ -574,6 +596,8 @@ namespace RiskOfOptions.OptionComponents
 
             List<HGHeaderNavigationController.Header> headers = new List<HGHeaderNavigationController.Header>();
 
+            //_leftGlyph.transform.SetParent(modListLayout);
+
             for (int i = 0; i < ModSettingsManager.OptionContainers.Count; i++)
             {
                 var container = ModSettingsManager.OptionContainers[i];
@@ -581,8 +605,6 @@ namespace RiskOfOptions.OptionComponents
                 GameObject newModButton = GameObject.Instantiate(Prefabs.ModButtonPrefab, modListLayout);
 
                 LanguageAPI.Add($"{ModSettingsManager.StartingText}.{container.ModGuid}.{container.ModName}.ModListOption".ToUpper().Replace(" ", "_"), container.Title);
-
-                //newModButton.GetComponent<LanguageTextMeshController>().token = $"{ModSettingsManager.StartingText}.{Container.ModGUID}.{Container.ModName}.ModListOption".ToUpper().Replace(" ", "_");
 
                 newModButton.GetComponentInChildren<HGTextMeshProUGUI>().text = container.Title;
 
@@ -601,8 +623,6 @@ namespace RiskOfOptions.OptionComponents
                 modIconRectTransform.sizeDelta = Vector2.zero;
                 modIconRectTransform.anchoredPosition = Vector2.zero;
 
-                //modIconRectTransform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
-
                 modIconRectTransform.gameObject.AddComponent<FetchIconWhenReady>().modGuid = container.ModGuid;
 
                 newModButton.name = $"ModListButton ({container.ModName})";
@@ -620,6 +640,11 @@ namespace RiskOfOptions.OptionComponents
 
                 headers.Add(header);
             }
+
+            //_rightGlyph.transform.SetParent(modListLayout);
+
+            //_leftGlyph.SetActive(true);
+            //_rightGlyph.SetActive(true);
 
             navigationController.headers = headers.ToArray();
 
@@ -661,6 +686,11 @@ namespace RiskOfOptions.OptionComponents
 
             navigationController.currentHeaderIndex = 0;
 
+            var categoryScrollRect = ch.GetComponentInChildren<CategoryScrollRect>();
+
+            categoryScrollRect.pages = Mathf.CeilToInt(container.GetCategoriesCached().Count / 4f);
+            
+
             for (int i = 0; i < container.GetCategoriesCached().Count; i++)
             {
                 GameObject newCategoryButton = GameObject.Instantiate(Prefabs.MoHeaderButtonPrefab, categoriesObject.transform);
@@ -698,19 +728,36 @@ namespace RiskOfOptions.OptionComponents
                     headerRoot = null
                 };
 
-
                 headers.Add(header);
             }
             navigationController.headers = headers.ToArray();
 
             navigationController.InvokeMethod("RebuildHeaders");
 
-            ch.transform.Find("Scroll View").Find("Scrollbar Horizontal").gameObject.GetComponent<CustomScrollbar>().onValueChanged.AddListener(new UnityAction<float>(delegate(float value)
-                {
-                    Debug.Log(value);
-                }));
+            //StartCoroutine(FuckingFixScrollPosition(categoryScrollRect));
+
+            //SetCategoryPage(0);
+            //ch.transform.Find("Scroll View").Find("Scrollbar Horizontal").gameObject.GetComponent<CustomScrollbar>().onValueChanged.AddListener(new UnityAction<float>(delegate(float value)
+            //    {
+            //        Debug.Log(value);
+            //    }));
 
             LoadOptionListFromCategory(containerIndex, navigationController.currentHeaderIndex, navigationController.headers.Length, canvas);
+        }
+
+        internal void SetCategoryPage(int page)
+        {
+            var categoryScrollRect = GetComponentInChildren<CategoryScrollRect>();
+
+            categoryScrollRect.SetPos(page);
+        }
+
+        internal IEnumerator FuckingFixScrollPosition(CategoryScrollRect csr)
+        {
+            yield return new WaitForEndOfFrame();
+            Debug.Log("doing");
+            csr.horizontalNormalizedPosition = 0f;
+            LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)csr.transform);
         }
 
         internal void LoadOptionListFromCategory(int containerIndex, int categoryIndex, int categories, Transform canvas)
@@ -992,6 +1039,9 @@ namespace RiskOfOptions.OptionComponents
 
                 GameObject.DestroyImmediate(buttonGameObject);
             }
+
+            //_leftGlyph.SetActive(false);
+            //_rightGlyph.SetActive(false);
         }
 
         internal void UnloadExistingOptionButtons(Transform op)
@@ -1032,6 +1082,11 @@ namespace RiskOfOptions.OptionComponents
             GameObject.DestroyImmediate(_optionDescriptionPanel);
             GameObject.DestroyImmediate(_categoryHeaderHighlight);
             GameObject.DestroyImmediate(modListHighlight);
+            GameObject.DestroyImmediate(Prefabs.Gdp);
+            GameObject.DestroyImmediate(Prefabs.MoCanvas);
+            GameObject.DestroyImmediate(Prefabs.MoHeaderButtonPrefab);
+            GameObject.DestroyImmediate(Prefabs.MoPanelPrefab);
+            GameObject.DestroyImmediate(Prefabs.ModButtonPrefab);
 
             OptionSerializer.Save(ModSettingsManager.OptionContainers.ToArray());
         }

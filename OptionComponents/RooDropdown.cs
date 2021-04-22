@@ -34,6 +34,8 @@ namespace RiskOfOptions.OptionComponents
         private ColorBlock _defaultColors;
         private ColorBlock _selectedColors;
 
+        private bool heldDown = false;
+
         private bool Showing => _template.activeSelf;
 
         public bool allowAllEventSystems;
@@ -65,11 +67,26 @@ namespace RiskOfOptions.OptionComponents
             if (!Showing)
                 return;
 
-            if (!Input.GetKey(KeyCode.Mouse0) && !Input.GetKey(KeyCode.Mouse1) && !Input.GetKey(KeyCode.Escape))
+            bool validKey = Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.Mouse1) || Input.GetKeyDown(KeyCode.Escape);
+
+            bool validKeyReleased = Input.GetKeyUp(KeyCode.Mouse0) || Input.GetKeyUp(KeyCode.Mouse1) || Input.GetKeyUp(KeyCode.Escape);
+
+            if (validKeyReleased && heldDown)
+            {
+                heldDown = false;
+                return;
+            }
+
+            if (!validKey)
+                return;
+
+            if (heldDown)
                 return;
 
             if (!_isPointerInside || Input.GetKey(KeyCode.Escape))
                 Hide();
+
+            heldDown = true;
         }
 
         protected override void OnDestroy()

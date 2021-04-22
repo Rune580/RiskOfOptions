@@ -48,6 +48,12 @@ namespace RiskOfOptions
 
             ModSettingsManager.CreateCategory("Testing New System");
 
+            ModSettingsManager.CreateCategory("Extra 1");
+            ModSettingsManager.CreateCategory("Extra 2");
+            ModSettingsManager.CreateCategory("Extra 3");
+            ModSettingsManager.CreateCategory("Extra 4");
+            ModSettingsManager.CreateCategory("Extra 5");
+
             ModSettingsManager.AddOption(new CheckBox(){ Name = "Test", CategoryName = "Testing New System", DefaultValue = true, Description = "Lig ball", OnValueChanged = DoVisibility, InvokeValueChangedEventOnStart = true });
 
             ModSettingsManager.AddOption(new KeyBind(){ Name = "Test KeyBind" , CategoryName = "Testing New System", DefaultValue = KeyCode.G, Description = "This is yet another Description", IsVisible = false });
