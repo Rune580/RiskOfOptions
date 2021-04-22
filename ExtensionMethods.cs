@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using BepInEx;
+using BepInEx.Logging;
 using R2API;
 using R2API.Utils;
 using RiskOfOptions.Containers;
@@ -22,7 +23,7 @@ namespace RiskOfOptions
             {
                 if (container.ModGuid == option.ModGuid)
                 {
-                    Debug.Log($"Found Container for {option.Name}, under {option.ModGuid}", BepInEx.Logging.LogLevel.Debug);
+                    Debug.Log($"Found Container for {option.Name}, under {option.ModGuid}", LogLevel.Debug);
                     container.Add(ref option);
                     return;
                 }
@@ -64,7 +65,7 @@ namespace RiskOfOptions
 
                     if (!foundCategory)
                     {
-                        Debug.Log($"Did not find a matching Category for {mo.Name}, creating a new one under {mo.CategoryName} \n This category will have no description, please create a category before assigning to it!", BepInEx.Logging.LogLevel.Warning);
+                        Debug.Log($"Did not find a matching Category for {mo.Name}, creating a new one under {mo.CategoryName} \n This category will have no description, please create a category before assigning to it!", LogLevel.Warning);
 
                         OptionCategory newCategory = new OptionCategory(mo.CategoryName, mo.ModGuid);
 
@@ -93,7 +94,7 @@ namespace RiskOfOptions
 
             if (mo.CategoryName != "")
             {
-                Debug.Log($"Did not find a matching Category for {mo.Name}, creating a new one under {mo.CategoryName} \n This category will have no description, please create a category before assigning to it!", BepInEx.Logging.LogLevel.Warning);
+                Debug.Log($"Did not find a matching Category for {mo.Name}, creating a new one under {mo.CategoryName} \n This category will have no description, please create a category before assigning to it!", LogLevel.Warning);
 
                 OptionCategory newCategory = new OptionCategory(mo.CategoryName, mo.ModGuid);
 
@@ -158,7 +159,7 @@ namespace RiskOfOptions
                     throw new Exception($"No container exists for this ModGUID: {modGuid} !");
 
 
-                Debug.Log($"Container not found for {modGuid}, Creating one.", BepInEx.Logging.LogLevel.Debug);
+                Debug.Log($"Container not found for {modGuid}, Creating one.", LogLevel.Debug);
                 containers.Add(new OptionContainer(modGuid, modName));
 
                 generateIfNotFound = false;
@@ -197,10 +198,60 @@ namespace RiskOfOptions
             }
             catch
             {
-                // Not in containers yet.
+                // Not in containers;
             }
 
             return indexes;
+        }
+
+        internal static float Remap(this float value, float fromMin, float fromMax, float toMin, float toMax)
+        {
+            return (value - fromMin) / (toMin - fromMin) * (toMax - fromMax) + fromMax;
+        }
+
+        // https://answers.unity.com/questions/530178/how-to-get-a-component-from-an-object-and-add-it-t.html - thanks
+        internal static T GetCopyOf<T>(this Component comp, T other) where T : Component
+        {
+            Type type = comp.GetType();
+            if (type != other.GetType()) return null; // type mis-match
+            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Default;
+            PropertyInfo[] pinfos = type.GetProperties(flags);
+            foreach (var pinfo in pinfos)
+            {
+                if (pinfo.CanWrite)
+                {
+                    try
+                    {
+                        pinfo.SetValue(comp, pinfo.GetValue(other, null), null);
+                    }
+                    catch
+                    {
+                        // In case of NotImplementedException being thrown.
+                    }
+                }
+            }
+            FieldInfo[] finfos = type.GetFields(flags);
+            foreach (var finfo in finfos)
+            {
+                finfo.SetValue(comp, finfo.GetValue(other));
+            }
+            return comp as T;
+        }
+
+        // https://answers.unity.com/questions/530178/how-to-get-a-component-from-an-object-and-add-it-t.html - thanks
+        internal static T AddComponent<T>(this GameObject go, T toAdd) where T : Component
+        {
+            return go.AddComponent<T>().GetCopyOf(toAdd) as T;
+        }
+
+        internal static T GetOrAddComponent<T>(this GameObject gameObject) where T : Component
+        {
+            T component = gameObject.GetComponent<T>();
+
+            if (!component)
+                component = gameObject.AddComponent<T>();
+
+            return component;
         }
 
         internal struct ModInfo

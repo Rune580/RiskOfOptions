@@ -4,8 +4,10 @@ using System.Globalization;
 using System.Text;
 using R2API;
 using RiskOfOptions.Interfaces;
+using RiskOfOptions.OptionComponents;
 using RiskOfOptions.OptionOverrides;
 using RiskOfOptions.Structs;
+using RoR2.UI;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -13,26 +15,33 @@ namespace RiskOfOptions.Options
 {
     public class DropDownOption : RiskOfOption, IIntProvider
     {
-        public UnityAction<int> OnValueChangedChoice { get; set; }
+        public List<UnityAction<int>> Events { get; set; } = new List<UnityAction<int>>();
 
         private int _value;
+
+        private string[] _choices;
 
         internal DropDownOption(string modGuid, string modName, string name, object[] description, string defaultValue, string categoryName, string[] choices, bool visibility, bool restartRequired, UnityAction<int> unityAction, bool invokeValueChangedEvent)
             : base(modGuid, modName, name, description, defaultValue, categoryName, null, visibility, restartRequired, invokeValueChangedEvent)
         {
             Value = (int) int.Parse(defaultValue, CultureInfo.InvariantCulture);
 
-            OnValueChangedChoice = unityAction;
+            if (unityAction != null)
+            {
+                Events.Add(unityAction);
+            }
+
+            _choices = choices;
 
             OptionToken = $"{ModSettingsManager.StartingText}.{modGuid}.{modName}.category_{categoryName.Replace(".", "")}.{name}.dropdown".ToUpper().Replace(" ", "_");
 
             RegisterTokens();
-            RegisterChoiceTokens(choices);
+            RegisterChoiceTokens();
         }
 
-        private void RegisterChoiceTokens(string[] choices)
+        private void RegisterChoiceTokens()
         {
-            foreach (var choice in choices)
+            foreach (var choice in _choices)
             {
                 string token = $"{OptionToken}_choice-{choice}".ToUpper().Replace(" ", "_");
                 LanguageAPI.Add(token, choice);
@@ -42,12 +51,47 @@ namespace RiskOfOptions.Options
         public int Value
         {
             get => _value;
-            set => _value = value;
+            set
+            {
+                if (_value == value)
+                    return;
+
+                _value = value;
+
+                InvokeListeners();
+            }
         }
 
         public override GameObject CreateOptionGameObject(RiskOfOption option, GameObject prefab, Transform parent)
         {
-            return base.CreateOptionGameObject(option, prefab, parent);
+            GameObject button = GameObject.Instantiate(prefab, parent);
+
+            var dropDownController = button.GetComponentInChildren<DropDownController>();
+
+            dropDownController.choices = _choices;
+
+            dropDownController.settingName = option.ConsoleToken;
+            dropDownController.nameToken = option.NameToken;
+
+            button.name = $"Mod Option Drop Down, {option.Name}";
+
+            return button;
+        }
+
+        public override void InvokeListeners()
+        {
+            foreach (var action in Events)
+            {
+                action.Invoke(Value);
+            }
+        }
+
+        public void InvokeListeners(int value)
+        {
+            foreach (var action in Events)
+            {
+                action.Invoke(value);
+            }
         }
 
         public override string GetValueAsString()

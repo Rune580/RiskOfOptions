@@ -69,12 +69,12 @@ namespace RiskOfOptions.OptionComponents
                     slider.transform.parent.Find("TextArea").GetComponent<UnityEngine.UI.Image>().color = slider.colors.disabledColor;
                 }
 
-                if (tempOption is SliderOption overridenSettingsSlider)
-                {
-                    GetComponentInChildren<SettingsSlider>()?.MoveSlider(((SliderOverride)overridenSettingsSlider.OptionOverride).ValueToReturnWhenOverriden);
-                    GetComponentInChildren<SettingsStepSlider>()?.MoveSlider(((SliderOverride)overridenSettingsSlider.OptionOverride).ValueToReturnWhenOverriden);
-                }
-                else if (tempOption is CheckBoxOption overridenCheckBoxOption)
+                //if (tempOption is SliderOption overridenSettingsSlider)
+                //{
+                //    GetComponentInChildren<SettingsSlider>()?.MoveSlider(((SliderOverride)overridenSettingsSlider.OptionOverride).ValueToReturnWhenOverriden);
+                //    GetComponentInChildren<SettingsStepSlider>()?.MoveSlider(((SliderOverride)overridenSettingsSlider.OptionOverride).ValueToReturnWhenOverriden);
+                //}
+                if (tempOption is CheckBoxOption overridenCheckBoxOption)
                 {
                     if (!onEnable)
                     {
@@ -102,12 +102,20 @@ namespace RiskOfOptions.OptionComponents
                     slider.transform.parent.Find("TextArea").GetComponent<UnityEngine.UI.Image>().color = GetComponent<HGButton>().colors.normalColor;
                 }
 
-                if (tempOption is SliderOption overridenSettingsSlider)
-                {
-                    GetComponentInChildren<SettingsSlider>()?.MoveSlider(tempOption.GetValue<float>());
-                    GetComponentInChildren<SettingsStepSlider>()?.MoveSlider(tempOption.GetValue<float>());
-                }
-                else if (tempOption is CheckBoxOption overridenCheckBoxOption)
+                //if (tempOption is SliderOption overridenSettingsSlider)
+                //{ 
+                //    var slider = GetComponentInChildren<SettingsSlider>();
+
+                //    if (slider != null)
+                //    {
+                //        float newValue = overridenSettingsSlider.Value.Remap(0, 100, slider.minValue, slider.maxValue);
+                //        slider.slider.value = newValue;
+                //    }
+
+                //    GetComponentInChildren<SettingsSlider>()?.MoveSlider(tempOption.GetValue<float>());
+                //    GetComponentInChildren<SettingsStepSlider>()?.MoveSlider(tempOption.GetValue<float>());
+                //}
+                if (tempOption is CheckBoxOption overridenCheckBoxOption)
                 {
                     if (!onEnable)
                     {

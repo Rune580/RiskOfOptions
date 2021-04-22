@@ -4,6 +4,7 @@ using BepInEx.Configuration;
 using R2API.Utils;
 using RiskOfOptions.OptionConstructors;
 using RiskOfOptions.OptionOverrides;
+using RiskOfOptions.Options;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -26,6 +27,8 @@ namespace RiskOfOptions
         private ConfigEntry<bool> testBool;
         private ConfigEntry<float> testFloat;
         private ConfigEntry<float> testFloatStepped;
+
+        private ConfigEntry<float> testFloatOverride;
 
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Awake is automatically called by Unity")]
@@ -63,10 +66,13 @@ namespace RiskOfOptions
 
             testFloatStepped = Config.Bind("Test BepInEx Config", "testSliderStepped", 1.5f, "lig me dude 2");
 
+            testFloatOverride = Config.Bind("Test BepInEx Config", "testSliderOverridden", 50f, "lig me dude 3");
 
             testBool.SettingChanged += ConfigEntryBoolTest;
 
             testKeyboard.SettingChanged += ConfigEntryKeyBindTest;
+
+            ModSettingsManager.AddOption(new DropDown() { Name = "Test Drop Down", CategoryName = "Testing New System", DefaultValue = 0, Choices = new[] {"Choice 1", "Choice 2", "Choice 3", "Choice 4", "Choice 5", "Choice 6", "Choice 7", "Choice 8", "Choice 9", "Choice 10" }, Description = "Test Drop Down with 5 choices" , OnValueChanged = ChoiceTest });
 
             ModSettingsManager.AddOption(new CheckBox() { ConfigEntry = testBool });
 
@@ -88,13 +94,17 @@ namespace RiskOfOptions
 
             ModSettingsManager.AddOption(new CheckBox() { Name = "To Be Overridden", CategoryName = "Testing New System", DefaultValue = true, Description = "Lig ball but disabled", Override = checkBoxOverride , OnValueChanged = OverrideTest });
 
-            //SliderOverride musicOverride = new SliderOverride()
-            //{
-            //    Name = "Enable Music",
-            //    CategoryName = "Audio",
-            //    OverrideOnTrue = false,
-            //    ValueToReturnWhenOverriden = 0f
-            //};
+
+            SliderOverride musicOverride = new SliderOverride()
+            {
+                Name = "Test Override",
+                CategoryName = "Testing New System",
+                OverrideOnTrue = true,
+                ValueToReturnWhenOverriden = 0f
+            };
+
+
+            ModSettingsManager.AddOption(new Slider() {ConfigEntry = testFloatOverride, Name = "Better Name", CategoryName = "Testing New System" , Override = musicOverride});
 
             //ModSettingsManager.AddSlider("Music Slider", "This is another Description", 50f, 10f, 69f, "Audio");
 
@@ -133,6 +143,11 @@ namespace RiskOfOptions
         private void OverrideTest(bool lig)
         {
             Debug.Log(lig);
+        }
+
+        private void ChoiceTest(int choice)
+        {
+            Debug.Log($"Choice set to index: {choice}");
         }
     }
 }

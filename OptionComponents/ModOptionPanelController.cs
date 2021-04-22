@@ -13,6 +13,7 @@ using RoR2.UI.SkinControllers;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+#pragma warning disable 618
 
 namespace RiskOfOptions.OptionComponents
 {
@@ -80,8 +81,12 @@ namespace RiskOfOptions.OptionComponents
             Prefabs.ModButtonPrefab = GameObject.Instantiate(verticalLayout.transform.Find("SettingsEntryButton, Bool (Audio Focus)").gameObject);
 
             _checkBoxPrefab = GameObject.Instantiate(Prefabs.ModButtonPrefab);
+
             _sliderPrefab = GameObject.Instantiate(verticalLayout.transform.Find("SettingsEntryButton, Slider (Master Volume)").gameObject);
             _keyBindPrefab = GameObject.Instantiate(subPanelArea.Find("SettingsSubPanel, Controls (M&KB)").Find("Scroll View").Find("Viewport").Find("VerticalLayout").Find("SettingsEntryButton, Binding (Jump)").gameObject);
+            _dropDownPrefab = GameObject.Instantiate(subPanelArea.Find("SettingsSubPanel, Video").Find("Scroll View").Find("Viewport").Find("VerticalLayout").Find("Option, Resolution").gameObject);
+
+            _dropDownPrefab.SetActive(false);
 
             #region KeybindPrefabCleaning
 
@@ -92,9 +97,81 @@ namespace RiskOfOptions.OptionComponents
 
             #endregion
 
+            #region DropDown Prefab Set up
+
+            GameObject.DestroyImmediate(_dropDownPrefab.transform.Find("CarouselRect").GetComponent<ResolutionControl>()); // Removing this entirely since it seems to mostly be made for resolution stuff.
+            GameObject.DestroyImmediate(_dropDownPrefab.transform.Find("CarouselRect").Find("RefreshRateDropdown").gameObject); // I only really need one Drop down element.
+            GameObject.DestroyImmediate(_dropDownPrefab.transform.Find("CarouselRect").Find("ApplyButton").gameObject); // I think most use cases don't need an apply button. If I think otherwise later I can make this optional
+            GameObject.DestroyImmediate(_dropDownPrefab.GetComponent<SelectableDescriptionUpdater>());
+            GameObject.DestroyImmediate(_dropDownPrefab.GetComponent<PanelSkinController>());
+            GameObject.DestroyImmediate(_dropDownPrefab.GetComponent<Image>());
+
+
+            GameObject.Instantiate(_checkBoxPrefab.transform.Find("BaseOutline").gameObject, _dropDownPrefab.transform);
+            GameObject dropDownHoverOutline = GameObject.Instantiate(_checkBoxPrefab.transform.Find("HoverOutline").gameObject, _dropDownPrefab.transform);
+
+            HGButton dropDownButton = _dropDownPrefab.AddComponent<HGButton>(_checkBoxPrefab.GetComponent<HGButton>());
+
+            dropDownButton.imageOnHover = dropDownHoverOutline.GetComponent<Image>();
+
+            var dropDownImage = _dropDownPrefab.AddComponent(_checkBoxPrefab.GetComponent<Image>());
+
+            _dropDownPrefab.AddComponent<ButtonSkinController>(_checkBoxPrefab.GetComponent<ButtonSkinController>());
+
+            var dropDownTargetGraphic = dropDownImage;
+
+            dropDownButton.targetGraphic = dropDownTargetGraphic;
+            dropDownButton.navigation = new Navigation();
+
+            dropDownButton.onClick.RemoveAllListeners();
+
+            _dropDownPrefab.AddComponent<DropDownController>().nameLabel = _dropDownPrefab.transform.Find("Text, Name").GetComponent<LanguageTextMeshController>();
+
+            var dropDownGameObject = _dropDownPrefab.transform.Find("CarouselRect").Find("ResolutionDropdown").gameObject;
+
+            dropDownGameObject.name = "Dropdown";
+
+            var dropDownLayoutElement = dropDownGameObject.GetComponent<LayoutElement>();
+            dropDownLayoutElement.minWidth = 300;
+            dropDownLayoutElement.preferredWidth = 300;
+
+            if (!RooDropdown.CheckMarkSprite)
+            {
+                RooDropdown.CheckMarkSprite = dropDownGameObject.transform.Find("Template").Find("Viewport").Find("Content").Find("Item").Find("Item Checkmark").GetComponent<Image>().sprite;
+            }
+
+            GameObject.DestroyImmediate(dropDownGameObject.GetComponent<MPDropdown>());
+            GameObject.DestroyImmediate(dropDownGameObject.transform.Find("Template").gameObject);
+
+            dropDownGameObject.AddComponent<RooDropdown>().colors = _checkBoxPrefab.GetComponent<HGButton>().colors;
+
+            //var choiceItem = dropDownGameObject.transform.Find("Template").Find("Viewport").Find("Content").Find("Item").gameObject;
+            
+            //GameObject.DestroyImmediate(choiceItem.GetComponent<Toggle>());
+
+            //var rooToggle = choiceItem.AddComponent<RooToggle>();
+            //rooToggle.interactable = true;
+            //rooToggle.targetGraphic = choiceItem.transform.Find("Item Background").GetComponent<Image>();
+            //rooToggle.isOn = true;
+            //rooToggle.toggleTransition = Toggle.ToggleTransition.Fade;
+            //rooToggle.graphic = choiceItem.transform.Find("Item Checkmark").GetComponent<Image>();
+
+
+            #endregion
             _checkBoxPrefab.SetActive(false);
             _sliderPrefab.SetActive(false);
             _keyBindPrefab.SetActive(false);
+            //_dropDownPrefab.SetActive(false);
+
+            if (!RooDropdown.CheckBoxPrefab)
+            {
+                RooDropdown.CheckBoxPrefab = _checkBoxPrefab;
+            }
+
+            if (!RooDropdown.PanelPrefab)
+            {
+                RooDropdown.PanelPrefab = Prefabs.MoPanelPrefab;
+            }
 
             GameObject.DestroyImmediate(Prefabs.ModButtonPrefab.GetComponentInChildren<CarouselController>());
             GameObject.DestroyImmediate(Prefabs.ModButtonPrefab.GetComponentInChildren<ButtonSkinController>());
@@ -484,6 +561,8 @@ namespace RiskOfOptions.OptionComponents
             headers.Add(header);
 
             GetComponent<HGHeaderNavigationController>().headers = headers.ToArray();
+
+            transform.Find("SafeArea").Find("HeaderContainer").Find("Header (JUICED)").Find("GenericGlyph (Right)").SetAsLastSibling();
         }
 
 
@@ -656,8 +735,11 @@ namespace RiskOfOptions.OptionComponents
                     StepSliderOption stepSliderOption => option.CreateOptionGameObject(option, _sliderPrefab, verticalLayoutTransform),
                     SliderOption sliderOption => option.CreateOptionGameObject(option, _sliderPrefab, verticalLayoutTransform),
                     KeyBindOption keyBindOption => option.CreateOptionGameObject(option, _keyBindPrefab, verticalLayoutTransform),
-                    _ => throw new ArgumentOutOfRangeException()
+                    DropDownOption dropDownOption => option.CreateOptionGameObject(option, _dropDownPrefab, verticalLayoutTransform),
+                    _ => throw new ArgumentOutOfRangeException(option.Name)
                 };
+
+                button.AddComponent<OptionIdentity>().optionToken = option.OptionToken;
 
                 if (option.OptionOverride != null)
                 {
@@ -673,14 +755,17 @@ namespace RiskOfOptions.OptionComponents
 
                 CanvasGroup canvasGroup = button.AddComponent<CanvasGroup>();
 
-                button.AddComponent<OptionIdentity>().optionToken = option.OptionToken;
+                var buttonComponent = button.GetComponentInChildren<HGButton>();
 
-                button.GetComponentInChildren<HGButton>().hoverToken = option.OptionToken;
-
-                button.GetComponentInChildren<HGButton>().onSelect.AddListener(new UnityAction(delegate()
+                if (buttonComponent)
                 {
-                    canvas.Find("Option Description Panel").GetComponentInChildren<HGTextMeshProUGUI>().SetText(option.GetDescriptionAsString());
-                }));
+                    button.GetComponentInChildren<HGButton>().hoverToken = option.OptionToken;
+
+                    button.GetComponentInChildren<HGButton>().onSelect.AddListener(new UnityAction(delegate ()
+                    {
+                        canvas.Find("Option Description Panel").GetComponentInChildren<HGTextMeshProUGUI>().SetText(option.GetDescriptionAsString());
+                    }));
+                }
 
                 if (!option.Visibility)
                 {

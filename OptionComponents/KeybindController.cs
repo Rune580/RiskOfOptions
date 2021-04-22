@@ -24,9 +24,9 @@ namespace RiskOfOptions.OptionComponents
 
         protected new void Awake()
         {
-            settingSource = (BaseSettingsControl.SettingSource) 2;
+            settingSource = (SettingSource) 2;
 
-            if (base.settingName == "")
+            if (settingName == "")
                 return;
 
             base.Awake();
@@ -57,6 +57,8 @@ namespace RiskOfOptions.OptionComponents
                 return;
 
             _timeoutTimer -= Time.unscaledDeltaTime;
+
+            //Debug.Log(Input.inputString);
 
             if (Input.GetKey(KeyCode.LeftShift))
             {
@@ -212,7 +214,7 @@ namespace RiskOfOptions.OptionComponents
 
         private void SetDisplay()
         {
-            string displayText = ((KeyCode) int.Parse(base.GetCurrentValue())).ToString();
+            string displayText = ((KeyCode) int.Parse(GetCurrentValue())).ToString();
 
             switch (displayText)
             {

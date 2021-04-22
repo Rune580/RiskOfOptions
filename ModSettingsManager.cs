@@ -118,7 +118,7 @@ namespace RiskOfOptions
                             keyBindOption.InvokeListeners(option.GetValue<KeyCode>());
                             break;
                         case DropDownOption dropDownOption:
-                            dropDownOption.OnValueChangedChoice?.Invoke(option.GetValue<int>());
+                            dropDownOption.InvokeListeners(option.GetValue<int>());
                             break;
                     }
                 }
@@ -162,6 +162,15 @@ namespace RiskOfOptions
 
             if (OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer] is IKeyCodeProvider keyCodeProvider)
                 keyCodeProvider.Events.Add(unityAction);
+        }
+
+        public static void AddListener(UnityEngine.Events.UnityAction<int> unityAction, string name, string categoryName = "Main")
+        {
+            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
+            Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
+
+            if (OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer] is IIntProvider intProvider)
+                intProvider.Events.Add(unityAction);
         }
 
         public static RiskOfOption GetOption(string name, string categoryName = "Main")

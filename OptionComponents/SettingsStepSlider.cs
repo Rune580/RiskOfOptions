@@ -74,7 +74,7 @@ namespace RiskOfOptions.OptionComponents
 
             if (TextSerialization.TryParseInvariant(newString, out float value))
             {
-                value = (value * increment) + internalMinValue;
+                value = value.Remap(minValue, maxValue, internalMinValue, internalMaxValue);
                 SubmitSetting(TextSerialization.ToStringInvariant(value));
             }
                 
