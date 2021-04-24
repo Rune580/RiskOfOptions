@@ -39,9 +39,9 @@ namespace RiskOfOptions.OptionComponents
         private IEnumerator _indicatorAnimator;
         private IEnumerator _colorAnimator;
 
-        private const int Spacing = 4;
-        private const int DotScale = 8;
-        private const int OutlineScale = 12;
+        private const int Spacing = 0;
+        private const int DotScale = 40;
+        private const int OutlineScale = 30;
 
         private static readonly Color InActiveColor = new Color(0.3f, 0.3f, 0.3f, 1);
 
@@ -90,16 +90,22 @@ namespace RiskOfOptions.OptionComponents
             _indicatorHolder = new GameObject("Indicators", typeof(RectTransform), typeof(HorizontalLayoutGroup));
             _indicatorHolder.transform.SetParent(transform);
 
-            var holderRectTransform = _indicatorHolder.GetComponent<RectTransform>();
-
-            holderRectTransform.anchoredPosition = new Vector2(0, -36);
-            holderRectTransform.sizeDelta = Vector2.zero;
-
             var horizontalLayoutGroup = _indicatorHolder.GetComponent<HorizontalLayoutGroup>();
 
             horizontalLayoutGroup.spacing = Spacing;
 
-            _indicatorDotPrefab = new GameObject("Indicator Dot", typeof(RectTransform), typeof(LayoutElement), typeof(CanvasRenderer), typeof(Image));
+            horizontalLayoutGroup.childForceExpandHeight = false;
+            horizontalLayoutGroup.childForceExpandWidth = false;
+            horizontalLayoutGroup.childAlignment = TextAnchor.LowerCenter;
+
+            var holderRectTransform = _indicatorHolder.GetComponent<RectTransform>();
+
+            holderRectTransform.anchorMin = new Vector2(0, 0);
+            holderRectTransform.anchorMax = new Vector2(1, 1);
+            holderRectTransform.sizeDelta = Vector2.zero;
+            holderRectTransform.anchoredPosition = new Vector2(0, -8);
+
+            _indicatorDotPrefab = new GameObject("Indicator Dot", typeof(RectTransform), typeof(LayoutElement), typeof(CanvasRenderer), typeof(Image), typeof(Button));
             _indicatorDotPrefab.transform.SetParent(transform);
             _indicatorDotPrefab.SetActive(false);
 
@@ -111,8 +117,8 @@ namespace RiskOfOptions.OptionComponents
 
             var dotLayoutElement = _indicatorDotPrefab.GetComponent<LayoutElement>();
 
-            dotLayoutElement.minWidth = DotScale;
-            dotLayoutElement.minHeight = DotScale;
+            dotLayoutElement.preferredHeight = DotScale;
+            dotLayoutElement.preferredWidth = DotScale;
 
             _indicatorOutlinePrefab = new GameObject("Indicator Outline", typeof(RectTransform), typeof(LayoutElement), typeof(CanvasRenderer), typeof(Image));
             _indicatorOutlinePrefab.transform.SetParent(_indicatorHolder.transform);
@@ -124,6 +130,8 @@ namespace RiskOfOptions.OptionComponents
             
             outlineRectTransform.pivot = Vector2.zero;
             outlineRectTransform.sizeDelta = new Vector2(OutlineScale, OutlineScale);
+            outlineRectTransform.anchorMin = new Vector2(0, 1);
+            outlineRectTransform.anchorMax = new Vector2(0, 1);
 
             var outlineLayoutElement = _indicatorOutlinePrefab.GetComponent<LayoutElement>();
 
@@ -132,24 +140,24 @@ namespace RiskOfOptions.OptionComponents
 
         private void AddIndicators()
         {
-            float offset = 0;
-
             _indicators = new GameObject[_pages];
 
             for (int i = 0; i < _pages; i++)
             {
                 var indicator = GameObject.Instantiate(_indicatorDotPrefab, _indicatorHolder.transform);
+
+                var button = indicator.GetComponent<Button>();
+
+                int page = i;
+                button.onClick.AddListener(delegate()
+                {
+                    SetPage(page);
+                });
                 
                 indicator.SetActive(true);
 
                 _indicators[i] = indicator;
-
-                offset = (Spacing + DotScale) * i;
             }
-
-            var holderRectTransform = _indicatorHolder.GetComponent<RectTransform>();
-
-            holderRectTransform.anchoredPosition = new Vector2(-offset, holderRectTransform.anchoredPosition.y);
         }
 
         private void RefreshButtons()
@@ -176,8 +184,8 @@ namespace RiskOfOptions.OptionComponents
 
         private void StartIndicators()
         {
-            _indicatorOutlinePrefab.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -8);
             _indicatorOutlinePrefab.transform.SetAsLastSibling();
+            _indicatorOutlinePrefab.GetComponent<RectTransform>().anchoredPosition = _indicators[0].GetComponent<RectTransform>().anchoredPosition;
 
             for (int i = 0; i < _indicators.Length; i++)
             {
@@ -207,7 +215,7 @@ namespace RiskOfOptions.OptionComponents
 
         }
 
-        private void SetPage(int page)
+        internal void SetPage(int page)
         {
             _currentPage = page;
 
@@ -261,7 +269,7 @@ namespace RiskOfOptions.OptionComponents
 
             var indicatorRectTransform = _indicatorOutlinePrefab.GetComponent<RectTransform>();
 
-            var newPos = new Vector2((Spacing + DotScale) * page, -8);
+            var newPos = _indicators[page].GetComponent<RectTransform>().anchoredPosition;
 
             while (!ExtensionMethods.CloseEnough(indicatorRectTransform.anchoredPosition, newPos) && !ExtensionMethods.CloseEnough(image.color, Color.white))
             {

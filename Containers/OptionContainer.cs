@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using BepInEx.Logging;
 using RiskOfOptions.Options;
 using UnityEngine;
 using Object = System.Object;
@@ -80,11 +81,19 @@ namespace RiskOfOptions.Containers
         internal void Add(ref OptionCategory option)
         {
             _options.Add(ref option);
+            if (_options.Options.Count > 80)
+            {
+                Debug.Log($"Hey! Mod: {ModName}, has added over 80 categories to its menu! The mod options menu may not look as intended!", LogLevel.Warning);
+            }
         }
 
         internal void Insert(ref OptionCategory option)
         {
             _options.Insert(ref option);
+            if (_options.Options.Count > 80)
+            {
+                Debug.Log($"Hey! Mod: {ModName}, has added over 80 categories to its menu! The mod options menu may not look as intended!", LogLevel.Warning);
+            }
         }
     }
 }
