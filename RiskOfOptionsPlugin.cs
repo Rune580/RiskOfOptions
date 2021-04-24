@@ -46,17 +46,17 @@ namespace RiskOfOptions
             ModSettingsManager.CreateCategory("Test Sliders");
             ModSettingsManager.CreateCategory("Testing New System");
             ModSettingsManager.CreateCategory("Extra 1");
-
+            
             ModSettingsManager.CreateCategory("Extra 2");
             ModSettingsManager.CreateCategory("Extra 3");
             ModSettingsManager.CreateCategory("Extra 4");
             ModSettingsManager.CreateCategory("Extra 5");
-
+            
             ModSettingsManager.CreateCategory("Extra 6");
             ModSettingsManager.CreateCategory("Extra 7");
             ModSettingsManager.CreateCategory("Extra 8");
             ModSettingsManager.CreateCategory("Extra 9");
-
+            
             ModSettingsManager.CreateCategory("Extra 10");
             ModSettingsManager.CreateCategory("Extra 11");
             ModSettingsManager.CreateCategory("Extra 12");

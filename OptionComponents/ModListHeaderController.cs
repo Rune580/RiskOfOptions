@@ -8,7 +8,7 @@ namespace RiskOfOptions.OptionComponents
         private ModOptionPanelController _mopc;
         private void OnEnable()
         {
-            if (!GetComponentInParent<ModOptionPanelController>().initilized)
+            if (!GetComponentInParent<ModOptionPanelController>().initialized)
             {
                 return;
             }

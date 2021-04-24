@@ -23,7 +23,7 @@ namespace RiskOfOptions.OptionComponents
                 if (!Mopc)
                     Mopc = GetComponentInParent<ModOptionPanelController>();
 
-                if (!Mopc.initilized)
+                if (!Mopc.initialized)
                 {
                     return;
                 }

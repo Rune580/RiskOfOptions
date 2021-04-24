@@ -274,6 +274,22 @@ namespace RiskOfOptions
             return Mathf.Abs(a.r - b.r) < 0.0001f && Mathf.Abs(a.g - b.g) < 0.0001f && Mathf.Abs(a.b - b.b) < 0.0001f && Mathf.Abs(a.a - b.a) < 0.0001f;
         }
 
+        internal static bool CloseEnough(Color[] a, Color b)
+        {
+            for (int i = 0; i < a.Length; i++)
+            {
+                if (a[i] == null)
+                    continue;
+                
+                if (!CloseEnough(a[i], b))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         internal static Vector2 SmoothStep(Vector2 a, Vector2 b, float t)
         {
             Vector2 c = Vector2.zero;
@@ -282,6 +298,19 @@ namespace RiskOfOptions
             c.y = Mathf.SmoothStep(a.y, b.y, t);
 
             return c;
+        }
+
+        internal static double Abs(double num)
+        {
+            return num < 0 ? -1 * num : num;
+        }
+
+        internal static double RoundUpToDecimalPlace(this double num, int place)
+        {
+            var pow = Mathf.Pow(10, place);
+
+            pow = pow == 0 ? 1 : pow;
+            return Mathf.Ceil((float) num * pow) / pow;
         }
 
         internal struct ModInfo

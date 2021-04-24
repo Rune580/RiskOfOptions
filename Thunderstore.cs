@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using SimpleJSON;
 using System.Threading;
+using RiskOfOptions.Resources;
 using UnityEngine;
 
 namespace RiskOfOptions
@@ -28,10 +29,7 @@ namespace RiskOfOptions
         {
             _modIcons = new List<ModIconInfo>();
 
-            defaultIcon = Resources.Load<Sprite>("@RiskOfOptions:assets/RiskOfOptions/missing_icon.png");
-
-            Debug.Log($"Adding Startup Event");
-            ModSettingsManager.addStartupListener(GrabIcons);
+            defaultIcon = Assets.Load<Sprite>("assets/RiskOfOptions/missing_icon.png");
         }
 
         internal static void GrabIcons()

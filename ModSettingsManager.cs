@@ -52,7 +52,7 @@ namespace RiskOfOptions
 
             On.RoR2.Console.Awake += AwakeListeners;
 
-            LoadAssets();
+            Resources.Assets.LoadAssets();
 
             LanguageTokens.Register();
 
@@ -63,17 +63,6 @@ namespace RiskOfOptions
             SettingsMenu.Init();
 
             On.RoR2.PauseManager.CCTogglePause += PauseManagerOnCCTogglePause;
-        }
-
-
-        private static void LoadAssets()
-        {
-            using (var assetStream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"RiskOfOptions.Resources.riskofoptions"))
-            {
-                var MainAssetBundle = AssetBundle.LoadFromStream(assetStream);
-
-                ResourcesAPI.AddProvider(new AssetBundleResourcesProvider($"@RiskOfOptions", MainAssetBundle));
-            }
         }
 
         private static void AwakeListeners(Console.orig_Awake orig, RoR2.Console self)
@@ -125,6 +114,8 @@ namespace RiskOfOptions
             }
 
             Debug.Log($"Finished registering to console!");
+            
+            Thunderstore.GrabIcons();
 
             _initilized = true;
         }

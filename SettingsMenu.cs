@@ -19,7 +19,7 @@ namespace RiskOfOptions
 
         private static void FindPrefab()
         {
-            GameObject pauseMenuPrefab = Resources.Load<GameObject>("prefabs/ui/pausescreen");
+            GameObject pauseMenuPrefab = UnityEngine.Resources.Load<GameObject>("prefabs/ui/pausescreen");
 
             Prefabs.SettingsPanelPrefab = pauseMenuPrefab.GetComponentInChildren<PauseScreenController>().settingsPanelPrefab;
 

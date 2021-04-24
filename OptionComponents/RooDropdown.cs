@@ -29,12 +29,12 @@ namespace RiskOfOptions.OptionComponents
 
         private GameObject _template;
         private GameObject _content;
-        private GameObject[] buttonCache;
+        private GameObject[] _buttonCache;
 
         private ColorBlock _defaultColors;
         private ColorBlock _selectedColors;
 
-        private bool heldDown = false;
+        private bool _heldDown = false;
 
         private bool Showing => _template.activeSelf;
 
@@ -71,22 +71,22 @@ namespace RiskOfOptions.OptionComponents
 
             bool validKeyReleased = Input.GetKeyUp(KeyCode.Mouse0) || Input.GetKeyUp(KeyCode.Mouse1) || Input.GetKeyUp(KeyCode.Escape);
 
-            if (validKeyReleased && heldDown)
+            if (validKeyReleased && _heldDown)
             {
-                heldDown = false;
+                _heldDown = false;
                 return;
             }
 
             if (!validKey)
                 return;
 
-            if (heldDown)
+            if (_heldDown)
                 return;
 
             if (!_isPointerInside || Input.GetKey(KeyCode.Escape))
                 Hide();
 
-            heldDown = true;
+            _heldDown = true;
         }
 
         protected override void OnDestroy()
@@ -238,10 +238,10 @@ namespace RiskOfOptions.OptionComponents
 
         public void SetChoice(int index)
         {
-            bool cacheIsValid = buttonCache != null && buttonCache.Length != 0;
+            bool cacheIsValid = _buttonCache != null && _buttonCache.Length != 0;
 
             if (cacheIsValid)
-                buttonCache[_currentIndex].GetComponentInChildren<HGButton>().colors = _defaultColors;
+                _buttonCache[_currentIndex].GetComponentInChildren<HGButton>().colors = _defaultColors;
 
 
             _currentIndex = index;
@@ -252,10 +252,10 @@ namespace RiskOfOptions.OptionComponents
             _label.SetText(choices[_currentIndex]);
 
             if (cacheIsValid)
-                buttonCache[_currentIndex].GetComponentInChildren<HGButton>().colors = _selectedColors;
+                _buttonCache[_currentIndex].GetComponentInChildren<HGButton>().colors = _selectedColors;
         }
 
-        internal void SubmitChoice(int index)
+        private void SubmitChoice(int index)
         {
             OnValueChanged.Invoke(index);
             SetChoice(index);
@@ -264,15 +264,15 @@ namespace RiskOfOptions.OptionComponents
 
         private void DestroyImmediateChoices()
         {
-            if (buttonCache == null)
+            if (_buttonCache == null)
                 return;
 
-            foreach (var button in buttonCache)
+            foreach (var button in _buttonCache)
             {
                 GameObject.DestroyImmediate(button);
             }
 
-            buttonCache = Array.Empty<GameObject>();
+            _buttonCache = Array.Empty<GameObject>();
         }
 
         private void ToggleShow()
@@ -289,7 +289,7 @@ namespace RiskOfOptions.OptionComponents
 
         private void Show()
         {
-            if (buttonCache == null || buttonCache.Length == 0)
+            if (_buttonCache == null || _buttonCache.Length == 0)
             {
                 CreateChoices();
             }
@@ -297,7 +297,7 @@ namespace RiskOfOptions.OptionComponents
             _template.SetActive(true);
             _template.GetComponent<Canvas>().overrideSorting = true;
 
-            buttonCache[_currentIndex].GetComponentInChildren<HGButton>().colors = _selectedColors;
+            _buttonCache[_currentIndex].GetComponentInChildren<HGButton>().colors = _selectedColors;
 
         }
 
@@ -309,7 +309,7 @@ namespace RiskOfOptions.OptionComponents
 
         private void CreateChoices()
         {
-            buttonCache = new GameObject[choices.Length];
+            _buttonCache = new GameObject[choices.Length];
             for (int i = 0; i < choices.Length; i++)
             {
                 var button = GameObject.Instantiate(_dropDownChoicePrefab, _content.transform);
@@ -330,7 +330,7 @@ namespace RiskOfOptions.OptionComponents
                     SubmitChoice(index);
                 });
 
-                buttonCache[i] = button;
+                _buttonCache[i] = button;
             }
         }
 

@@ -7,6 +7,7 @@ using R2API;
 using R2API.Utils;
 using RiskOfOptions.Containers;
 using RiskOfOptions.Options;
+using RiskOfOptions.Resources;
 using RoR2;
 using RoR2.UI;
 using RoR2.UI.SkinControllers;
@@ -20,7 +21,7 @@ namespace RiskOfOptions.OptionComponents
 {
     public class ModOptionPanelController : MonoBehaviour
     {
-        public bool initilized = false;
+        public bool initialized = false;
 
         public GameObject modListPanel;
         public GameObject modListHighlight;
@@ -416,7 +417,8 @@ namespace RiskOfOptions.OptionComponents
             restartIconLayoutElement.ignoreLayout = true;
 
             Image restartIcon = restartIconGameObject.AddComponent<UnityEngine.UI.Image>();
-            restartIcon.sprite = Resources.Load<Sprite>("@RiskOfOptions:assets/RiskOfOptions/ror2RestartSymbol.png");
+            restartIcon.sprite = Assets.Load<Sprite>("assets/RiskOfOptions/ror2RestartSymbol.png");
+            //restartIcon.sprite = Resources.Load<Sprite>("@RiskOfOptions:assets/RiskOfOptions/ror2RestartSymbol.png");
             restartIcon.preserveAspect = true;
 
             restartIconRectTransform.pivot = new Vector2(0.5f, 0.5f);
@@ -981,7 +983,7 @@ namespace RiskOfOptions.OptionComponents
 
         internal void UnLoad(Transform canvas)
         {
-            if (!initilized)
+            if (!initialized)
                 return;
 
             var mdp = canvas.Find("Mod Description Panel").gameObject;
@@ -1061,7 +1063,7 @@ namespace RiskOfOptions.OptionComponents
         {
             //Debug.Log("Unloading Assets");
 
-            initilized = false;
+            initialized = false;
 
             GameObject.DestroyImmediate(_checkBoxPrefab);
             GameObject.DestroyImmediate(_sliderPrefab);
@@ -1087,7 +1089,7 @@ namespace RiskOfOptions.OptionComponents
 
         public void OnEnable()
         {
-            initilized = true;
+            initialized = true;
         }
     }
 }
