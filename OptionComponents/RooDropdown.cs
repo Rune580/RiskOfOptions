@@ -389,26 +389,6 @@ namespace RiskOfOptions.OptionComponents
 
             dropDownLayoutElement.minHeight = 40;
             dropDownLayoutElement.preferredHeight = 40;
-
-            //var checkMark = new GameObject("Checkmark");
-            //checkMark.transform.SetParent(_dropDownChoicePrefab.transform);
-
-            //var checkMarkRectTransform = checkMark.AddComponent<RectTransform>();
-
-            //checkMarkRectTransform.anchorMin = new Vector2(0, 0.5f);
-            //checkMarkRectTransform.anchorMax = new Vector2(0, 0.5f);
-            //checkMarkRectTransform.pivot = new Vector2(0.5f, 0.5f);
-
-            //checkMark.AddComponent<CanvasRenderer>();
-
-            //var checkMarkImage = checkMark.AddComponent<Image>();
-
-            //checkMarkImage.sprite = CheckMarkSprite;
-            //checkMarkImage.raycastTarget = true;
-            //checkMarkImage.type = Image.Type.Simple;
-            //checkMarkImage.preserveAspect = true;
-
-            //_dropDownChoicePrefab.transform.Find("HoverOutline")
         }
 
         public class DropDownEvent : UnityEvent<int>

@@ -10,6 +10,7 @@ using RiskOfOptions.Options;
 using RoR2;
 using RoR2.UI;
 using RoR2.UI.SkinControllers;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -181,6 +182,30 @@ namespace RiskOfOptions.OptionComponents
             GameObject.DestroyImmediate(Prefabs.ModButtonPrefab.transform.Find("CarouselRect").gameObject);
 
             _leftButton = GameObject.Instantiate(Prefabs.ModButtonPrefab);
+            GameObject.DestroyImmediate(_leftButton.GetComponent<LayoutElement>());
+
+            var leftButtonRectTransform = _leftButton.GetComponent<RectTransform>();
+            leftButtonRectTransform.sizeDelta = new Vector2(64, 64);
+            leftButtonRectTransform.anchoredPosition = new Vector2(60, -54);
+
+            _leftButton.GetComponentInChildren<LanguageTextMeshController>().token = LanguageTokens.LeftPageButton;
+
+            var leftButtonText = _leftButton.GetComponentInChildren<HGTextMeshProUGUI>();
+            leftButtonText.alignment = TextAlignmentOptions.Midline;
+            leftButtonText.enableAutoSizing = false;
+            leftButtonText.fontSize = 72;
+
+            _rightButton = GameObject.Instantiate(_leftButton);
+
+            _rightButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(1064, -54);
+
+            _rightButton.GetComponentInChildren<LanguageTextMeshController>().token = LanguageTokens.RightPageButton;
+
+            _leftButton.name = "Previous Category Page Button";
+            _rightButton.name = "Next Category Page Button";
+
+            _leftButton.SetActive(false);
+            _rightButton.SetActive(false);
 
             // Converting a HGButton to a ROOButton so we can modify it better.
 
@@ -492,7 +517,7 @@ namespace RiskOfOptions.OptionComponents
             categoryScrollRect.horizontal = true;
             categoryScrollRect.vertical = false;
 
-            categoryScrollRect.movementType = ScrollRect.MovementType.Clamped;
+            categoryScrollRect.movementType = ScrollRect.MovementType.Unrestricted;
 
             categoryScrollRect.viewport = categoryViewPortHeaderRectTransform;
 
@@ -688,8 +713,10 @@ namespace RiskOfOptions.OptionComponents
 
             var categoryScrollRect = ch.GetComponentInChildren<CategoryScrollRect>();
 
-            categoryScrollRect.pages = Mathf.CeilToInt(container.GetCategoriesCached().Count / 4f);
-            
+            categoryScrollRect.Categories = container.GetCategoriesCached().Count;
+
+            var previousPageButton = GameObject.Instantiate(_leftButton, ch.transform.Find("Scroll View"));
+            previousPageButton.SetActive(true);
 
             for (int i = 0; i < container.GetCategoriesCached().Count; i++)
             {
@@ -734,30 +761,14 @@ namespace RiskOfOptions.OptionComponents
 
             navigationController.InvokeMethod("RebuildHeaders");
 
-            //StartCoroutine(FuckingFixScrollPosition(categoryScrollRect));
+            var nextPageButton = GameObject.Instantiate(_rightButton, ch.transform.Find("Scroll View"));
 
-            //SetCategoryPage(0);
-            //ch.transform.Find("Scroll View").Find("Scrollbar Horizontal").gameObject.GetComponent<CustomScrollbar>().onValueChanged.AddListener(new UnityAction<float>(delegate(float value)
-            //    {
-            //        Debug.Log(value);
-            //    }));
+            //nextPageButton.transform.SetAsLastSibling();
+            nextPageButton.SetActive(true);
+
+            categoryScrollRect.Init();
 
             LoadOptionListFromCategory(containerIndex, navigationController.currentHeaderIndex, navigationController.headers.Length, canvas);
-        }
-
-        internal void SetCategoryPage(int page)
-        {
-            var categoryScrollRect = GetComponentInChildren<CategoryScrollRect>();
-
-            categoryScrollRect.SetPos(page);
-        }
-
-        internal IEnumerator FuckingFixScrollPosition(CategoryScrollRect csr)
-        {
-            yield return new WaitForEndOfFrame();
-            Debug.Log("doing");
-            csr.horizontalNormalizedPosition = 0f;
-            LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)csr.transform);
         }
 
         internal void LoadOptionListFromCategory(int containerIndex, int categoryIndex, int categories, Transform canvas)
@@ -902,9 +913,9 @@ namespace RiskOfOptions.OptionComponents
 
                 //warningTransform.anchorMax = Vector2.Lerp(warningTransform.anchorMax, newWarningPos, animSpeed * Time.deltaTime);
 
-                modListTransform.anchorMin = SmoothStep(modListTransform.anchorMin, newModListPos, (animSpeed * 5.25f) * Time.deltaTime);
+                modListTransform.anchorMin = ExtensionMethods.SmoothStep(modListTransform.anchorMin, newModListPos, (animSpeed * 5.25f) * Time.deltaTime);
 
-                warningTransform.anchorMax = SmoothStep(warningTransform.anchorMax, newWarningPos, (animSpeed * 5.25f) * Time.deltaTime);
+                warningTransform.anchorMax = ExtensionMethods.SmoothStep(warningTransform.anchorMax, newWarningPos, (animSpeed * 5.25f) * Time.deltaTime);
 
                 float angle = Mathf.Clamp(Mathf.Lerp(angleIncrement * Time.deltaTime, max, 1f * Time.deltaTime), 90 * Time.deltaTime, Math.Abs(maxAngleRotation));
 
@@ -927,7 +938,7 @@ namespace RiskOfOptions.OptionComponents
                         break;
                 }
 
-                if (CloseEnough(modListTransform.anchorMin, newModListPos) && CloseEnough(warningTransform.anchorMax, newWarningPos) && CloseEnough(warningText.color, textColor) && CloseEnough(restartIcon.color, textColor))
+                if (ExtensionMethods.CloseEnough(modListTransform.anchorMin, newModListPos) && ExtensionMethods.CloseEnough(warningTransform.anchorMax, newWarningPos) && ExtensionMethods.CloseEnough(warningText.color, textColor) && ExtensionMethods.CloseEnough(restartIcon.color, textColor))
                 {
                     modListTransform.anchorMin = newModListPos;
                     warningTransform.anchorMax = newWarningPos;
@@ -938,26 +949,6 @@ namespace RiskOfOptions.OptionComponents
 
                 yield return new WaitForEndOfFrame();
             }
-        }
-
-        private bool CloseEnough(Vector2 a, Vector2 b)
-        {
-            return Mathf.Abs(a.x - b.x) < 0.00001f && Mathf.Abs(a.y - b.y) < 0.00001f;
-        }
-
-        private bool CloseEnough(Color a, Color b)
-        {
-            return Mathf.Abs(a.r - b.r) < 0.0001f && Mathf.Abs(a.g - b.g) < 0.0001f && Mathf.Abs(a.b - b.b) < 0.0001f && Mathf.Abs(a.a - b.a) < 0.0001f;
-        }
-
-        private Vector2 SmoothStep(Vector2 a, Vector2 b, float t)
-        {
-            Vector2 c = Vector2.zero;
-
-            c.x = Mathf.SmoothStep(a.x, b.x, t);
-            c.y = Mathf.SmoothStep(a.y, b.y, t);
-
-            return c;
         }
 
         public void UpdateExistingOptionButtons()
@@ -1082,6 +1073,9 @@ namespace RiskOfOptions.OptionComponents
             GameObject.DestroyImmediate(_optionDescriptionPanel);
             GameObject.DestroyImmediate(_categoryHeaderHighlight);
             GameObject.DestroyImmediate(modListHighlight);
+            GameObject.DestroyImmediate(_leftButton);
+            GameObject.DestroyImmediate(_rightButton);
+            GameObject.DestroyImmediate(_dropDownPrefab);
             GameObject.DestroyImmediate(Prefabs.Gdp);
             GameObject.DestroyImmediate(Prefabs.MoCanvas);
             GameObject.DestroyImmediate(Prefabs.MoHeaderButtonPrefab);

@@ -206,7 +206,17 @@ namespace RiskOfOptions
 
         internal static float Remap(this float value, float fromMin, float fromMax, float toMin, float toMax)
         {
-            return (value - fromMin) / (toMin - fromMin) * (toMax - fromMax) + fromMax;
+            var fromAbs = value - fromMin;
+            var fromMaxAbs = fromMax - fromMin;
+
+            var normal = fromAbs / fromMaxAbs;
+
+            var toMaxAbs = toMax - toMin;
+            var toAbs = toMaxAbs * normal;
+
+            var to = toAbs + toMin;
+
+            return Mathf.Clamp(to, toMin, toMax);
         }
 
         // https://answers.unity.com/questions/530178/how-to-get-a-component-from-an-object-and-add-it-t.html - thanks
@@ -252,6 +262,26 @@ namespace RiskOfOptions
                 component = gameObject.AddComponent<T>();
 
             return component;
+        }
+
+        internal static bool CloseEnough(Vector2 a, Vector2 b)
+        {
+            return Mathf.Abs(a.x - b.x) < 0.00001f && Mathf.Abs(a.y - b.y) < 0.00001f;
+        }
+
+        internal static bool CloseEnough(Color a, Color b)
+        {
+            return Mathf.Abs(a.r - b.r) < 0.0001f && Mathf.Abs(a.g - b.g) < 0.0001f && Mathf.Abs(a.b - b.b) < 0.0001f && Mathf.Abs(a.a - b.a) < 0.0001f;
+        }
+
+        internal static Vector2 SmoothStep(Vector2 a, Vector2 b, float t)
+        {
+            Vector2 c = Vector2.zero;
+
+            c.x = Mathf.SmoothStep(a.x, b.x, t);
+            c.y = Mathf.SmoothStep(a.y, b.y, t);
+
+            return c;
         }
 
         internal struct ModInfo

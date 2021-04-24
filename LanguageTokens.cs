@@ -13,9 +13,17 @@ namespace RiskOfOptions
         public static string OptionRebindDialogDescription =
             $"{ModSettingsManager.StartingText.ToUpper()}_OPTION_REBIND_DIALOG_DESCRIPTION_TOKEN";
 
+        public static string LeftPageButton =
+            $"{ModSettingsManager.StartingText.ToUpper()}_LEFT_PAGE_BUTTON_TEXT_TOKEN;";
+
+        public static string RightPageButton =
+            $"{ModSettingsManager.StartingText.ToUpper()}_RIGHT_PAGE_BUTTON_TEXT_TOKEN;";
+
         public static void Register()
         {
             LanguageAPI.Add(OptionRebindDialogTitle, "Rebind Control...");
+            LanguageAPI.Add(LeftPageButton, "<");
+            LanguageAPI.Add(RightPageButton, ">");
         }
     }
 }

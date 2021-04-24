@@ -123,7 +123,7 @@ namespace RiskOfOptions.Options
 
         public override void SetValue(string newValue)
         {
-            Value = float.Parse(newValue);
+            Value = float.Parse(newValue, CultureInfo.InvariantCulture);
         }
 
         public override T GetValue<T>()

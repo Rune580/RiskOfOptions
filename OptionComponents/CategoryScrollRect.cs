@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using RoR2.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -9,50 +11,81 @@ namespace RiskOfOptions.OptionComponents
 {
     public class CategoryScrollRect : ScrollRect
     {
-        private bool _forced = false;
-        private float _forcedValue = 0f;
+        public int Categories
+        {
+            get => _categories;
+            set
+            {
+                _pages = Mathf.CeilToInt(value / 4f);
+                _categories = value;
+            }
+        }
 
-        public int pages = 0;
+        private HGButton _leftButton;
+        private HGButton _rightButton;
 
-        //protected override void Awake()
-        //{
-        //    base.Awake();
-        //    if (pages > 0)
-        //    {
-        //        Debug.Log("doing Awake header stuff");
-        //        SetPos(0);
-        //    }
-        //}
+        private int _currentPage = 0;
+        private int _pages = 0;
+        private IEnumerator _animator;
 
-        //protected void OnValidate()
-        //{
-        //    if (pages > 0)
-        //    {
-        //        Debug.Log("doing Validate header stuff");
-        //        SetPos(0);
-        //    }
-        //}
+        public float value = 0f;
 
-        //protected override void Start()
-        //{
-        //    base.Start();
+        private int _categories;
 
-        //    if (pages > 0)
-        //    {
-        //        Debug.Log("doing Start header stuff");
-        //        //ForceSet(0);
-        //    }
-        //}
+        private bool Initialized => _leftButton && _rightButton;
 
-        //protected override void OnEnable()
-        //{
-        //    base.OnEnable();
-        //    if (pages > 0)
-        //    {
-        //        Debug.Log("doing OnEnable header stuff");
-        //        SetPos(0);
-        //    }
-        //}
+        public void Init()
+        {
+            if (!Initialized)
+                InitializeButtons();
+
+            RefreshButtons();
+        }
+
+        private void InitializeButtons()
+        {
+            _leftButton = transform.Find("Previous Category Page Button(Clone)").GetComponent<HGButton>();
+            _rightButton = transform.Find("Next Category Page Button(Clone)").GetComponent<HGButton>();
+
+            if (!Initialized)
+                return;
+
+            _leftButton.disablePointerClick = false;
+            _rightButton.disablePointerClick = false;
+
+            _leftButton.onClick.RemoveAllListeners();
+            _rightButton.onClick.RemoveAllListeners();
+
+            _leftButton.onClick.AddListener(Previous);
+            _rightButton.onClick.AddListener(Next);
+        }
+
+        private void CreateIndicator()
+        {
+
+        }
+
+        private void RefreshButtons()
+        {
+            _leftButton.interactable = _currentPage - 1 >= 0;
+            _rightButton.interactable = _currentPage + 1 <= _pages - 1;
+        }
+
+        public void Previous()
+        {
+            if (_currentPage - 1 >= 0)
+            {
+                SetPage(_currentPage - 1);
+            }
+        }
+
+        public void Next()
+        {
+            if (_currentPage + 1 <= _pages - 1)
+            {
+                SetPage(_currentPage + 1);
+            }
+        }
 
         public override void OnBeginDrag(PointerEventData eventData)
         {
@@ -74,46 +107,46 @@ namespace RiskOfOptions.OptionComponents
 
         }
 
-        protected override void LateUpdate()
+        internal void SetPage(int page)
         {
-            if (!_forced)
+            _currentPage = page;
+
+            if (_animator != null)
+                StopCoroutine(_animator);
+
+            _animator = AnimMove(_currentPage / ((float)_pages - 1));
+            StartCoroutine(_animator);
+
+            RefreshButtons();
+        }
+
+        private IEnumerator AnimMove(float newPos)
+        {
+            float remainingCategories = Mathf.Abs(4 - ((_pages * 4) - (_categories)));
+
+            float max = remainingCategories switch
             {
-                base.LateUpdate();
-            }
-        }
+                3 => 0.145f,
+                2 => 0.335f,
+                1 => 0.6025f,
+                _ => 0f
+            };
 
-        private void Update()
-        {
-            if (_forced)
+            float remappedPos = newPos.Remap(0, 1, 0, 1 + value);
+
+            float fistVisibleCategory = newPos.Remap(0, 1, 1, (_pages * 4) - remainingCategories);
+
+            Debug.Log($"remapped: {remappedPos}, input: {newPos}, max: {max}, first visible: {fistVisibleCategory}");
+
+
+            while (Mathf.Abs(horizontalNormalizedPosition - remappedPos) > 0.000001f)
             {
-                base.horizontalNormalizedPosition = _forcedValue;
-                base.verticalNormalizedPosition = 0;
+                horizontalNormalizedPosition = Mathf.Lerp(horizontalNormalizedPosition, remappedPos, 6f * Time.deltaTime);
+
+                yield return new WaitForEndOfFrame();
             }
-        }
 
-        public void ForceSet(float value)
-        {
-            _forcedValue = value / pages;
-            _forced = true;
-        }
-
-        public void Release()
-        {
-            _forced = false;
-        }
-
-        protected override void SetNormalizedPosition(float value, int axis)
-        {
-            Debug.Log($"value: {value}, axis: {axis}");
-            base.SetNormalizedPosition(value, axis);
-        }
-
-        public void SetPos(float value)
-        {
-            value /= (pages - 1);
-
-            Release();
-            SetNormalizedPosition(value, 0);
+            horizontalNormalizedPosition = remappedPos;
         }
     }
 }
