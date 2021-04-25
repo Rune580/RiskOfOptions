@@ -27,6 +27,8 @@ namespace RiskOfOptions.OptionComponents
         public GameObject modListHighlight;
 
         public GameObject warningPanel;
+        
+        private List<GameObject> _toDestroy = new List<GameObject>();
 
         private GameObject _modDescriptionPanel;
         private GameObject _categoryHeader;
@@ -38,6 +40,7 @@ namespace RiskOfOptions.OptionComponents
         private GameObject _sliderPrefab;
         private GameObject _keyBindPrefab;
         private GameObject _dropDownPrefab;
+        private GameObject _inputFieldPrefab;
 
         private GameObject _leftButton;
         private GameObject _rightButton;
@@ -63,7 +66,7 @@ namespace RiskOfOptions.OptionComponents
             AddPanelsToSettings();
             CheckIfRestartNeeded();
 
-            ModSettingsManager.instanceModOptionPanelController = this;
+            ModSettingsManager.InstanceModOptionPanelController = this;
         }
         private void CreatePrefabs()
         {
@@ -102,6 +105,7 @@ namespace RiskOfOptions.OptionComponents
             _sliderPrefab = GameObject.Instantiate(verticalLayout.transform.Find("SettingsEntryButton, Slider (Master Volume)").gameObject);
             _keyBindPrefab = GameObject.Instantiate(subPanelArea.Find("SettingsSubPanel, Controls (M&KB)").Find("Scroll View").Find("Viewport").Find("VerticalLayout").Find("SettingsEntryButton, Binding (Jump)").gameObject);
             _dropDownPrefab = GameObject.Instantiate(subPanelArea.Find("SettingsSubPanel, Video").Find("Scroll View").Find("Viewport").Find("VerticalLayout").Find("Option, Resolution").gameObject);
+            _inputFieldPrefab = GameObject.Instantiate(_checkBoxPrefab);
 
             _dropDownPrefab.SetActive(false);
 
@@ -114,7 +118,7 @@ namespace RiskOfOptions.OptionComponents
 
             #endregion
 
-            #region DropDown Prefab Set up
+            #region DropDown Prefab Setup
 
             GameObject.DestroyImmediate(_dropDownPrefab.transform.Find("CarouselRect").GetComponent<ResolutionControl>()); // Removing this entirely since it seems to mostly be made for resolution stuff.
             GameObject.DestroyImmediate(_dropDownPrefab.transform.Find("CarouselRect").Find("RefreshRateDropdown").gameObject); // I only really need one Drop down element.
@@ -164,9 +168,22 @@ namespace RiskOfOptions.OptionComponents
 
 
             #endregion
+
+            #region InputField Setup
+
+            GameObject.DestroyImmediate(_inputFieldPrefab.GetComponentInChildren<CarouselController>());
+            GameObject.DestroyImmediate(_inputFieldPrefab.GetComponentInChildren<ButtonSkinController>());
+            GameObject.DestroyImmediate(_inputFieldPrefab.GetComponentInChildren<HGButton>());
+            GameObject.DestroyImmediate(_inputFieldPrefab.transform.Find("CarouselRect").gameObject);
+
+            _inputFieldPrefab.AddComponent<TMP_InputField>();
+
+            #endregion
+            
             _checkBoxPrefab.SetActive(false);
             _sliderPrefab.SetActive(false);
             _keyBindPrefab.SetActive(false);
+            _inputFieldPrefab.SetActive(false);
 
             if (!RooDropdown.CheckBoxPrefab)
             {
@@ -181,6 +198,8 @@ namespace RiskOfOptions.OptionComponents
             GameObject.DestroyImmediate(Prefabs.ModButtonPrefab.GetComponentInChildren<CarouselController>());
             GameObject.DestroyImmediate(Prefabs.ModButtonPrefab.GetComponentInChildren<ButtonSkinController>());
             GameObject.DestroyImmediate(Prefabs.ModButtonPrefab.transform.Find("CarouselRect").gameObject);
+            
+            
 
             _leftButton = GameObject.Instantiate(Prefabs.ModButtonPrefab);
             GameObject.DestroyImmediate(_leftButton.GetComponent<LayoutElement>());
@@ -418,7 +437,6 @@ namespace RiskOfOptions.OptionComponents
 
             Image restartIcon = restartIconGameObject.AddComponent<UnityEngine.UI.Image>();
             restartIcon.sprite = Assets.Load<Sprite>("assets/RiskOfOptions/ror2RestartSymbol.png");
-            //restartIcon.sprite = Resources.Load<Sprite>("@RiskOfOptions:assets/RiskOfOptions/ror2RestartSymbol.png");
             restartIcon.preserveAspect = true;
 
             restartIconRectTransform.pivot = new Vector2(0.5f, 0.5f);
@@ -796,6 +814,7 @@ namespace RiskOfOptions.OptionComponents
                     SliderOption sliderOption => option.CreateOptionGameObject(option, _sliderPrefab, verticalLayoutTransform),
                     KeyBindOption keyBindOption => option.CreateOptionGameObject(option, _keyBindPrefab, verticalLayoutTransform),
                     DropDownOption dropDownOption => option.CreateOptionGameObject(option, _dropDownPrefab, verticalLayoutTransform),
+                    InputFieldOption inputFieldOption => option.CreateOptionGameObject(option, _inputFieldPrefab, verticalLayoutTransform),
                     _ => throw new ArgumentOutOfRangeException(option.Name)
                 };
 
@@ -1009,7 +1028,7 @@ namespace RiskOfOptions.OptionComponents
         }
 
 
-        internal void UnloadExistingCategoryButtons(Transform ch)
+        private void UnloadExistingCategoryButtons(Transform ch)
         {
             _categoryHeaderHighlight.transform.SetParent(transform);
             _categoryHeaderHighlight.SetActive(false);
@@ -1037,11 +1056,11 @@ namespace RiskOfOptions.OptionComponents
             //_rightGlyph.SetActive(false);
         }
 
-        internal void UnloadExistingOptionButtons(Transform op)
+        private void UnloadExistingOptionButtons(Transform op)
         {
             _controllers = Array.Empty<OverrideController>();
 
-            BaseSettingsControl[] activeOptionButtons = op.GetComponentsInChildren<BaseSettingsControl>();
+            OptionIdentity[] activeOptionButtons = op.GetComponentsInChildren<OptionIdentity>();
 
             if (activeOptionButtons.Length <= 0)
                 return;
@@ -1065,6 +1084,11 @@ namespace RiskOfOptions.OptionComponents
 
             initialized = false;
 
+            // foreach (var gameObject in _toDestroy)
+            // {
+            //     GameObject.DestroyImmediate(gameObject);
+            // }
+
             GameObject.DestroyImmediate(_checkBoxPrefab);
             GameObject.DestroyImmediate(_sliderPrefab);
             GameObject.DestroyImmediate(_keyBindPrefab);
@@ -1078,6 +1102,7 @@ namespace RiskOfOptions.OptionComponents
             GameObject.DestroyImmediate(_leftButton);
             GameObject.DestroyImmediate(_rightButton);
             GameObject.DestroyImmediate(_dropDownPrefab);
+            GameObject.DestroyImmediate(_inputFieldPrefab);
             GameObject.DestroyImmediate(Prefabs.Gdp);
             GameObject.DestroyImmediate(Prefabs.MoCanvas);
             GameObject.DestroyImmediate(Prefabs.MoHeaderButtonPrefab);
@@ -1085,6 +1110,10 @@ namespace RiskOfOptions.OptionComponents
             GameObject.DestroyImmediate(Prefabs.ModButtonPrefab);
 
             OptionSerializer.Save(ModSettingsManager.OptionContainers.ToArray());
+        }
+        private void RegisterForDestroy(ref GameObject gameObject)
+        {
+            _toDestroy.Add(gameObject);
         }
 
         public void OnEnable()

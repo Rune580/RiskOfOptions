@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using BepInEx.Configuration;
 using R2API.Utils;
+using RiskOfOptions.Events;
 using RiskOfOptions.Interfaces;
 using RiskOfOptions.OptionComponents;
 using RiskOfOptions.OptionOverrides;
@@ -14,11 +15,11 @@ namespace RiskOfOptions.Options
 {
     public class KeyBindOption : RiskOfOption, IKeyCodeProvider
     {
-        public List<UnityAction<KeyCode>> Events { get; set; } = new List<UnityAction<KeyCode>>();
+        public KeyCodeEvent OnValueChanged { get; set; } = new KeyCodeEvent();
 
         private KeyCode _value;
 
-        internal ConfigEntry<KeyboardShortcut> configEntry;
+        internal ConfigEntry<KeyboardShortcut> ConfigEntry;
 
         internal KeyBindOption(string modGuid, string modName, string name, object[] description, string defaultValue, string categoryName, bool visibility, UnityAction<KeyCode> unityAction, bool invokeEventOnStart)
             : base(modGuid, modName, name, description, defaultValue, categoryName, null, visibility, false, invokeEventOnStart)
@@ -27,7 +28,7 @@ namespace RiskOfOptions.Options
 
             if (unityAction != null)
             {
-                Events.Add(unityAction);
+                OnValueChanged.AddListener(unityAction);
             }
             
             OptionToken = $"{ModSettingsManager.StartingText}.{modGuid}.{modName}.category_{categoryName.Replace(".", "")}.{name}.keybind".ToUpper().Replace(" ", "_");
@@ -45,12 +46,12 @@ namespace RiskOfOptions.Options
 
                 _value = value;
 
-                if (configEntry != null)
+                if (ConfigEntry != null)
                 {
-                    configEntry.Value = new KeyboardShortcut(Value);
+                    ConfigEntry.Value = new KeyboardShortcut(Value);
                 }
 
-                InvokeListeners();
+                OnValueChanged.Invoke(Value);
             }
         }
 
@@ -83,22 +84,6 @@ namespace RiskOfOptions.Options
             return button;
         }
 
-        public override void InvokeListeners()
-        {
-            foreach (var action in Events)
-            {
-                action.Invoke(Value);
-            }
-        }
-
-        public void InvokeListeners(KeyCode value)
-        {
-            foreach (var action in Events)
-            {
-                action.Invoke(value);
-            }
-        }
-
         public override string GetValueAsString()
         {
             return $"{(int)Value}";
@@ -122,6 +107,16 @@ namespace RiskOfOptions.Options
             }
 
             return (T)Convert.ChangeType(Value, typeof(T));
+        }
+        
+        internal override void Invoke<T>(T value)
+        {
+            OnValueChanged.Invoke((KeyCode) Convert.ChangeType(value, typeof(KeyCode)));
+        }
+        
+        internal override void Invoke()
+        {
+            OnValueChanged.Invoke(Value);
         }
     }
 }

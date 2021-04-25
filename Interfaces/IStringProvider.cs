@@ -4,10 +4,10 @@ using UnityEngine.Events;
 
 namespace RiskOfOptions.Interfaces
 {
-    internal interface IIntProvider
+    internal interface IStringProvider
     {
-        public IntEvent OnValueChanged { get; set; }
+        public StringEvent OnValueChanged { get; set; }
 
-        public int Value { get; set; }
+        public string Value { get; set; }
     }
 }

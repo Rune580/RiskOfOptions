@@ -99,11 +99,6 @@ namespace RiskOfOptions.Options
             throw new NotImplementedException();
         }
 
-        public virtual void InvokeListeners()
-        {
-            throw new NotImplementedException();
-        }
-
         public virtual string GetValueAsString()
         {
             throw new NotImplementedException();
@@ -120,6 +115,16 @@ namespace RiskOfOptions.Options
         }
 
         public virtual T GetValue<T>()
+        {
+            throw new NotImplementedException();
+        }
+
+        internal virtual void Invoke<T>(T value)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal virtual void Invoke()
         {
             throw new NotImplementedException();
         }

@@ -10,7 +10,6 @@ using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using EntityStates.AncientWispMonster;
-using On.RoR2;
 using On.RoR2.UI;
 using R2API;
 using R2API.Utils;
@@ -21,12 +20,14 @@ using RiskOfOptions.OptionComponents;
 using RiskOfOptions.OptionConstructors;
 using RiskOfOptions.OptionOverrides;
 using RiskOfOptions.Options;
+using RoR2;
 using RoR2.ConVar;
 using UnityEngine;
 
 using static RiskOfOptions.ExtensionMethods;
 using ConCommandArgs = RoR2.ConCommandArgs;
 using Console = On.RoR2.Console;
+using PauseManager = On.RoR2.PauseManager;
 
 #pragma warning disable 618
 
@@ -40,11 +41,11 @@ namespace RiskOfOptions
 
         internal static readonly string StartingText = "risk_of_options";
 
-        internal static bool doingKeybind = false;
+        internal static bool DoingKeybind = false;
 
         private static bool _initilized = false;
 
-        internal static ModOptionPanelController instanceModOptionPanelController;
+        internal static ModOptionPanelController InstanceModOptionPanelController;
 
         public static void Init()
         {
@@ -95,21 +96,7 @@ namespace RiskOfOptions
 
                 if (option.invokeValueChangedEventOnStart)
                 {
-                    switch (option)
-                    {
-                        case CheckBoxOption checkBoxOption:
-                            checkBoxOption.InvokeListeners(option.GetValue<bool>());
-                            break;
-                        case SliderOption sliderOption:
-                            sliderOption.InvokeListeners(option.GetValue<float>());
-                            break;
-                        case KeyBindOption keyBindOption:
-                            keyBindOption.InvokeListeners(option.GetValue<KeyCode>());
-                            break;
-                        case DropDownOption dropDownOption:
-                            dropDownOption.InvokeListeners(option.GetValue<int>());
-                            break;
-                    }
+                    option.Invoke();
                 }
             }
 
@@ -122,7 +109,7 @@ namespace RiskOfOptions
 
         private static void PauseManagerOnCCTogglePause(PauseManager.orig_CCTogglePause orig, ConCommandArgs args)
         {
-            if (doingKeybind)
+            if (DoingKeybind)
                 return;
 
             orig(args);
@@ -134,7 +121,7 @@ namespace RiskOfOptions
             Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
 
             if (OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer] is IBoolProvider boolProvider)
-                boolProvider.Events.Add(unityAction);
+                boolProvider.OnValueChanged.AddListener(unityAction);
         }
 
         public static void AddListener(UnityEngine.Events.UnityAction<float> unityAction, string name, string categoryName = "Main")
@@ -143,7 +130,7 @@ namespace RiskOfOptions
             Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
 
             if (OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer] is IFloatProvider floatProvider)
-                floatProvider.Events.Add(unityAction);
+                floatProvider.OnValueChanged.AddListener(unityAction);
         }
 
         public static void AddListener(UnityEngine.Events.UnityAction<KeyCode> unityAction, string name, string categoryName = "Main")
@@ -152,7 +139,7 @@ namespace RiskOfOptions
             Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
 
             if (OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer] is IKeyCodeProvider keyCodeProvider)
-                keyCodeProvider.Events.Add(unityAction);
+                keyCodeProvider.OnValueChanged.AddListener(unityAction);
         }
 
         public static void AddListener(UnityEngine.Events.UnityAction<int> unityAction, string name, string categoryName = "Main")
@@ -161,10 +148,10 @@ namespace RiskOfOptions
             Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
 
             if (OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer] is IIntProvider intProvider)
-                intProvider.Events.Add(unityAction);
+                intProvider.OnValueChanged.AddListener(unityAction);
         }
 
-        public static RiskOfOption GetOption(string name, string categoryName = "Main")
+        public static RiskOfOption GetOption(string name, string categoryName)
         {
             ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
             Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
@@ -220,9 +207,9 @@ namespace RiskOfOptions
 
             OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer].Visibility = visibility;
 
-            if (instanceModOptionPanelController)
+            if (InstanceModOptionPanelController)
             {
-                instanceModOptionPanelController.UpdateVisibility(OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer].OptionToken, visibility);
+                InstanceModOptionPanelController.UpdateVisibility(OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer].OptionToken, visibility);
             }
         }
 
@@ -234,6 +221,7 @@ namespace RiskOfOptions
                 IFloatProvider floatProvider => new FloatConVar(option.ConsoleToken, RoR2.ConVarFlags.None, option.DefaultValue, option.GetDescriptionAsString()),
                 IKeyCodeProvider keyCodeProvider => new KeyConVar(option.ConsoleToken, RoR2.ConVarFlags.None, option.DefaultValue, option.GetDescriptionAsString()),
                 IIntProvider intProvider => new IntConVar(option.ConsoleToken, RoR2.ConVarFlags.None, option.DefaultValue, option.GetDescriptionAsString()),
+                IStringProvider stringProvider => new StringConVar(option.ConsoleToken, ConVarFlags.None, option.DefaultValue, option.GetDescriptionAsString()),
                 _ => throw new Exception($"Option {option.Name} somehow managed to not implement a provider interface! please contact me on github or discord.")
             };
 
@@ -257,8 +245,8 @@ namespace RiskOfOptions
 
             if (_initilized)
                 throw new Exception($"An AddOption() was called with the option name: {option.Name} from the mod {modInfo.ModName}, after initialization of RiskOfOptions. \n This usually means you are calling this after Awake()");
-
-
+            
+            
             switch (option)
             {
                 case CheckBox checkBox:
@@ -275,11 +263,14 @@ namespace RiskOfOptions
 
                         checkBox.DefaultValue = checkBox.ConfigEntry.Value;
                     }
+                    
+                    ValidateOption(checkBox, modInfo.ModName);
+                    
                     RegisterOption(new CheckBoxOption(modInfo.ModGuid, modInfo.ModName, checkBox.Name,
                         option.descriptionArray, checkBox.value, checkBox.CategoryName,
                         checkBox.Override, checkBox.IsVisible, checkBox.RestartRequired, checkBox.OnValueChanged,
                         checkBox.InvokeValueChangedEventOnStart)
-                        {configEntry = checkBox.ConfigEntry});
+                        {ConfigEntry = checkBox.ConfigEntry});
                     break;
                 case StepSlider stepSlider:
                     if (stepSlider.ConfigEntry != null)
@@ -295,10 +286,13 @@ namespace RiskOfOptions
 
                         stepSlider.DefaultValue = stepSlider.ConfigEntry.Value;
                     }
+                    
+                    ValidateOption(stepSlider, modInfo.ModName);
+                    
                     RegisterOption(new StepSliderOption(modInfo.ModGuid, modInfo.ModName, stepSlider.Name, stepSlider.descriptionArray,
                         stepSlider.value, stepSlider.Min, stepSlider.Max, stepSlider.Increment, stepSlider.CategoryName,
                         stepSlider.Override, stepSlider.IsVisible, stepSlider.OnValueChanged, stepSlider.InvokeValueChangedEventOnStart)
-                        {configEntry = stepSlider.ConfigEntry});
+                        {ConfigEntry = stepSlider.ConfigEntry});
                     break;
                 case Slider slider:
                     if (slider.ConfigEntry != null)
@@ -314,10 +308,13 @@ namespace RiskOfOptions
 
                         slider.DefaultValue = slider.ConfigEntry.Value;
                     }
+                    
+                    ValidateOption(slider, modInfo.ModName);
+                    
                     RegisterOption(new SliderOption(modInfo.ModGuid, modInfo.ModName, slider.Name, slider.descriptionArray,
                         slider.value, slider.Min, slider.Max, slider.CategoryName, slider.Override,
                         slider.IsVisible, slider.OnValueChanged, slider.InvokeValueChangedEventOnStart)
-                        {configEntry = slider.ConfigEntry});
+                        {ConfigEntry = slider.ConfigEntry});
                     break;
                 case KeyBind keyBind:
                     if (keyBind.ConfigEntry != null)
@@ -336,15 +333,30 @@ namespace RiskOfOptions
                         if (keyBind.ConfigEntry.Value.Modifiers.Any())
                             throw new WarningException($"The KeyBind {keyBind.Name} contains modifier keys! Currently Risk Of Options doesn't support modifier keys!");
                     }
+                    
+                    ValidateOption(keyBind, modInfo.ModName);
+                    
                     RegisterOption(new KeyBindOption(modInfo.ModGuid, modInfo.ModName, keyBind.Name, keyBind.descriptionArray,
                         keyBind.value, keyBind.CategoryName, keyBind.IsVisible, keyBind.OnValueChanged, keyBind.InvokeValueChangedEventOnStart)
-                        {configEntry = keyBind.ConfigEntry});
+                        {ConfigEntry = keyBind.ConfigEntry});
                     break;
                 case DropDown dropDown:
+                    ValidateOption(dropDown, modInfo.ModName);
+                    
                     RegisterOption(new DropDownOption(modInfo.ModGuid, modInfo.ModName, dropDown.Name,
                         dropDown.descriptionArray, dropDown.value, dropDown.CategoryName, dropDown.Choices,
                         dropDown.IsVisible, dropDown.RestartRequired, dropDown.OnValueChanged,
                         dropDown.InvokeValueChangedEventOnStart));
+                    break;
+                case InputField inputField:
+                    ValidateOption(inputField, modInfo.ModName);
+                    
+                    if (inputField.StringValidator == null)
+                        throw new Exception($"Input Field {inputField.Name}, Requires a ValidateString Delegate!");
+                    
+                    RegisterOption(new InputFieldOption(modInfo.ModGuid, modInfo.ModName, inputField.Name, inputField.descriptionArray,
+                        inputField.value, inputField.CategoryName, inputField.IsVisible, inputField.RestartRequired,
+                        inputField.OnValueChanged ,inputField.InvokeValueChangedEventOnStart, inputField.ValidateOnEnter, inputField.StringValidator));
                     break;
             }
         }
@@ -435,12 +447,28 @@ namespace RiskOfOptions
             return modSearchEntries.ToArray();
         }
 
-        //internal struct OptionOverrideInfo
-        //{
-        //    internal string name;
-        //    internal string categoryName;
-        //    internal string modGuid;
-        //}
+        private static void ValidateOption(OptionConstructorBase option, string modName)
+        {
+            bool invalidName = string.IsNullOrEmpty(option.Name);
+            bool invalidCategory = string.IsNullOrEmpty(option.CategoryName);
+
+            if (!invalidName && !invalidCategory)
+                return;
+            
+            string error = "";
+
+            if (invalidName)
+            {
+                error += "Invalid Name";
+            }
+
+            if (invalidCategory)
+            {
+                error += error.Length > 1 ? "and an Invalid Category" : "Invalid Category";
+            }
+            
+            throw new Exception($"An option was created by {modName} with an {error}!");
+        }
 
         #region ModOption Legacy Stuff
 
@@ -480,7 +508,7 @@ namespace RiskOfOptions
             Indexes indexes = OptionContainers.GetIndexes(modOption.owner, modOption.name);
 
             if (OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer] is IFloatProvider floatProvider)
-                floatProvider.Events.Add(unityAction);
+                floatProvider.OnValueChanged.AddListener(unityAction);
         }
 
         [Obsolete("Usage of ModOption is depreciated, use RiskOfOption instead.")]
@@ -491,7 +519,7 @@ namespace RiskOfOptions
             Indexes indexes = OptionContainers.GetIndexes(modOption.owner, modOption.name);
 
             if (OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer] is IBoolProvider boolProvider)
-                boolProvider.Events.Add(unityAction);
+                boolProvider.OnValueChanged.AddListener(unityAction);
         }
 
         [Obsolete("ModOptions are handled internally now. Please use AddCheckBox, AddSlider, etc", false)]

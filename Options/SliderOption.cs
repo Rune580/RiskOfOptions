@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using BepInEx.Configuration;
+using RiskOfOptions.Events;
 using RiskOfOptions.Interfaces;
 using RiskOfOptions.OptionOverrides;
 using RoR2.UI;
@@ -15,14 +16,14 @@ namespace RiskOfOptions.Options
 {
     public class SliderOption : RiskOfOption, IFloatProvider
     {
-        public List<UnityAction<float>> Events { get; set; } = new List<UnityAction<float>>();
+        public FloatEvent OnValueChanged { get; set; } = new FloatEvent();
 
         private float _value;
 
         public float Min;
         public float Max;
 
-        internal ConfigEntry<float> configEntry;
+        internal ConfigEntry<float> ConfigEntry;
 
         internal SliderOption(string modGuid, string modName, string name, object[] description, string defaultValue, float min, float max, string categoryName, OptionOverride optionOverride, bool visibility, UnityAction<float> unityAction, bool invokeEventOnStart)
             : base(modGuid, modName, name, description, defaultValue, categoryName, optionOverride, visibility, false, invokeEventOnStart)
@@ -32,7 +33,7 @@ namespace RiskOfOptions.Options
 
             if (unityAction != null)
             {
-                Events.Add(unityAction);
+                OnValueChanged.AddListener(unityAction);
             }
 
             Value = float.Parse(defaultValue, CultureInfo.InvariantCulture);
@@ -66,12 +67,12 @@ namespace RiskOfOptions.Options
             {
                 _value = value;
 
-                if (configEntry != null)
+                if (ConfigEntry != null)
                 {
-                    configEntry.Value = Value;
+                    ConfigEntry.Value = Value;
                 }
 
-                InvokeListeners();
+                OnValueChanged.Invoke(Value);
             }
 
         }
@@ -93,22 +94,6 @@ namespace RiskOfOptions.Options
             button.name = $"Mod Option Slider, {option.Name}";
 
             return button;
-        }
-
-        public override void InvokeListeners()
-        {
-            foreach (var action in Events)
-            {
-                action.Invoke(Value);
-            }
-        }
-
-        public void InvokeListeners(float value)
-        {
-            foreach (var action in Events)
-            {
-                action.Invoke(value);
-            }
         }
 
         public override string GetValueAsString()
@@ -134,6 +119,16 @@ namespace RiskOfOptions.Options
             }
 
             return (T)Convert.ChangeType(Value, typeof(T));
+        }
+        
+        internal override void Invoke<T>(T value)
+        {
+            OnValueChanged.Invoke((float) Convert.ChangeType(value, typeof(float)));
+        }
+        
+        internal override void Invoke()
+        {
+            OnValueChanged.Invoke(Value);
         }
     }
 }

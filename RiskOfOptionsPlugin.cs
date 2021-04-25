@@ -41,10 +41,12 @@ namespace RiskOfOptions
             //ModSettingsManager.setPanelTitle("Example Title Bitch");
 
             ModSettingsManager.SetPanelDescription("Example Description");
-
+            
+            ModSettingsManager.CreateCategory("Testing New System");
             ModSettingsManager.CreateCategory("Test BepInEx Config");
             ModSettingsManager.CreateCategory("Test Sliders");
-            ModSettingsManager.CreateCategory("Testing New System");
+            
+            ModSettingsManager.AddOption(new InputField() {Name = "Input Test", CategoryName =  "Testing New System", DefaultValue = "test", Description = "super lig ball", StringValidator = TestString});
 
 
             //for (int i = 1; i < 80; i++)
@@ -154,6 +156,13 @@ namespace RiskOfOptions
         private void ChoiceTest(int choice)
         {
             Debug.Log($"Choice set to index: {choice}");
+        }
+
+        private bool TestString(string input, out string message)
+        {
+            message = "liggy";
+            Debug.Log(input);
+            return true;
         }
     }
 }

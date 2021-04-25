@@ -78,7 +78,7 @@ namespace RiskOfOptions.OptionComponents
                 {
                     if (!onEnable)
                     {
-                        overridenCheckBoxOption.InvokeListeners();
+                        overridenCheckBoxOption.Invoke();
                     }
                 }
             }
@@ -119,7 +119,7 @@ namespace RiskOfOptions.OptionComponents
                 {
                     if (!onEnable)
                     {
-                        overridenCheckBoxOption.InvokeListeners();
+                        overridenCheckBoxOption.Invoke();
                     }
                 }
             }

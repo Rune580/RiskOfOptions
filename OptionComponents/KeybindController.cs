@@ -51,7 +51,7 @@ namespace RiskOfOptions.OptionComponents
         {
             base.Update();
 
-            _bindingButton.interactable = !ModSettingsManager.doingKeybind;
+            _bindingButton.interactable = !ModSettingsManager.DoingKeybind;
 
             if (!_listening)
                 return;
@@ -94,13 +94,13 @@ namespace RiskOfOptions.OptionComponents
 
         public void StartListening()
         {
-            if (_listening || ModSettingsManager.doingKeybind)
+            if (_listening || ModSettingsManager.DoingKeybind)
                 return;
 
             _count = 2;
             _listening = true;
 
-            ModSettingsManager.doingKeybind = _listening;
+            ModSettingsManager.DoingKeybind = _listening;
 
             _timeoutTimer = 5f;
 
@@ -259,7 +259,7 @@ namespace RiskOfOptions.OptionComponents
 
         private void FixPauseMenu()
         {
-            ModSettingsManager.doingKeybind = _listening;
+            ModSettingsManager.DoingKeybind = _listening;
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using BepInEx.Configuration;
+using RiskOfOptions.Events;
 using RiskOfOptions.Interfaces;
 using RiskOfOptions.OptionComponents;
 using RiskOfOptions.OptionOverrides;
@@ -15,11 +16,11 @@ namespace RiskOfOptions.Options
 {
     public class CheckBoxOption : RiskOfOption, IBoolProvider
     {
-        public List<UnityAction<bool>> Events { get; set; } = new List<UnityAction<bool>>();
+        public BoolEvent OnValueChanged { get; set; } = new BoolEvent();
 
         private bool _value;
 
-        internal ConfigEntry<bool> configEntry;
+        internal ConfigEntry<bool> ConfigEntry;
 
         internal CheckBoxOption(string modGuid, string modName, string name, object[] description, string defaultValue, string categoryName, OptionOverride optionOverride, bool visibility, bool restartRequired, UnityAction<bool> unityAction, bool invokeEventOnStart)
             : base(modGuid, modName, name, description, defaultValue, categoryName, optionOverride, visibility, restartRequired, invokeEventOnStart)
@@ -28,7 +29,7 @@ namespace RiskOfOptions.Options
 
             if (unityAction != null)
             {
-                Events.Add(unityAction);
+                OnValueChanged.AddListener(unityAction);
             }
 
             OptionToken = $"{ModSettingsManager.StartingText}.{modGuid}.{modName}.category_{categoryName.Replace(".", "")}.{name}.checkbox".ToUpper().Replace(" ", "_");
@@ -64,18 +65,13 @@ namespace RiskOfOptions.Options
 
                 _value = value;
 
-                if (configEntry != null)
+                if (ConfigEntry != null)
                 {
-                    configEntry.Value = Value;
+                    ConfigEntry.Value = Value;
                 }
 
-                InvokeListeners();
+                OnValueChanged.Invoke(Value);
             }
-        }
-
-        public void AddListener(UnityAction<bool> unityAction)
-        {
-            Events.Add(unityAction);
         }
 
         public override GameObject CreateOptionGameObject(RiskOfOption option, GameObject prefab, Transform parent)
@@ -94,22 +90,6 @@ namespace RiskOfOptions.Options
             return button;
         }
 
-        public override void InvokeListeners()
-        {
-            foreach (var action in Events)
-            {
-                action.Invoke(Value);
-            }
-        }
-
-        public void InvokeListeners(bool value)
-        {
-            foreach (var action in Events)
-            {
-                action.Invoke(value);
-            }
-        }
-
         public override string GetValueAsString()
         {
             return $"{(Value ? "1" : "0")}";
@@ -124,7 +104,7 @@ namespace RiskOfOptions.Options
         {
             Value = (int.Parse(newValue) == 1);
         }
-
+        
         public override T GetValue<T>()
         {
             if (typeof(T) != typeof(bool))
@@ -133,6 +113,16 @@ namespace RiskOfOptions.Options
             }
 
             return (T) Convert.ChangeType(Value, typeof(T));
+        }
+
+        internal override void Invoke<T>(T value)
+        {
+            OnValueChanged.Invoke((bool) Convert.ChangeType(value, typeof(bool)));
+        }
+
+        internal override void Invoke()
+        {
+            OnValueChanged.Invoke(Value);
         }
     }
 }

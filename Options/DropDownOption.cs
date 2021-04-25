@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 using R2API;
+using RiskOfOptions.Events;
 using RiskOfOptions.Interfaces;
 using RiskOfOptions.OptionComponents;
-using RiskOfOptions.OptionOverrides;
-using RiskOfOptions.Structs;
-using RoR2.UI;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -15,7 +12,7 @@ namespace RiskOfOptions.Options
 {
     public class DropDownOption : RiskOfOption, IIntProvider
     {
-        public List<UnityAction<int>> Events { get; set; } = new List<UnityAction<int>>();
+        public IntEvent OnValueChanged { get; set; } = new IntEvent();
 
         private int _value;
 
@@ -28,7 +25,7 @@ namespace RiskOfOptions.Options
 
             if (unityAction != null)
             {
-                Events.Add(unityAction);
+                OnValueChanged.AddListener(unityAction);
             }
 
             _choices = choices;
@@ -58,7 +55,7 @@ namespace RiskOfOptions.Options
 
                 _value = value;
 
-                InvokeListeners();
+                OnValueChanged.Invoke(Value);
             }
         }
 
@@ -76,22 +73,6 @@ namespace RiskOfOptions.Options
             button.name = $"Mod Option Drop Down, {option.Name}";
 
             return button;
-        }
-
-        public override void InvokeListeners()
-        {
-            foreach (var action in Events)
-            {
-                action.Invoke(Value);
-            }
-        }
-
-        public void InvokeListeners(int value)
-        {
-            foreach (var action in Events)
-            {
-                action.Invoke(value);
-            }
         }
 
         public override string GetValueAsString()
@@ -117,6 +98,16 @@ namespace RiskOfOptions.Options
             }
 
             return (T)Convert.ChangeType(Value, typeof(T));
+        }
+        
+        internal override void Invoke<T>(T value)
+        {
+            OnValueChanged.Invoke((int) Convert.ChangeType(value, typeof(int)));
+        }
+        
+        internal override void Invoke()
+        {
+            OnValueChanged.Invoke(Value);
         }
     }
 }

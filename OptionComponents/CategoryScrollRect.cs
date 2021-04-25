@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections;
 using RiskOfOptions.Resources;
 using RoR2.UI;
 using UnityEngine;
@@ -32,8 +29,8 @@ namespace RiskOfOptions.OptionComponents
 
         private GameObject[] _indicators;
 
-        private int _currentPage = 0;
-        private int _pages = 0;
+        private int _currentPage;
+        private int _pages;
         
         private IEnumerator _pageAnimator;
         private IEnumerator _indicatorAnimator;
@@ -149,7 +146,7 @@ namespace RiskOfOptions.OptionComponents
                 var button = indicator.GetComponent<Button>();
 
                 int page = i;
-                button.onClick.AddListener(delegate()
+                button.onClick.AddListener(delegate
                 {
                     SetPage(page);
                 });

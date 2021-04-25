@@ -26,19 +26,19 @@ namespace RiskOfOptions
                     switch (option)
                     {
                         case CheckBoxOption checkBoxOption:
-                            if (checkBoxOption.configEntry != null)
+                            if (checkBoxOption.ConfigEntry != null)
                             {
                                 isConfig = true;
                             }
                             break;
                         case SliderOption sliderOption:
-                            if (sliderOption.configEntry != null)
+                            if (sliderOption.ConfigEntry != null)
                             {
                                 isConfig = true;
                             }
                             break;
                         case KeyBindOption keyBindOption:
-                            if (keyBindOption.configEntry != null)
+                            if (keyBindOption.ConfigEntry != null)
                             {
                                 isConfig = true;
                             }
