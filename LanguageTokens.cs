@@ -19,6 +19,9 @@ namespace RiskOfOptions
         public static string RightPageButton =
             $"{ModSettingsManager.StartingText.ToUpper()}_RIGHT_PAGE_BUTTON_TEXT_TOKEN;";
 
+        public static string OptionInputField =
+            $"{ModSettingsManager.StartingText.ToUpper()}_OPTION_INPUT_FIELD_TEXT_TOKEN";
+
         public static void Register()
         {
             LanguageAPI.Add(OptionRebindDialogTitle, "Rebind Control...");

@@ -234,7 +234,7 @@ namespace RiskOfOptions
 
 
             if (!string.IsNullOrEmpty(loadedValue))
-                option.SetValue(loadedValue);
+                option.SetInternalValue(loadedValue);
 
             OptionContainers.Add(ref option);
         }
@@ -350,13 +350,11 @@ namespace RiskOfOptions
                     break;
                 case InputField inputField:
                     ValidateOption(inputField, modInfo.ModName);
-                    
-                    if (inputField.StringValidator == null)
-                        throw new Exception($"Input Field {inputField.Name}, Requires a ValidateString Delegate!");
-                    
+
                     RegisterOption(new InputFieldOption(modInfo.ModGuid, modInfo.ModName, inputField.Name, inputField.descriptionArray,
                         inputField.value, inputField.CategoryName, inputField.IsVisible, inputField.RestartRequired,
-                        inputField.OnValueChanged ,inputField.InvokeValueChangedEventOnStart, inputField.ValidateOnEnter, inputField.StringValidator));
+                        inputField.OnValueChanged ,inputField.InvokeValueChangedEventOnStart, inputField.ValidateOnEnter, inputField.StringValidator,
+                        inputField.CharacterValidation));
                     break;
             }
         }

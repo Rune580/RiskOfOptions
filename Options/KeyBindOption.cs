@@ -99,6 +99,11 @@ namespace RiskOfOptions.Options
             Value = (KeyCode)int.Parse(newValue);
         }
 
+        public override void SetInternalValue(string newValue)
+        {
+            _value = (KeyCode)int.Parse(newValue);
+        }
+
         public override T GetValue<T>()
         {
             if (typeof(T) != typeof(KeyCode))

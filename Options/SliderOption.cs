@@ -111,6 +111,11 @@ namespace RiskOfOptions.Options
             Value = float.Parse(newValue, CultureInfo.InvariantCulture);
         }
 
+        public override void SetInternalValue(string newValue)
+        {
+            _value = float.Parse(newValue, CultureInfo.InvariantCulture);
+        }
+
         public override T GetValue<T>()
         {
             if (typeof(T) != typeof(float))

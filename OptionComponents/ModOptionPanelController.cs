@@ -171,19 +171,149 @@ namespace RiskOfOptions.OptionComponents
 
             #region InputField Setup
 
+            _inputFieldPrefab.SetActive(false);
+
+            _inputFieldPrefab.name = "Input Field";
+
             GameObject.DestroyImmediate(_inputFieldPrefab.GetComponentInChildren<CarouselController>());
-            GameObject.DestroyImmediate(_inputFieldPrefab.GetComponentInChildren<ButtonSkinController>());
-            GameObject.DestroyImmediate(_inputFieldPrefab.GetComponentInChildren<HGButton>());
+            //GameObject.DestroyImmediate(_inputFieldPrefab.GetComponentInChildren<ButtonSkinController>());
+            //GameObject.DestroyImmediate(_inputFieldPrefab.GetComponentInChildren<HGButton>());
             GameObject.DestroyImmediate(_inputFieldPrefab.transform.Find("CarouselRect").gameObject);
 
-            _inputFieldPrefab.AddComponent<TMP_InputField>();
+            _inputFieldPrefab.AddComponent<InputFieldController>();
+
+            ColorBlock inputColors = _inputFieldPrefab.GetComponent<HGButton>().colors;
+
+            GameObject textPreview = new GameObject("Text Preview", typeof(RectTransform), typeof(HorizontalLayoutGroup));
+
+            textPreview.transform.SetParent(_inputFieldPrefab.transform);
+
+            var textPreviewHorizontalLayoutGroup = textPreview.GetComponent<HorizontalLayoutGroup>();
+
+            textPreviewHorizontalLayoutGroup.childAlignment = TextAnchor.MiddleRight;
+            textPreviewHorizontalLayoutGroup.padding = new RectOffset(8, 8, 0, 0);
+            textPreviewHorizontalLayoutGroup.spacing = 8;
+            textPreviewHorizontalLayoutGroup.childForceExpandWidth = false;
+            textPreviewHorizontalLayoutGroup.childForceExpandHeight = false;
+
+            var textPreviewRectTransform = textPreview.GetComponent<RectTransform>();
+
+            textPreviewRectTransform.anchorMin = new Vector2(0, 0);
+            textPreviewRectTransform.anchorMax = new Vector2(1, 1);
+            textPreviewRectTransform.pivot = new Vector2(1, 0.5f);
+            textPreviewRectTransform.anchoredPosition = new Vector2(-6, 0);
+
+
+            GameObject placeHolderTextArea = new GameObject("Text Area", typeof(RectTransform), typeof(RectMask2D), typeof(CanvasRenderer), typeof(LayoutElement), typeof(GraphicRaycaster));
+
+            placeHolderTextArea.transform.SetParent(textPreview.transform);
+
+            placeHolderTextArea.AddComponent<Image>(_checkBoxPrefab.GetComponent<Image>());
+
+            var placeHolderLayoutElement = placeHolderTextArea.GetComponent<LayoutElement>();
+
+            placeHolderLayoutElement.minWidth = 256;
+            placeHolderLayoutElement.minHeight = 48;
+            placeHolderLayoutElement.preferredWidth = 256;
+
+            placeHolderTextArea.name = "Text Area";
+
+
+            GameObject textPlaceHolder = new GameObject("Text", typeof(RectTransform), typeof(RectMask2D), typeof(CanvasRenderer));
+
+            textPlaceHolder.transform.SetParent(placeHolderTextArea.transform);
+
+            textPlaceHolder.AddComponent<HGTextMeshProUGUI>(_inputFieldPrefab.transform.Find("ButtonText").GetComponent<HGTextMeshProUGUI>());
+
+            textPlaceHolder.AddComponent<LanguageTextMeshController>();
+
+
+            var textPlaceHolderRectTransform = textPlaceHolder.GetComponent<RectTransform>();
+
+            textPlaceHolderRectTransform.anchorMin = new Vector2(0.03f, 0.5f);
+            textPlaceHolderRectTransform.anchorMax = new Vector2(1, 0.5f);
+            textPlaceHolderRectTransform.sizeDelta = new Vector2(0, 100);
+
+            textPlaceHolder.name = "Text";
+
+            GameObject textCanvas = new GameObject("Text Overlay", typeof(RectTransform), typeof(RectMask2D), typeof(Canvas), typeof(GraphicRaycaster), typeof(CanvasGroup));
+
+            textCanvas.SetActive(false);
+            textCanvas.transform.SetParent(_inputFieldPrefab.transform);
+
+            //var textCanvasImage = textCanvas.AddComponent<Image>(_inputFieldPrefab.GetComponent<Image>());
+
+            //textCanvas.AddComponent<TranslucentImage>(Prefabs.MoPanelPrefab.transform.Find("Scroll View").Find("BlurPanel").gameObject.GetComponent<TranslucentImage>());
+
+            //textCanvasImage.color = inputColors.normalColor;
+
+            textCanvas.AddComponent<RooInputFieldOverlay>();
+
+            var textCanvasRectTransform = textCanvas.GetComponent<RectTransform>();
+
+            textCanvasRectTransform.anchoredPosition = new Vector2(0, -50);
+            textCanvasRectTransform.sizeDelta = new Vector2(525, 48);
+
+            textCanvas.name = "Text Overlay";
+
+            GameObject.Instantiate(Prefabs.MoPanelPrefab.transform.Find("Scroll View").Find("BlurPanel").gameObject, textCanvas.transform);
+            GameObject.Instantiate(Prefabs.MoPanelPrefab.transform.Find("Scroll View").Find("ImagePanel").gameObject, textCanvas.transform);
+
+            //GameObject.Instantiate(_inputFieldPrefab.transform.Find("BaseOutline"), textCanvas.transform);
+
+
+            GameObject textArea = new GameObject("Text Area", typeof(RectTransform), typeof(RectMask2D), typeof(CanvasRenderer), typeof(GraphicRaycaster));
+
+            textArea.transform.SetParent(textCanvas.transform);
+
+            var textAreaRectTransform = textArea.GetComponent<RectTransform>();
+
+            textAreaRectTransform.anchorMin = new Vector2(0, 0);
+            textAreaRectTransform.anchorMax = new Vector2(1, 1);
+            textAreaRectTransform.anchoredPosition = Vector2.zero;
+            textAreaRectTransform.sizeDelta = Vector2.zero;
+
+            var textAreaImage = textArea.AddComponent<Image>(_inputFieldPrefab.GetComponent<Image>());
+
+            textAreaImage.color = inputColors.normalColor;
+
+            textArea.name = "Text Area";
+
+
+            GameObject inputText = new GameObject("Text", typeof(RectTransform), typeof(CanvasRenderer)); 
+
+            inputText.transform.SetParent(textAreaRectTransform.transform);
+
+            inputText.AddComponent<HGTextMeshProUGUI>(_inputFieldPrefab.transform.Find("ButtonText").GetComponent<HGTextMeshProUGUI>());
+
+            var inputTextRectTransform = inputText.GetComponent<RectTransform>();
+
+            inputTextRectTransform.anchorMin = new Vector2(0.02f, 0);
+            inputTextRectTransform.anchorMax = new Vector2(0.98f, 1);
+            inputTextRectTransform.anchoredPosition = Vector2.zero; 
+            inputTextRectTransform.sizeDelta = Vector2.zero;
+
+            inputText.name = "Text";
+
+            var tmpInputField = placeHolderTextArea.AddComponent<RooInputField>();
+
+            tmpInputField.overlay = textCanvas;
+
+            tmpInputField.textViewport = textAreaRectTransform;
+            tmpInputField.textComponent = inputText.GetComponent<HGTextMeshProUGUI>();
+
+            tmpInputField.colors = inputColors;
+
+
+            //textCanvas.transform.SetAsFirstSibling();
+            //textPreview.transform.SetAsFirstSibling();
+            
 
             #endregion
-            
+
             _checkBoxPrefab.SetActive(false);
             _sliderPrefab.SetActive(false);
             _keyBindPrefab.SetActive(false);
-            _inputFieldPrefab.SetActive(false);
 
             if (!RooDropdown.CheckBoxPrefab)
             {

@@ -1,8 +1,10 @@
 ﻿using System;
 using RiskOfOptions.Events;
 using RiskOfOptions.Interfaces;
+using RiskOfOptions.OptionComponents;
 using RiskOfOptions.OptionConstructors;
 using RiskOfOptions.OptionOverrides;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -12,22 +14,30 @@ namespace RiskOfOptions.Options
     {
         public StringEvent OnValueChanged { get; set; } = new StringEvent();
 
-        private InputField.ValidateString _stringValidator;
-
-        internal ValidationFailedEvent ValidationFailed = new ValidationFailedEvent();
-
         private string _value;
-        
-        internal InputFieldOption(string modGuid, string modName, string name, object[] description, string defaultValue, string categoryName, bool visibility, bool restartRequired, UnityAction<string> unityAction, bool invokeValueChangedEvent, bool validateOnEnter, InputField.ValidateString stringValidator)
+
+        private TMP_InputValidator _validator;
+        private TMP_InputField.CharacterValidation _characterValidation;
+        private bool _validateOnEnter;
+
+        internal InputFieldOption(string modGuid, string modName, string name, object[] description, string defaultValue, string categoryName, bool visibility, bool restartRequired, UnityAction<string> unityAction, bool invokeValueChangedEvent, bool validateOnEnter, TMP_InputValidator stringValidator, TMP_InputField.CharacterValidation characterValidation)
             : base(modGuid, modName, name, description, defaultValue, categoryName, null, visibility, restartRequired, invokeValueChangedEvent)
         {
-            _stringValidator = stringValidator;
-            
             Value = defaultValue;
 
             if (unityAction != null)
             {
                 OnValueChanged.AddListener(unityAction);
+            }
+
+            _validateOnEnter = validateOnEnter;
+
+            _characterValidation = characterValidation;
+
+            if (stringValidator != null)
+            {
+                _validator = stringValidator;
+                _characterValidation = TMP_InputField.CharacterValidation.CustomValidator;
             }
 
             OptionToken = $"{ModSettingsManager.StartingText}.{modGuid}.{modName}.category_{categoryName.Replace(".", "")}.{name}.inputfield".ToUpper().Replace(" ", "_");
@@ -42,12 +52,6 @@ namespace RiskOfOptions.Options
             {
                 if (_value == value)
                     return;
-                
-                if (!_stringValidator(value, out string message))
-                {
-                    ValidationFailed.Invoke(message);
-                    return;
-                }
 
                 _value = value;
 
@@ -59,12 +63,21 @@ namespace RiskOfOptions.Options
         {
             GameObject button = GameObject.Instantiate(prefab, parent);
 
-            //var controller = button.GetComponentInChildren<CarouselController>();
+            var controller = button.GetComponentInChildren<InputFieldController>();
 
-            // controller.settingName = option.ConsoleToken;
-            // controller.nameToken = option.NameToken;
-            //
-            // controller.settingSource = RooSettingSource;
+            controller.settingName = option.ConsoleToken;
+            controller.nameToken = option.NameToken;
+            
+            controller.settingSource = RooSettingSource;
+
+            if (_validator != null)
+            {
+                controller.validator = _validator;
+            }
+
+            controller.characterValidation = _characterValidation;
+
+            controller.validateOnSubmit = _validateOnEnter;
 
             button.name = $"Mod Option Input Field, {option.Name}";
 
@@ -84,6 +97,11 @@ namespace RiskOfOptions.Options
         public override void SetValue(string newValue)
         {
             Value = newValue;
+        }
+
+        public override void SetInternalValue(string newValue)
+        {
+            _value = newValue;
         }
 
         public override T GetValue<T>()

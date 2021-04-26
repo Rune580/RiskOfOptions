@@ -114,6 +114,11 @@ namespace RiskOfOptions.Options
             throw new NotImplementedException();
         }
 
+        public virtual void SetInternalValue(string newValue)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual T GetValue<T>()
         {
             throw new NotImplementedException();

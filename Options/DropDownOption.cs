@@ -90,6 +90,11 @@ namespace RiskOfOptions.Options
             Value = int.Parse(newValue, CultureInfo.InvariantCulture);
         }
 
+        public override void SetInternalValue(string newValue)
+        {
+            _value = int.Parse(newValue, CultureInfo.InvariantCulture);
+        }
+
         public override T GetValue<T>()
         {
             if (typeof(T) != typeof(int))

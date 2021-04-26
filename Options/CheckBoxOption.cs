@@ -104,7 +104,12 @@ namespace RiskOfOptions.Options
         {
             Value = (int.Parse(newValue) == 1);
         }
-        
+
+        public override void SetInternalValue(string newValue)
+        {
+            _value = (int.Parse(newValue) == 1);
+        }
+
         public override T GetValue<T>()
         {
             if (typeof(T) != typeof(bool))

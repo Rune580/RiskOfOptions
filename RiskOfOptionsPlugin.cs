@@ -46,7 +46,7 @@ namespace RiskOfOptions
             ModSettingsManager.CreateCategory("Test BepInEx Config");
             ModSettingsManager.CreateCategory("Test Sliders");
             
-            ModSettingsManager.AddOption(new InputField() {Name = "Input Test", CategoryName =  "Testing New System", DefaultValue = "test", Description = "super lig ball", StringValidator = TestString});
+            ModSettingsManager.AddOption(new InputField() {Name = "Input Test", CategoryName =  "Testing New System", DefaultValue = "test", Description = "super lig ball"});
 
 
             //for (int i = 1; i < 80; i++)
