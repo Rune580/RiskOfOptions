@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using IL.RoR2;
-using R2API.Utils;
-using RiskOfOptions.Options;
+﻿using R2API.Utils;
 using RoR2.UI;
 using TMPro;
-using UnityEngine;
 using Language = On.RoR2.Language;
 
-namespace RiskOfOptions.OptionComponents
+namespace RiskOfOptions.Components.OptionComponents
 {
     public class InputFieldController : BaseSettingsControl
     {

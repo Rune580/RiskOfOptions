@@ -10,7 +10,7 @@ namespace RiskOfOptions.Containers
     {
         private int _lastAmount = 0;
 
-        internal List<OptionBase> Options;
+        internal readonly List<OptionBase> Options;
 
         private List<RiskOfOption> _modOptions;
 

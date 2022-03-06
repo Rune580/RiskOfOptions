@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
-using On.RoR2;
-using R2API.Utils;
 using RoR2.UI;
-using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace RiskOfOptions.OptionComponents
+namespace RiskOfOptions.Components.OptionComponents
 {
     public class SettingsStepSlider : BaseSettingsControl
     {

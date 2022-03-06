@@ -1,11 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+﻿using System.Globalization;
 using RoR2.UI;
-using TMPro;
-using UnityEngine;
 
-namespace RiskOfOptions.OptionComponents
+namespace RiskOfOptions.Components.OptionComponents
 {
     public class DropDownController : BaseSettingsControl
     {

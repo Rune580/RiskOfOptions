@@ -21,7 +21,7 @@ namespace RiskOfOptions
             MODNAME = "Risk of Options",
             AUTHOR = "rune580",
             GUID = "com." + AUTHOR + "." + "riskofoptions",
-            VERSION = "2.0.0"; // Yes this update is big enough that I feel it deserves a major version change.
+            VERSION = "2.0.0";
 
         private ConfigEntry<KeyboardShortcut> testKeyboard;
         private ConfigEntry<bool> testBool;

@@ -6,7 +6,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace RiskOfOptions.OptionComponents
+namespace RiskOfOptions.Components.OptionComponents
 {
     /// <summary>
     /// This is basically a reimplementation of MPDropdown with my own methods of handling the dropdown.

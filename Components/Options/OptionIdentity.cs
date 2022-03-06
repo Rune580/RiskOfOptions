@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace RiskOfOptions.OptionComponents
+namespace RiskOfOptions.Components.OptionComponents
 {
     public class OptionIdentity : MonoBehaviour
     {

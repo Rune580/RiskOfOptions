@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using R2API;
+using RiskOfOptions.Components.OptionComponents;
 using RiskOfOptions.Events;
 using RiskOfOptions.Interfaces;
-using RiskOfOptions.OptionComponents;
 using UnityEngine;
 using UnityEngine.Events;
 

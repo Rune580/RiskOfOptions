@@ -1,12 +1,10 @@
-﻿using System;
-using RiskOfOptions.Interfaces;
-using RiskOfOptions.OptionOverrides;
+﻿using RiskOfOptions.Interfaces;
 using RiskOfOptions.Options;
 using RoR2.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace RiskOfOptions.OptionComponents
+namespace RiskOfOptions.Components.OptionComponents
 {
     public class OverrideController : MonoBehaviour
     {

@@ -1,7 +1,7 @@
 ﻿using RoR2.UI;
 using UnityEngine;
 
-namespace RiskOfOptions.OptionComponents
+namespace RiskOfOptions.Components.OptionComponents
 {
     public class ModListHeaderController : MonoBehaviour
     {

@@ -4,8 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using RiskOfOptions.OptionComponents;
+using RiskOfOptions.Components.OptionComponents;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace RiskOfOptions
 {
@@ -19,12 +20,12 @@ namespace RiskOfOptions
 
         private static void FindPrefab()
         {
-            GameObject pauseMenuPrefab = UnityEngine.Resources.Load<GameObject>("prefabs/ui/pausescreen");
+            GameObject pauseMenuPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/UI/PauseScreen.prefab").WaitForCompletion();
+            
+            if (pauseMenuPrefab == null)
+                throw new Exception("Couldn't initialize Risk Of Options! Continue at your own risk!");
 
             Prefabs.SettingsPanelPrefab = pauseMenuPrefab.GetComponentInChildren<PauseScreenController>().settingsPanelPrefab;
-
-            if (Prefabs.SettingsPanelPrefab == null)
-                throw new Exception("Couldn't initilize Risk Of Options! Continue at your own risk!");
         }
 
         private static void AddToPrefab()

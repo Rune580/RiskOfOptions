@@ -1,20 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using On.RoR2;
-using R2API.Utils;
 using RoR2.UI;
 using TMPro;
 using UnityEngine;
 using RoR2Application = RoR2.RoR2Application;
 
-namespace RiskOfOptions.OptionComponents
+namespace RiskOfOptions.Components.OptionComponents
 {
     // ReSharper disable once IdentifierTypo
     public class KeybindController : BaseSettingsControl
     {
         private bool _listening = false;
-        private int _count;
         private float _timeoutTimer;
 
         private TextMeshProUGUI _keybindLabel;
@@ -97,7 +93,6 @@ namespace RiskOfOptions.OptionComponents
             if (_listening || ModSettingsManager.DoingKeybind)
                 return;
 
-            _count = 2;
             _listening = true;
 
             ModSettingsManager.DoingKeybind = _listening;

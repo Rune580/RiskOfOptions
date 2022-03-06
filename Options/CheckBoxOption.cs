@@ -4,7 +4,6 @@ using System.Text;
 using BepInEx.Configuration;
 using RiskOfOptions.Events;
 using RiskOfOptions.Interfaces;
-using RiskOfOptions.OptionComponents;
 using RiskOfOptions.OptionOverrides;
 using RoR2.UI;
 using UnityEngine;

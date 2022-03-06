@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using RiskOfOptions.OptionComponents;
+using RiskOfOptions.Components.OptionComponents;
 using RiskOfOptions.OptionOverrides;
 using RoR2.UI;
 using UnityEngine;

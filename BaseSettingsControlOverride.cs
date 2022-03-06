@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using On.RoR2.UI;
 using R2API.Utils;
-using RiskOfOptions.OptionComponents;
+using RiskOfOptions.Components.OptionComponents;
 using RoR2;
 
 using static RiskOfOptions.ExtensionMethods;
@@ -27,7 +27,7 @@ namespace RiskOfOptions
 
         private static void SubmitSettingRoo(On.RoR2.UI.BaseSettingsControl.orig_SubmitSetting orig, RoR2.UI.BaseSettingsControl self, string newValue)
         {
-            if (self.settingSource == BaseSettingsControl.SettingSource.ConVar || self.settingSource == BaseSettingsControl.SettingSource.UserProfilePref)
+            if (self.settingSource is BaseSettingsControl.SettingSource.ConVar or BaseSettingsControl.SettingSource.UserProfilePref)
             {
                 orig(self, newValue);
                 return;

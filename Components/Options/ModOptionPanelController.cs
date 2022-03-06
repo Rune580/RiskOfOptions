@@ -13,11 +13,11 @@ using RoR2.UI;
 using RoR2.UI.SkinControllers;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
+
 #pragma warning disable 618
 
-namespace RiskOfOptions.OptionComponents
+namespace RiskOfOptions.Components.OptionComponents
 {
     public class ModOptionPanelController : MonoBehaviour
     {
@@ -933,6 +933,8 @@ namespace RiskOfOptions.OptionComponents
 
             var verticalLayoutTransform = canvas.Find("Options Panel").Find("Scroll View").Find("Viewport").Find("VerticalLayout");
 
+            Selectable lastSelectable = null;
+
             for (int i = 0; i < category.GetModOptionsCached().Count; i++)
             {
                 var option = category.GetModOptionsCached()[i];
@@ -970,10 +972,38 @@ namespace RiskOfOptions.OptionComponents
                 {
                     button.GetComponentInChildren<HGButton>().hoverToken = option.OptionToken;
 
-                    button.GetComponentInChildren<HGButton>().onSelect.AddListener(new UnityAction(delegate ()
+                    button.GetComponentInChildren<HGButton>().onSelect.AddListener(delegate
                     {
                         canvas.Find("Option Description Panel").GetComponentInChildren<HGTextMeshProUGUI>().SetText(option.GetDescriptionAsString());
-                    }));
+                    });
+                }
+
+                var selectable = button.GetComponentInChildren<Selectable>();
+
+                if (selectable)
+                {
+                    var selectableNavigation = selectable.navigation;
+                    selectableNavigation.mode = Navigation.Mode.Explicit;
+                    
+                    if (i == 0 || i > category.GetModOptionsCached().Count)
+                    {
+                        // Todo if at top of list, select category.
+                    }
+                    else if (lastSelectable)
+                    {
+                        var lastSelectableNavigation = lastSelectable.navigation;
+                        lastSelectableNavigation.selectOnDown = selectable;
+                        lastSelectable.navigation = lastSelectableNavigation;
+                        
+                        selectableNavigation.selectOnUp = lastSelectable;
+                    }
+                    
+                    selectable.navigation = selectableNavigation;
+                    lastSelectable = selectable;
+                }
+                else
+                {
+                    lastSelectable = null;
                 }
 
                 if (!option.Visibility)
