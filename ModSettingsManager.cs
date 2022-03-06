@@ -14,6 +14,7 @@ using On.RoR2.UI;
 using R2API;
 using R2API.Utils;
 using RiskOfOptions.Components.OptionComponents;
+using RiskOfOptions.Components.Options;
 using RiskOfOptions.Containers;
 using RiskOfOptions.Interfaces;
 using RiskOfOptions.Legacy;
@@ -61,7 +62,7 @@ namespace RiskOfOptions
 
             BaseSettingsControlOverride.Init();
 
-            SettingsMenu.Init();
+            SettingsModifier.Init();
 
             On.RoR2.PauseManager.CCTogglePause += PauseManagerOnCCTogglePause;
         }

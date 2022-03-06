@@ -4,6 +4,7 @@ using System.Text;
 using On.RoR2.UI;
 using R2API.Utils;
 using RiskOfOptions.Components.OptionComponents;
+using RiskOfOptions.Components.Options;
 using RoR2;
 
 using static RiskOfOptions.ExtensionMethods;

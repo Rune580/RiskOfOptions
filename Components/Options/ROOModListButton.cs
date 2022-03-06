@@ -1,4 +1,5 @@
-﻿using RoR2.UI;
+﻿using RiskOfOptions.Components.Options;
+using RoR2.UI;
 using UnityEngine.EventSystems;
 
 namespace RiskOfOptions.Components.OptionComponents

@@ -1,4 +1,5 @@
-﻿using RiskOfOptions.Interfaces;
+﻿using RiskOfOptions.Components.Options;
+using RiskOfOptions.Interfaces;
 using RiskOfOptions.Options;
 using RoR2.UI;
 using UnityEngine;

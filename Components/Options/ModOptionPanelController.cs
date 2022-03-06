@@ -5,6 +5,8 @@ using System.Linq;
 using LeTai.Asset.TranslucentImage;
 using R2API;
 using R2API.Utils;
+using RiskOfOptions.Components.OptionComponents;
+using RiskOfOptions.Components.RuntimePrefabs;
 using RiskOfOptions.Containers;
 using RiskOfOptions.Options;
 using RiskOfOptions.Resources;
@@ -17,7 +19,7 @@ using UnityEngine.UI;
 
 #pragma warning disable 618
 
-namespace RiskOfOptions.Components.OptionComponents
+namespace RiskOfOptions.Components.Options
 {
     public class ModOptionPanelController : MonoBehaviour
     {
@@ -25,11 +27,8 @@ namespace RiskOfOptions.Components.OptionComponents
 
         public GameObject modListPanel;
         public GameObject modListHighlight;
-
         public GameObject warningPanel;
         
-        private List<GameObject> _toDestroy = new List<GameObject>();
-
         private GameObject _modDescriptionPanel;
         private GameObject _categoryHeader;
         private GameObject _optionsPanel;
@@ -70,6 +69,8 @@ namespace RiskOfOptions.Components.OptionComponents
         }
         private void CreatePrefabs()
         {
+            RuntimePrefabManager.InitializePrefabs(gameObject);
+            
             Transform subPanelArea = transform.Find("SafeArea").Find("SubPanelArea");
             Transform headerArea = transform.Find("SafeArea").Find("HeaderContainer").Find("Header (JUICED)");
 
@@ -81,24 +82,10 @@ namespace RiskOfOptions.Components.OptionComponents
 
             //_leftGlyph.GetComponentInChildren<HGTextMeshProUGUI>().SetText("<sprite=\"tmpsprXboxOneGlyphs\" name=\"texXBoxOneGlyphs_5\">");
             //_rightGlyph.GetComponentInChildren<HGTextMeshProUGUI>().SetText("<sprite=\"tmpsprXboxOneGlyphs\" name=\"texXBoxOneGlyphs_9\">");
+            
+            //GameObject verticalLayout = RuntimePrefabManager.Get<ModOptionsPanelPrefab>().transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").gameObject;
 
-            Prefabs.Gdp = GameObject.Instantiate(subPanelArea.Find("GenericDescriptionPanel").gameObject);
-
-            GameObject.DestroyImmediate(Prefabs.Gdp.GetComponentInChildren<DisableIfTextIsEmpty>());
-            GameObject.DestroyImmediate(Prefabs.Gdp.GetComponentInChildren<LanguageTextMeshController>());
-            GameObject.DestroyImmediate(Prefabs.Gdp.transform.Find("ContentSizeFitter").Find("BlurPanel").gameObject);
-            GameObject.DestroyImmediate(Prefabs.Gdp.transform.Find("ContentSizeFitter").Find("CornerRect").gameObject);
-
-            GameObject audioPanel = subPanelArea.Find("SettingsSubPanel, Audio").gameObject;
-
-            Prefabs.MoPanelPrefab = GameObject.Instantiate(audioPanel);
-            Prefabs.MoPanelPrefab.name = "SettingsSubPanel, Mod Options";
-
-            Prefabs.MoHeaderButtonPrefab = GameObject.Instantiate(headerArea.Find("GenericHeaderButton (Audio)").gameObject);
-
-            GameObject verticalLayout = Prefabs.MoPanelPrefab.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").gameObject;
-
-            Prefabs.ModButtonPrefab = GameObject.Instantiate(verticalLayout.transform.Find("SettingsEntryButton, Bool (Audio Focus)").gameObject);
+            //Prefabs.ModButtonPrefab = GameObject.Instantiate(verticalLayout.transform.Find("SettingsEntryButton, Bool (Audio Focus)").gameObject);
 
             _checkBoxPrefab = GameObject.Instantiate(Prefabs.ModButtonPrefab);
 
@@ -445,11 +432,9 @@ namespace RiskOfOptions.Components.OptionComponents
 
         private void CreatePanel()
         {
-            Prefabs.MoPanelPrefab.name = "SettingsSubPanel, Mod Options";
-
             Transform headerArea = transform.Find("SafeArea").Find("HeaderContainer").Find("Header (JUICED)");
 
-            GameObject verticalLayout = Prefabs.MoPanelPrefab.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").gameObject;
+            GameObject verticalLayout = RuntimePrefabManager.Get<ModOptionsPanelPrefab>().transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").gameObject;
 
             UnityEngine.Object.DestroyImmediate(verticalLayout.transform.Find("SettingsEntryButton, Slider (Master Volume)").gameObject);
             UnityEngine.Object.DestroyImmediate(verticalLayout.transform.Find("SettingsEntryButton, Slider (SFX Volume)").gameObject);
@@ -510,7 +495,7 @@ namespace RiskOfOptions.Components.OptionComponents
 
             Transform mdpVerticalLayout = _modDescriptionPanel.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout");
 
-            GameObject.Instantiate(Prefabs.Gdp, mdpVerticalLayout);
+            GameObject.Instantiate(RuntimePrefabManager.Get<GenericDescriptionPanelPrefab>(), mdpVerticalLayout);
 
             _modDescriptionPanel.SetActive(true);
 
@@ -518,7 +503,7 @@ namespace RiskOfOptions.Components.OptionComponents
 
 
 
-            warningPanel = GameObject.Instantiate(Prefabs.Gdp, modListPanel.transform);
+            warningPanel = GameObject.Instantiate(RuntimePrefabManager.Get<GenericDescriptionPanelPrefab>(), modListPanel.transform);
 
             warningPanel.GetComponent<RectTransform>().anchorMin = new Vector2(0f, 0f);
             warningPanel.GetComponent<RectTransform>().anchorMax = new Vector2(1f, 0f);
@@ -1243,11 +1228,7 @@ namespace RiskOfOptions.Components.OptionComponents
             //Debug.Log("Unloading Assets");
 
             initialized = false;
-
-            // foreach (var gameObject in _toDestroy)
-            // {
-            //     GameObject.DestroyImmediate(gameObject);
-            // }
+            
 
             GameObject.DestroyImmediate(_checkBoxPrefab);
             GameObject.DestroyImmediate(_sliderPrefab);
@@ -1263,17 +1244,10 @@ namespace RiskOfOptions.Components.OptionComponents
             GameObject.DestroyImmediate(_rightButton);
             GameObject.DestroyImmediate(_dropDownPrefab);
             GameObject.DestroyImmediate(_inputFieldPrefab);
-            GameObject.DestroyImmediate(Prefabs.Gdp);
-            GameObject.DestroyImmediate(Prefabs.MoCanvas);
-            GameObject.DestroyImmediate(Prefabs.MoHeaderButtonPrefab);
-            GameObject.DestroyImmediate(Prefabs.MoPanelPrefab);
-            GameObject.DestroyImmediate(Prefabs.ModButtonPrefab);
+            
+            RuntimePrefabManager.DestroyPrefabs();
 
             OptionSerializer.Save(ModSettingsManager.OptionContainers.ToArray());
-        }
-        private void RegisterForDestroy(ref GameObject gameObject)
-        {
-            _toDestroy.Add(gameObject);
         }
 
         public void OnEnable()

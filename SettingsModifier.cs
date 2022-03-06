@@ -5,32 +5,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RiskOfOptions.Components.OptionComponents;
+using RiskOfOptions.Components.Options;
+using RiskOfOptions.Components.RuntimePrefabs;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using Object = UnityEngine.Object;
 
 namespace RiskOfOptions
 {
-    internal static class SettingsMenu
+    internal static class SettingsModifier
     {
         public static void Init()
-        {
-            FindPrefab();
-            AddToPrefab();
-        }
-
-        private static void FindPrefab()
         {
             GameObject pauseMenuPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/UI/PauseScreen.prefab").WaitForCompletion();
             
             if (pauseMenuPrefab == null)
                 throw new Exception("Couldn't initialize Risk Of Options! Continue at your own risk!");
 
-            Prefabs.SettingsPanelPrefab = pauseMenuPrefab.GetComponentInChildren<PauseScreenController>().settingsPanelPrefab;
-        }
-
-        private static void AddToPrefab()
-        {
-            Prefabs.SettingsPanelPrefab.AddComponent<ModOptionPanelController>();
+            pauseMenuPrefab.GetComponentInChildren<PauseScreenController>().settingsPanelPrefab
+                .AddComponent<ModOptionPanelController>();
+            
+            RuntimePrefabManager.Register<ModOptionsPanelPrefab>();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using RiskOfOptions.Components.Options;
+using UnityEngine;
 
 namespace RiskOfOptions.Components.OptionComponents
 {
