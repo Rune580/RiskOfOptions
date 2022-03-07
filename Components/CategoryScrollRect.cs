@@ -129,6 +129,8 @@ namespace RiskOfOptions.Components
             outlineRectTransform.sizeDelta = new Vector2(OutlineScale, OutlineScale);
             outlineRectTransform.anchorMin = new Vector2(0, 1);
             outlineRectTransform.anchorMax = new Vector2(0, 1);
+            outlineRectTransform.offsetMin = dotRectTransform.offsetMin;
+            outlineRectTransform.offsetMax = dotRectTransform.offsetMax;
 
             var outlineLayoutElement = _indicatorOutlinePrefab.GetComponent<LayoutElement>();
 
@@ -266,17 +268,17 @@ namespace RiskOfOptions.Components
 
             var indicatorRectTransform = _indicatorOutlinePrefab.GetComponent<RectTransform>();
 
-            var newPos = _indicators[page].GetComponent<RectTransform>().anchoredPosition;
+            var newPos = _indicators[page].GetComponent<RectTransform>().localPosition;
 
-            while (!ExtensionMethods.CloseEnough(indicatorRectTransform.anchoredPosition, newPos) && !ExtensionMethods.CloseEnough(image.color, Color.white))
+            while (!ExtensionMethods.CloseEnough(indicatorRectTransform.localPosition, newPos) && !ExtensionMethods.CloseEnough(image.color, Color.white))
             {
-                indicatorRectTransform.anchoredPosition = Vector2.Lerp(indicatorRectTransform.anchoredPosition, newPos, 10f * Time.deltaTime);
+                indicatorRectTransform.localPosition = Vector2.Lerp(indicatorRectTransform.localPosition, newPos, 10f * Time.deltaTime);
                 image.color = Color.Lerp(image.color, Color.white, 10f * Time.deltaTime);
                 
                 yield return new WaitForEndOfFrame();
             }
             
-            indicatorRectTransform.anchoredPosition = newPos;
+            indicatorRectTransform.localPosition = newPos;
         }
 
         private IEnumerator IndicatorColor(int ignore)
@@ -298,6 +300,14 @@ namespace RiskOfOptions.Components
 
                 yield return new WaitForEndOfFrame();
             }
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+
+            foreach (var indicator in _indicators)
+                DestroyImmediate(indicator);
         }
     }
 }

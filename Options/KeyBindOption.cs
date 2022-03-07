@@ -4,6 +4,7 @@ using System.Text;
 using BepInEx.Configuration;
 using R2API.Utils;
 using RiskOfOptions.Components.OptionComponents;
+using RiskOfOptions.Components.Options;
 using RiskOfOptions.Events;
 using RiskOfOptions.Interfaces;
 using RiskOfOptions.OptionOverrides;

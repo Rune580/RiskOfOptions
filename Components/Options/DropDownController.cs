@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using RiskOfOptions.Components.Options;
 using RoR2.UI;
 
 namespace RiskOfOptions.Components.OptionComponents

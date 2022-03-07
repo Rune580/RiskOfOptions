@@ -1,23 +1,25 @@
 ﻿using RoR2.UI;
 using UnityEngine;
 
-namespace RiskOfOptions.Components.OptionComponents
+namespace RiskOfOptions.Components.Options
 {
     public class ModSettingsControl : MonoBehaviour
     {
         public string settingToken;
         public string nameToken;
         public LanguageTextMeshController nameLabel;
+        
+        private MPEventSystemLocator _eventSystemLocator;
+        private string _originalValue;
 
-        public bool HasChanged => m_originalValue != null;
+        public bool HasChanged => _originalValue != null;
 
         public void SubmitSetting(string newValue)
         {
-            if (m_originalValue == null)
-                m_originalValue = GetCurrentValue();
+            _originalValue ??= GetCurrentValue();
             
-            if (m_originalValue == newValue)
-                m_originalValue = null;
+            if (_originalValue == newValue)
+                _originalValue = null;
             
             // Todo implement setting value using settingToken.
             
@@ -32,16 +34,16 @@ namespace RiskOfOptions.Components.OptionComponents
 
         public void Revert()
         {
-            if (HasChanged)
-            {
-                SubmitSetting(m_originalValue);
-                m_originalValue = null;
-            }
+            if (!HasChanged)
+                return;
+            
+            SubmitSetting(_originalValue);
+            _originalValue = null;
         }
 
         protected void Awake()
         {
-            m_eventSystemLocator = GetComponent<MPEventSystemLocator>();
+            _eventSystemLocator = GetComponent<MPEventSystemLocator>();
             
             if (nameLabel && !string.IsNullOrEmpty(nameToken))
                 nameLabel.token = nameToken;
@@ -74,7 +76,6 @@ namespace RiskOfOptions.Components.OptionComponents
         
         protected virtual void OnUpdateControls() {}
 
-        private MPEventSystemLocator m_eventSystemLocator;
-        private string m_originalValue;
+        
     }
 }

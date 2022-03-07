@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using RiskOfOptions.Components.OptionComponents;
+using RiskOfOptions.Components.Options;
 using RiskOfOptions.OptionOverrides;
 using RoR2.UI;
 using UnityEngine;

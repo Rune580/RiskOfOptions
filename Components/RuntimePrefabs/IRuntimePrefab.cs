@@ -6,6 +6,6 @@ namespace RiskOfOptions.Components.RuntimePrefabs
     {
         void Instantiate(GameObject settingsPanel);
 
-        GameObject GetRoot();
+        void Destroy();
     }
 }

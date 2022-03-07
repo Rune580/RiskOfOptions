@@ -26,6 +26,8 @@ namespace RiskOfOptions
                 .AddComponent<ModOptionPanelController>();
             
             RuntimePrefabManager.Register<ModOptionsPanelPrefab>();
+            RuntimePrefabManager.Register<CheckBoxPrefab>();
+            RuntimePrefabManager.Register<SliderPrefab>();
         }
     }
 }

@@ -232,8 +232,7 @@ namespace RiskOfOptions
             }
 
             string loadedValue = OptionSerializer.Load(option.ConsoleToken);
-
-
+            
             if (!string.IsNullOrEmpty(loadedValue))
                 option.SetInternalValue(loadedValue);
 

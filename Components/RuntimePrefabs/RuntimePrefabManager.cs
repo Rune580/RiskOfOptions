@@ -9,7 +9,6 @@ namespace RiskOfOptions.Components.RuntimePrefabs
     public static class RuntimePrefabManager
     {
         private static readonly Dictionary<Type, IRuntimePrefab> Prefabs = new();
-        private static readonly Dictionary<Type, GameObject> GameObjects = new();
 
         public static void Register<T>() where T : IRuntimePrefab, new()
         {
@@ -28,16 +27,14 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             foreach (var (type, runtimePrefab) in Prefabs)
             {
                 runtimePrefab.Instantiate(panel);
-
-                GameObjects[type] = runtimePrefab.GetRoot();
             }
         }
 
         internal static void DestroyPrefabs()
         {
-            foreach (var (_, instance) in GameObjects)
+            foreach (var (_, runtimePrefab) in Prefabs)
             {
-                Object.DestroyImmediate(instance);
+                runtimePrefab.Destroy();
             }
         }
     }

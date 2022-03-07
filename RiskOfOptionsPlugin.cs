@@ -42,11 +42,11 @@ namespace RiskOfOptions
 
             ModSettingsManager.SetPanelDescription("Example Description");
             
-            ModSettingsManager.CreateCategory("Testing New System");
-            ModSettingsManager.CreateCategory("Test BepInEx Config");
-            ModSettingsManager.CreateCategory("Test Sliders");
+            //ModSettingsManager.CreateCategory("Testing New System");
+            //ModSettingsManager.CreateCategory("Test BepInEx Config");
+            //ModSettingsManager.CreateCategory("Test Sliders");
             
-            ModSettingsManager.AddOption(new InputField() {Name = "Input Test", CategoryName =  "Testing New System", DefaultValue = "test", Description = "super lig ball"});
+            //ModSettingsManager.AddOption(new InputField() {Name = "Input Test", CategoryName =  "Testing New System", DefaultValue = "test", Description = "super lig ball"});
 
 
             //for (int i = 1; i < 80; i++)
@@ -56,17 +56,17 @@ namespace RiskOfOptions
 
 
 
-            ModSettingsManager.AddOption(new CheckBox(){ Name = "Test", CategoryName = "Testing New System", DefaultValue = true, Description = "Lig ball", OnValueChanged = DoVisibility, InvokeValueChangedEventOnStart = true });
+            //ModSettingsManager.AddOption(new CheckBox() { Name = "Test", CategoryName = "Testing New System", DefaultValue = true, Description = "Lig ball", OnValueChanged = DoVisibility, InvokeValueChangedEventOnStart = true });
 
-            ModSettingsManager.AddOption(new KeyBind(){ Name = "Test KeyBind" , CategoryName = "Testing New System", DefaultValue = KeyCode.G, Description = "This is yet another Description", IsVisible = false });
+            //ModSettingsManager.AddOption(new KeyBind() { Name = "Test KeyBind" , CategoryName = "Testing New System", DefaultValue = KeyCode.G, Description = "This is yet another Description", IsVisible = false });
 
-            ModSettingsManager.AddOption(new Slider() { Name = "Music Slider", CategoryName = "Test Sliders", DefaultValue = 50f, Min = 10, Max = 69, Description = "This is another Description", DisplayAsPercentage = false});
+            //ModSettingsManager.AddOption(new Slider() { Name = "Music Slider", CategoryName = "Test Sliders", DefaultValue = 50f, Min = 10, Max = 69, Description = "This is another Description", DisplayAsPercentage = false});
 
-            ModSettingsManager.AddOption(new StepSlider() { Name = "FOV Slider Test", CategoryName = "Test Sliders", DefaultValue = 90, Min = 50, Max = 110, Increment = 1f, Description = "FOV Test Slider Description" });
-            ModSettingsManager.AddOption(new StepSlider() { Name = "Other Test Step Slider", CategoryName = "Test Sliders", DefaultValue = 1.5f, Min = 1, Max = 2, Increment = 0.05f, Description = "Test slider from 1 to 2 with increments of 0.05f" });
-            ModSettingsManager.AddOption(new StepSlider() { Name = "More Visible Step Slider", CategoryName = "Test Sliders", DefaultValue = 60, Min = 0, Max = 200, Increment = 25, Description = "Test slider from 0 to 200 with increments of 20", DisplayAsPercentage = true});
+            //ModSettingsManager.AddOption(new StepSlider() { Name = "FOV Slider Test", CategoryName = "Test Sliders", DefaultValue = 90, Min = 50, Max = 110, Increment = 1f, Description = "FOV Test Slider Description" });
+            //ModSettingsManager.AddOption(new StepSlider() { Name = "Other Test Step Slider", CategoryName = "Test Sliders", DefaultValue = 1.5f, Min = 1, Max = 2, Increment = 0.05f, Description = "Test slider from 1 to 2 with increments of 0.05f" });
+            //ModSettingsManager.AddOption(new StepSlider() { Name = "More Visible Step Slider", CategoryName = "Test Sliders", DefaultValue = 60, Min = 0, Max = 200, Increment = 25, Description = "Test slider from 0 to 200 with increments of 20", DisplayAsPercentage = true});
 
-            testKeyboard = Config.Bind("Test BepInEx Config", "testKey", new KeyboardShortcut(KeyCode.G), "lig my balls");
+            testKeyboard = Config.Bind("Test BepInEx Config", "testKey", new KeyboardShortcut(KeyCode.G, KeyCode.LeftShift), "lig my balls");
 
             testBool = Config.Bind("Test BepInEx Config", "testCheckBox", true, "This check box was made from a config");
 
@@ -80,39 +80,31 @@ namespace RiskOfOptions
 
             testKeyboard.SettingChanged += ConfigEntryKeyBindTest;
 
-            ModSettingsManager.AddOption(new DropDown() { Name = "Test Drop Down", CategoryName = "Testing New System", DefaultValue = 0, Choices = new[] {"Choice 1", "Choice 2", "Choice 3", "Choice 4", "Choice 5", "Choice 6", "Choice 7", "Choice 8", "Choice 9", "Choice 10" }, Description = "Test Drop Down with 5 choices" , OnValueChanged = ChoiceTest });
+            //ModSettingsManager.AddOption(new DropDown() { Name = "Test Drop Down", CategoryName = "Testing New System", DefaultValue = 0, Choices = new[] {"Choice 1", "Choice 2", "Choice 3", "Choice 4", "Choice 5", "Choice 6", "Choice 7", "Choice 8", "Choice 9", "Choice 10" }, Description = "Test Drop Down with 5 choices" , OnValueChanged = ChoiceTest });
 
             ModSettingsManager.AddOption(new CheckBox() { ConfigEntry = testBool });
 
             ModSettingsManager.AddOption(new KeyBind() { ConfigEntry = testKeyboard });
 
-            ModSettingsManager.AddOption(new Slider() { ConfigEntry = testFloat, Min = 50, Max = 69 });
+            ModSettingsManager.AddOption(new Slider(testFloat) { Min = 50, Max = 69 });
 
-            ModSettingsManager.AddOption(new StepSlider() { ConfigEntry = testFloatStepped, Min = 1, Max = 2, Increment = 0.05f });
+            ModSettingsManager.AddOption(new StepSlider(testFloatStepped) { Min = 1, Max = 2, Increment = 0.05f });
 
-            ModSettingsManager.AddOption(new CheckBox() { Name = "Test Override", CategoryName = "Testing New System", DefaultValue = false, Description = "Lig ball" });
+            //ModSettingsManager.AddOption(new CheckBox() { Name = "Test Override", CategoryName = "Testing New System", DefaultValue = false, Description = "Lig ball" });
 
-            CheckBoxOverride checkBoxOverride = new CheckBoxOverride()
-            {
-                Name = "Test Override",
-                CategoryName = "Testing New System",
-                OverrideOnTrue = true,
-                ValueToReturnWhenOverriden = false
-            };
-
-            ModSettingsManager.AddOption(new CheckBox() { Name = "To Be Overridden", CategoryName = "Testing New System", DefaultValue = true, Description = "Lig ball but disabled", Override = checkBoxOverride , OnValueChanged = OverrideTest });
+            //ModSettingsManager.AddOption(new CheckBox() { Name = "To Be Overridden", CategoryName = "Testing New System", DefaultValue = true, Description = "Lig ball but disabled", Override = checkBoxOverride , OnValueChanged = OverrideTest });
 
 
-            SliderOverride musicOverride = new SliderOverride()
-            {
-                Name = "Test Override",
-                CategoryName = "Testing New System",
-                OverrideOnTrue = true,
-                ValueToReturnWhenOverriden = 0f
-            };
+            // SliderOverride musicOverride = new SliderOverride()
+            // {
+            //     Name = "Test Override",
+            //     CategoryName = "Testing New System",
+            //     OverrideOnTrue = true,
+            //     ValueToReturnWhenOverriden = 0f
+            // };
 
 
-            ModSettingsManager.AddOption(new Slider() {ConfigEntry = testFloatOverride, Name = "Better Name", CategoryName = "Testing New System" , Override = musicOverride});
+            //ModSettingsManager.AddOption(new Slider(testFloatOverride) { Name = "Better Name", CategoryName = "Testing New System" , Override = musicOverride});
 
             //ModSettingsManager.AddSlider("Music Slider", "This is another Description", 50f, 10f, 69f, "Audio");
 

@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using R2API;
 using UnityEngine;
 
 namespace RiskOfOptions.Resources
@@ -14,10 +13,8 @@ namespace RiskOfOptions.Resources
 
         internal static void LoadAssets()
         {
-            using (var assetStream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"RiskOfOptions.Resources.riskofoptions"))
-            {
-                _mainAssetBundle = AssetBundle.LoadFromStream(assetStream);
-            }
+            using var assetStream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"RiskOfOptions.Resources.riskofoptions");
+            _mainAssetBundle = AssetBundle.LoadFromStream(assetStream);
         }
     }
 }

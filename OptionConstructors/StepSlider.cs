@@ -1,10 +1,12 @@
-﻿namespace RiskOfOptions.OptionConstructors
+﻿using BepInEx.Configuration;
+
+namespace RiskOfOptions.OptionConstructors
 {
     public class StepSlider : Slider
     {
         public float Increment;
 
-        public StepSlider()
+        public StepSlider(ConfigEntry<float> configEntry) : base(configEntry)
         {
             Increment = 1f;
             DisplayAsPercentage = false;

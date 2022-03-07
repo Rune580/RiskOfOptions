@@ -1,10 +1,9 @@
-﻿using RiskOfOptions.Components.Options;
-using RoR2.UI;
+﻿using RoR2.UI;
 using UnityEngine.EventSystems;
 
-namespace RiskOfOptions.Components.OptionComponents
+namespace RiskOfOptions.Components.Options
 {
-    public class RooModListButton : HGButton
+    public class ModListButton : HGButton
     {
         public string description = "";
         public HGTextMeshProUGUI tmp;
@@ -35,13 +34,13 @@ namespace RiskOfOptions.Components.OptionComponents
                 {
                     navigationController.ChooseHeaderByButton(this);
 
-                    Mopc.LoadModOptionsFromContainer(containerIndex, transform.parent.parent.parent.parent.parent);
+                    Mopc.LoadModOptionsFromContainer(containerIndex);
                 }));
         }
 
         private new void Update()
         {
-            if (!this.eventSystem || this.eventSystem.player == null)
+            if (!this.eventSystem)
             {
                 return;
             }

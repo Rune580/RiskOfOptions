@@ -1,4 +1,6 @@
-﻿using TMPro;
+﻿using System;
+using BepInEx.Configuration;
+using TMPro;
 using UnityEngine.Events;
 
 namespace RiskOfOptions.OptionConstructors
@@ -13,11 +15,13 @@ namespace RiskOfOptions.OptionConstructors
         public bool ValidateOnEnter;
         public bool RestartRequired;
         public UnityAction<string> OnValueChanged;
+        public ConfigEntry<string> ConfigEntry;
         public TMP_InputValidator StringValidator;
         public TMP_InputField.CharacterValidation CharacterValidation;
 
-        public InputField()
+        public InputField(ConfigEntry<string> configEntry)
         {
+            ConfigEntry = configEntry ?? throw new NullReferenceException("configEntry must not be null");
             StringValidator = null;
             CharacterValidation = TMP_InputField.CharacterValidation.None;
             RestartRequired = false;

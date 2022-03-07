@@ -4,7 +4,7 @@ using RoR2.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace RiskOfOptions.Components.OptionComponents
+namespace RiskOfOptions.Components.Options
 {
     public class SettingsStepSlider : BaseSettingsControl
     {

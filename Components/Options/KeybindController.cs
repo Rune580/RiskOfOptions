@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using On.RoR2;
 using RoR2.UI;
 using TMPro;
 using UnityEngine;
 using RoR2Application = RoR2.RoR2Application;
 
-namespace RiskOfOptions.Components.OptionComponents
+namespace RiskOfOptions.Components.Options
 {
     // ReSharper disable once IdentifierTypo
     public class KeybindController : BaseSettingsControl
@@ -13,10 +15,13 @@ namespace RiskOfOptions.Components.OptionComponents
         private bool _listening = false;
         private float _timeoutTimer;
 
-        private TextMeshProUGUI _keybindLabel;
+        private TextMeshProUGUI _keyBindLabel;
         private MPEventSystem _mpEventSystem;
         private SimpleDialogBox _dialogBox;
         private HGButton _bindingButton;
+
+        private List<KeyCode> _heldKeys = new();
+        private List<KeyCode> _keySequence = new();
 
         protected new void Awake()
         {
@@ -29,7 +34,7 @@ namespace RiskOfOptions.Components.OptionComponents
 
             _mpEventSystem = GetComponentInParent<MPEventSystemLocator>().eventSystem;
 
-            _keybindLabel = transform.Find("BindingContainer").Find("BindingButton").Find("ButtonText").GetComponent<TextMeshProUGUI>();
+            _keyBindLabel = transform.Find("BindingContainer").Find("BindingButton").Find("ButtonText").GetComponent<TextMeshProUGUI>();
 
             _bindingButton = transform.Find("BindingContainer").Find("BindingButton").GetComponent<HGButton>();
         }
@@ -178,13 +183,11 @@ namespace RiskOfOptions.Components.OptionComponents
             if (!_listening)
                 return;
 
-            if (!Event.current.isKey || Event.current.type != EventType.KeyDown)
+            if (!Event.current.isKey || Event.current.type is not (EventType.KeyDown or EventType.KeyUp))
                 return;
 
             if (Event.current.keyCode == KeyCode.None)
                 return;
-
-
 
             if (Event.current.keyCode == KeyCode.Escape)
             {
@@ -192,11 +195,46 @@ namespace RiskOfOptions.Components.OptionComponents
                 return;
             }
 
-            SubmitSetting($"{(int)Event.current.keyCode}");
+            switch (Event.current.type)
+            {
+                case EventType.KeyDown:
+                    KeyDown(Event.current.keyCode);
+                    break;
+                case EventType.KeyUp:
+                    KeyUp(Event.current.keyCode);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            //SubmitSetting($"{(int)Event.current.keyCode}");
 
             StopListening();
 
             //onValueChangedKeyCode?.Invoke((KeyCode)int.Parse(base.GetCurrentValue()));
+        }
+
+        private void KeyDown(KeyCode keyCode)
+        {
+            if (_heldKeys.Contains(keyCode))
+                return;
+            
+            _heldKeys.Add(keyCode);
+        }
+
+        private void KeyUp(KeyCode keyCode)
+        {
+            _heldKeys.Remove(keyCode);
+            
+            if (_keySequence.Contains(keyCode))
+                return;
+            
+            _keySequence.Add(keyCode);
+
+            if (_heldKeys.Count == 0)
+            {
+                
+            }
         }
 
         private void SetKeyBind(KeyCode keyCode)
@@ -249,7 +287,7 @@ namespace RiskOfOptions.Components.OptionComponents
                 i++;
             }
 
-            _keybindLabel.SetText(displayText);
+            _keyBindLabel.SetText(displayText);
         }
 
         private void FixPauseMenu()

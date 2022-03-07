@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-namespace RiskOfOptions.Components.OptionComponents
+namespace RiskOfOptions.Components
 {
     public class FetchIconWhenReady : MonoBehaviour
     {

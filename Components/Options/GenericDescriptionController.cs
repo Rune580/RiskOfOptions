@@ -34,10 +34,7 @@ namespace RiskOfOptions.Components.OptionComponents
                     _genericDescriptionPanel.SetActive(true);
                 }
 
-                if (!_canvas)
-                    _canvas = _genericDescriptionPanel.transform.parent.Find("SettingsSubPanel, Mod Options(Clone)");
-
-                Mopc.UnLoad(_canvas);
+                Mopc.UnLoad();
             }
             catch
             {
