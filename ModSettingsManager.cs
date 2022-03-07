@@ -142,9 +142,10 @@ namespace RiskOfOptions
                 GameObject testButton = UnityEngine.Object.Instantiate<GameObject>(gameplayButton, gameplayButton.transform.parent);
 
                 testButton.name = "GenericHeaderButton (Mod Options)";
-
+                
+                UnityEngine.Object.DestroyImmediate(testButton.GetComponentInChildren<LanguageTextMeshController>());
+                
                 testButton.GetComponentInChildren<HGTextMeshProUGUI>().SetText("MOD OPTIONS");
-
                 testButton.GetComponentInChildren<HGButton>().onClick.AddListener(loadMainModPanel);
 
                 initilized = true;
