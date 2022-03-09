@@ -1,132 +1,56 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using BepInEx.Configuration;
-using RiskOfOptions.Events;
-using RiskOfOptions.Interfaces;
-using RiskOfOptions.OptionOverrides;
-using RoR2.UI;
+﻿using BepInEx.Configuration;
+using RiskOfOptions.Components.Options;
+using RiskOfOptions.OptionConfigs;
 using UnityEngine;
-using UnityEngine.Events;
-
-using static RiskOfOptions.ExtensionMethods;
 
 namespace RiskOfOptions.Options
 {
-    public class CheckBoxOption : RiskOfOption, IBoolProvider
+    public class CheckBoxOption : BaseOption, ITypedValue<bool>
     {
-        public BoolEvent OnValueChanged { get; set; } = new BoolEvent();
+        private readonly ConfigEntry<bool> _configEntry;
+        internal CheckBoxConfig Config { get; }
 
-        private bool _value;
+        public CheckBoxOption(ConfigEntry<bool> configEntry) : this(configEntry, new CheckBoxConfig()) { }
 
-        internal ConfigEntry<bool> ConfigEntry;
-
-        internal CheckBoxOption(string modGuid, string modName, string name, object[] description, string defaultValue, string categoryName, OptionOverride optionOverride, bool visibility, bool restartRequired, UnityAction<bool> unityAction, bool invokeEventOnStart)
-            : base(modGuid, modName, name, description, defaultValue, categoryName, optionOverride, visibility, restartRequired, invokeEventOnStart)
+        public CheckBoxOption(ConfigEntry<bool> configEntry, CheckBoxConfig config)
         {
-            Value = (int.Parse(defaultValue) == 1);
-
-            if (unityAction != null)
-            {
-                OnValueChanged.AddListener(unityAction);
-            }
-
-            OptionToken = $"{ModSettingsManager.StartingText}.{modGuid}.{modName}.category_{categoryName.Replace(".", "")}.{name}.checkbox".ToUpper().Replace(" ", "_");
-
-            RegisterTokens();
+            _configEntry = configEntry;
+            Config = config;
+            
+            SetCategoryName(configEntry.Definition.Section, config);
+            SetName(configEntry.Definition.Key, config);
+            SetDescription(configEntry.Definition.Section, config);
         }
+        
+        public override string OptionTypeName { get; protected set; } = "checkbox";
 
-        public bool Value
+        public override GameObject CreateOptionGameObject(GameObject prefab, Transform parent)
         {
-            get
-            {
-                if (OptionOverride != null)
-                {
-                    Indexes indexes = ModSettingsManager.OptionContainers.GetIndexes(ModGuid, OptionOverride.Name, OptionOverride.CategoryName);
+            GameObject button = Object.Instantiate(prefab, parent);
 
-                    if (ModSettingsManager.OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer] is IBoolProvider boolProvider)
-                    {
-                        bool overrideValue = boolProvider.Value;
+            var controller = button.GetComponentInChildren<ModSettingsBool>();
 
-                        if ((overrideValue && OptionOverride.OverrideOnTrue) || (!overrideValue && !OptionOverride.OverrideOnTrue))
-                        {
-                            return ((CheckBoxOverride)OptionOverride).ValueToReturnWhenOverriden;
-                        }
-                    }
-                }
-
-                return _value;
-            }
-            set
-            {
-                if (_value == value)
-                    return;
-
-                _value = value;
-
-                if (ConfigEntry != null)
-                {
-                    ConfigEntry.Value = Value;
-                }
-
-                OnValueChanged.Invoke(Value);
-            }
-        }
-
-        public override GameObject CreateOptionGameObject(RiskOfOption option, GameObject prefab, Transform parent)
-        {
-            GameObject button = GameObject.Instantiate(prefab, parent);
-
-            var controller = button.GetComponentInChildren<CarouselController>();
-
-            controller.settingName = option.ConsoleToken;
-            controller.nameToken = option.NameToken;
-
-            controller.settingSource = RooSettingSource;
-
-            button.name = $"Mod Option CheckBox, {option.Name}";
+            controller.nameToken = GetNameToken();
+            controller.settingToken = Identifier;
+            
+            button.name = $"Mod Option CheckBox, {Name}";
 
             return button;
         }
-
-        public override string GetValueAsString()
+        
+        public override BaseOptionConfig GetConfig()
         {
-            return $"{(Value ? "1" : "0")}";
+            return Config;
         }
 
-        public override string GetInternalValueAsString()
+        public void SetValue(bool value)
         {
-            return $"{(_value ? "1" : "0")}";
+            _configEntry.Value = value;
         }
 
-        public override void SetValue(string newValue)
+        public bool GetValue()
         {
-            Value = (int.Parse(newValue) == 1);
-        }
-
-        public override void SetInternalValue(string newValue)
-        {
-            _value = (int.Parse(newValue) == 1);
-        }
-
-        public override T GetValue<T>()
-        {
-            if (typeof(T) != typeof(bool))
-            {
-                throw new Exception($"{Name} can only return a bool! {typeof(T)} is not a valid return type!");
-            }
-
-            return (T) Convert.ChangeType(Value, typeof(T));
-        }
-
-        internal override void Invoke<T>(T value)
-        {
-            OnValueChanged.Invoke((bool) Convert.ChangeType(value, typeof(bool)));
-        }
-
-        internal override void Invoke()
-        {
-            OnValueChanged.Invoke(Value);
+            return _configEntry.Value;
         }
     }
 }

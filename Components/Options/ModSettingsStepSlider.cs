@@ -1,17 +1,19 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using RoR2.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace RiskOfOptions.Components.Options
 {
-    public class ModSettingsSlider : ModSettingsControl<float>
+    public class ModSettingsStepSlider : ModSettingsControl<float>
     {
         public Slider slider;
         public HGTextMeshProUGUI valueText;
         
         public float minValue;
         public float maxValue;
+        public float increment;
         public string formatString;
 
         protected override void Awake()
@@ -21,11 +23,9 @@ namespace RiskOfOptions.Components.Options
             if (!slider)
                 return;
             
-            slider.minValue = minValue;
-            slider.maxValue = maxValue;
             slider.onValueChanged.AddListener(OnSliderValueChanged);
         }
-
+        
         protected override void Disable()
         {
             slider.interactable = false;
@@ -52,8 +52,10 @@ namespace RiskOfOptions.Components.Options
         {
             if (InUpdateControls)
                 return;
-            
-            SubmitValue(newValue);
+
+            float remapValue = (newValue * increment) + minValue;
+
+            SubmitValue(remapValue);
         }
 
         protected override void OnUpdateControls()
@@ -61,9 +63,9 @@ namespace RiskOfOptions.Components.Options
             base.OnUpdateControls();
 
             float num = Mathf.Clamp(GetCurrentValue(), minValue, maxValue);
-
+            
             if (slider)
-                slider.value = num;
+                slider.value = Math.Abs(num - minValue) / increment;
 
             if (valueText)
                 valueText.text = string.Format(CultureInfo.InvariantCulture, formatString, num);

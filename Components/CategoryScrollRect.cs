@@ -16,7 +16,6 @@ namespace RiskOfOptions.Components
             {
                 _pages = Mathf.CeilToInt(value / 4f);
                 _categories = value;
-                
             }
         }
 
@@ -24,8 +23,8 @@ namespace RiskOfOptions.Components
         private HGButton _rightButton;
 
         private GameObject _indicatorHolder;
-        private GameObject _indicatorDotPrefab;
-        private GameObject _indicatorOutlinePrefab;
+        private GameObject _indicatorDot;
+        //private GameObject _indicatorOutline;
 
         private GameObject[] _indicators;
 
@@ -37,8 +36,7 @@ namespace RiskOfOptions.Components
         private IEnumerator _colorAnimator;
 
         private const int Spacing = 0;
-        private const int DotScale = 40;
-        private const int OutlineScale = 30;
+        private const int DotScale = 20;
 
         private static readonly Color InActiveColor = new Color(0.3f, 0.3f, 0.3f, 1);
 
@@ -49,7 +47,7 @@ namespace RiskOfOptions.Components
         private bool Initialized => ButtonsInitialized && IndicatorsInitialized;
         
         private bool ButtonsInitialized => _leftButton && _rightButton;
-        private bool IndicatorsInitialized => _indicatorHolder && _indicatorDotPrefab && _indicatorOutlinePrefab;
+        private bool IndicatorsInitialized => _indicatorHolder && _indicatorDot;
 
         public void Init()
         {
@@ -84,57 +82,60 @@ namespace RiskOfOptions.Components
 
         private void CreateIndicatorPrefabs()
         {
-            _indicatorHolder = new GameObject("Indicators", typeof(RectTransform), typeof(HorizontalLayoutGroup));
+            _indicatorHolder = new GameObject("Indicators", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(ContentSizeFitter));
             _indicatorHolder.transform.SetParent(transform);
 
             var horizontalLayoutGroup = _indicatorHolder.GetComponent<HorizontalLayoutGroup>();
 
             horizontalLayoutGroup.spacing = Spacing;
 
-            horizontalLayoutGroup.childForceExpandHeight = false;
-            horizontalLayoutGroup.childForceExpandWidth = false;
+            horizontalLayoutGroup.childControlHeight = true;
+            horizontalLayoutGroup.childControlWidth = true;
+            horizontalLayoutGroup.childForceExpandHeight = true;
+            horizontalLayoutGroup.childForceExpandWidth = true;
             horizontalLayoutGroup.childAlignment = TextAnchor.LowerCenter;
+
+            var fitter = _indicatorHolder.GetComponent<ContentSizeFitter>();
+
+            fitter.horizontalFit = ContentSizeFitter.FitMode.MinSize;
+            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
             var holderRectTransform = _indicatorHolder.GetComponent<RectTransform>();
 
-            holderRectTransform.anchorMin = new Vector2(0, 0);
-            holderRectTransform.anchorMax = new Vector2(1, 1);
+            holderRectTransform.anchorMin = new Vector2(0, 0.5f);
+            holderRectTransform.anchorMax = new Vector2(1, 0.6f);
             holderRectTransform.sizeDelta = Vector2.zero;
-            holderRectTransform.anchoredPosition = new Vector2(0, -8);
+            holderRectTransform.anchoredPosition = new Vector2(0, -38);
 
-            _indicatorDotPrefab = new GameObject("Indicator Dot", typeof(RectTransform), typeof(LayoutElement), typeof(CanvasRenderer), typeof(Image), typeof(Button));
-            _indicatorDotPrefab.transform.SetParent(transform);
-            _indicatorDotPrefab.SetActive(false);
+            _indicatorDot = new GameObject("Indicator Dot", typeof(RectTransform), typeof(LayoutElement), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+            _indicatorDot.transform.SetParent(transform);
+            _indicatorDot.SetActive(false);
 
-            _indicatorDotPrefab.GetComponent<Image>().sprite = Assets.Load<Sprite>("assets/RiskOfOptions/IndicatorDot.png");
+            var image = _indicatorDot.GetComponent<Image>();
+            image.sprite = Assets.Load<Sprite>("assets/RiskOfOptions/IndicatorDot.png");
+            image.preserveAspect = true;
 
-            var dotRectTransform = _indicatorDotPrefab.GetComponent<RectTransform>();
+            var dotRectTransform = _indicatorDot.GetComponent<RectTransform>();
             
             dotRectTransform.pivot = Vector2.zero;
+            //dotRectTransform.localScale = new Vector3(0.7f, 0.7f, 1f);
 
-            var dotLayoutElement = _indicatorDotPrefab.GetComponent<LayoutElement>();
+            var dotLayoutElement = _indicatorDot.GetComponent<LayoutElement>();
 
-            dotLayoutElement.preferredHeight = DotScale;
-            dotLayoutElement.preferredWidth = DotScale;
+            dotLayoutElement.minHeight = DotScale;
 
-            _indicatorOutlinePrefab = new GameObject("Indicator Outline", typeof(RectTransform), typeof(LayoutElement), typeof(CanvasRenderer), typeof(Image));
-            _indicatorOutlinePrefab.transform.SetParent(_indicatorHolder.transform);
-            _indicatorOutlinePrefab.SetActive(true);
-            
-            _indicatorOutlinePrefab.GetComponent<Image>().sprite = Assets.Load<Sprite>("assets/RiskOfOptions/IndicatorOutline.png");
-
-            var outlineRectTransform = _indicatorOutlinePrefab.GetComponent<RectTransform>();
-            
-            outlineRectTransform.pivot = Vector2.zero;
-            outlineRectTransform.sizeDelta = new Vector2(OutlineScale, OutlineScale);
-            outlineRectTransform.anchorMin = new Vector2(0, 1);
-            outlineRectTransform.anchorMax = new Vector2(0, 1);
-            outlineRectTransform.offsetMin = dotRectTransform.offsetMin;
-            outlineRectTransform.offsetMax = dotRectTransform.offsetMax;
-
-            var outlineLayoutElement = _indicatorOutlinePrefab.GetComponent<LayoutElement>();
-
-            outlineLayoutElement.ignoreLayout = true;
+            // _indicatorOutline = new GameObject("Indicator Outline", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            // _indicatorOutline.transform.SetParent(transform);
+            // _indicatorOutline.SetActive(true);
+            //
+            // _indicatorOutline.GetComponent<Image>().sprite = Assets.Load<Sprite>("assets/RiskOfOptions/IndicatorOutline.png");
+            //
+            // var outlineRectTransform = _indicatorOutline.GetComponent<RectTransform>();
+            //
+            // outlineRectTransform.pivot = Vector2.zero;
+            // outlineRectTransform.sizeDelta = new Vector2(DotScale, DotScale);
+            // outlineRectTransform.anchorMin = new Vector2(0, 1);
+            // outlineRectTransform.anchorMax = new Vector2(0, 1);
         }
 
         private void AddIndicators()
@@ -143,7 +144,7 @@ namespace RiskOfOptions.Components
 
             for (int i = 0; i < _pages; i++)
             {
-                var indicator = GameObject.Instantiate(_indicatorDotPrefab, _indicatorHolder.transform);
+                var indicator = GameObject.Instantiate(_indicatorDot, _indicatorHolder.transform);
 
                 var button = indicator.GetComponent<Button>();
 
@@ -183,8 +184,7 @@ namespace RiskOfOptions.Components
 
         private void StartIndicators()
         {
-            _indicatorOutlinePrefab.transform.SetAsLastSibling();
-            _indicatorOutlinePrefab.GetComponent<RectTransform>().anchoredPosition = _indicators[0].GetComponent<RectTransform>().anchoredPosition;
+            //_indicatorOutline.transform.SetAsLastSibling();
 
             for (int i = 0; i < _indicators.Length; i++)
             {
@@ -248,8 +248,6 @@ namespace RiskOfOptions.Components
 
             double compensatedMax = ((incrementPerAllPages + differenceBetweenPages) * (_pages - 1)).RoundUpToDecimalPlace(3);
             
-            //Debug.Log(compensatedMax);
-
             float remappedPos = newPos.Remap(0, 1, 0, (float) compensatedMax);
             
             while (Mathf.Abs(horizontalNormalizedPosition - remappedPos) > 0.000001f)
@@ -266,19 +264,19 @@ namespace RiskOfOptions.Components
         {
             var image = _indicators[page].GetComponent<Image>();
 
-            var indicatorRectTransform = _indicatorOutlinePrefab.GetComponent<RectTransform>();
+            // var indicatorRectTransform = _indicatorOutline.GetComponent<RectTransform>();
 
-            var newPos = _indicators[page].GetComponent<RectTransform>().localPosition;
+            // var newPos = _indicators[page].GetComponent<RectTransform>().position;
 
-            while (!ExtensionMethods.CloseEnough(indicatorRectTransform.localPosition, newPos) && !ExtensionMethods.CloseEnough(image.color, Color.white))
+            while (!ExtensionMethods.CloseEnough(image.color, Color.white))
             {
-                indicatorRectTransform.localPosition = Vector2.Lerp(indicatorRectTransform.localPosition, newPos, 10f * Time.deltaTime);
+                // indicatorRectTransform.position = Vector2.Lerp(indicatorRectTransform.position, newPos, 10f * Time.deltaTime);
                 image.color = Color.Lerp(image.color, Color.white, 10f * Time.deltaTime);
                 
                 yield return new WaitForEndOfFrame();
             }
             
-            indicatorRectTransform.localPosition = newPos;
+            // indicatorRectTransform.position = newPos;
         }
 
         private IEnumerator IndicatorColor(int ignore)
@@ -308,6 +306,10 @@ namespace RiskOfOptions.Components
 
             foreach (var indicator in _indicators)
                 DestroyImmediate(indicator);
+            
+            DestroyImmediate(_indicatorHolder);
+            DestroyImmediate(_indicatorDot);
+            // DestroyImmediate(_indicatorOutline);
         }
     }
 }

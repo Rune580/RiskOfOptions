@@ -2,12 +2,9 @@
 using BepInEx;
 using BepInEx.Configuration;
 using R2API.Utils;
-using RiskOfOptions.OptionConstructors;
-using RiskOfOptions.OptionOverrides;
+using RiskOfOptions.OptionConfigs;
 using RiskOfOptions.Options;
-using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace RiskOfOptions
 {
@@ -27,6 +24,13 @@ namespace RiskOfOptions
         private ConfigEntry<bool> testBool;
         private ConfigEntry<float> testFloat;
         private ConfigEntry<float> testFloatStepped;
+        
+        private ConfigEntry<bool> bool1;
+        private ConfigEntry<bool> bool2;
+        private ConfigEntry<bool> bool3;
+        private ConfigEntry<bool> bool4;
+        private ConfigEntry<bool> bool5;
+        private ConfigEntry<bool> bool6;
 
         private ConfigEntry<float> testFloatOverride;
 
@@ -40,32 +44,8 @@ namespace RiskOfOptions
 
             //ModSettingsManager.setPanelTitle("Example Title Bitch");
 
-            ModSettingsManager.SetPanelDescription("Example Description");
+            //ModSettingsManager.SetPanelDescription("Example Description");
             
-            //ModSettingsManager.CreateCategory("Testing New System");
-            //ModSettingsManager.CreateCategory("Test BepInEx Config");
-            //ModSettingsManager.CreateCategory("Test Sliders");
-            
-            //ModSettingsManager.AddOption(new InputField() {Name = "Input Test", CategoryName =  "Testing New System", DefaultValue = "test", Description = "super lig ball"});
-
-
-            //for (int i = 1; i < 80; i++)
-            //{
-            //    ModSettingsManager.CreateCategory($"Extra {i}");
-            //}
-
-
-
-            //ModSettingsManager.AddOption(new CheckBox() { Name = "Test", CategoryName = "Testing New System", DefaultValue = true, Description = "Lig ball", OnValueChanged = DoVisibility, InvokeValueChangedEventOnStart = true });
-
-            //ModSettingsManager.AddOption(new KeyBind() { Name = "Test KeyBind" , CategoryName = "Testing New System", DefaultValue = KeyCode.G, Description = "This is yet another Description", IsVisible = false });
-
-            //ModSettingsManager.AddOption(new Slider() { Name = "Music Slider", CategoryName = "Test Sliders", DefaultValue = 50f, Min = 10, Max = 69, Description = "This is another Description", DisplayAsPercentage = false});
-
-            //ModSettingsManager.AddOption(new StepSlider() { Name = "FOV Slider Test", CategoryName = "Test Sliders", DefaultValue = 90, Min = 50, Max = 110, Increment = 1f, Description = "FOV Test Slider Description" });
-            //ModSettingsManager.AddOption(new StepSlider() { Name = "Other Test Step Slider", CategoryName = "Test Sliders", DefaultValue = 1.5f, Min = 1, Max = 2, Increment = 0.05f, Description = "Test slider from 1 to 2 with increments of 0.05f" });
-            //ModSettingsManager.AddOption(new StepSlider() { Name = "More Visible Step Slider", CategoryName = "Test Sliders", DefaultValue = 60, Min = 0, Max = 200, Increment = 25, Description = "Test slider from 0 to 200 with increments of 20", DisplayAsPercentage = true});
-
             testKeyboard = Config.Bind("Test BepInEx Config", "testKey", new KeyboardShortcut(KeyCode.G, KeyCode.LeftShift), "lig my balls");
 
             testBool = Config.Bind("Test BepInEx Config", "testCheckBox", true, "This check box was made from a config");
@@ -76,48 +56,32 @@ namespace RiskOfOptions
 
             testFloatOverride = Config.Bind("Test BepInEx Config", "testSliderOverridden", 50f, "lig me dude 3");
 
+            bool1 = Config.Bind("Test 1", "bool1", false, "L");
+            bool2 = Config.Bind("Test 2", "bool2", false, "L");
+            bool3 = Config.Bind("Test 3", "bool3", false, "L");
+            bool4 = Config.Bind("Test 4", "bool4", false, "L");
+            bool5 = Config.Bind("Test 5", "bool5", false, "L");
+            bool6 = Config.Bind("Test 6", "bool6", false, "L");
+
             testBool.SettingChanged += ConfigEntryBoolTest;
+            
+            testFloat.SettingChanged += ConfigEntryFloatTest;
+
+            testFloatStepped.SettingChanged += ConfigEntryFloatTest;
 
             testKeyboard.SettingChanged += ConfigEntryKeyBindTest;
-
-            //ModSettingsManager.AddOption(new DropDown() { Name = "Test Drop Down", CategoryName = "Testing New System", DefaultValue = 0, Choices = new[] {"Choice 1", "Choice 2", "Choice 3", "Choice 4", "Choice 5", "Choice 6", "Choice 7", "Choice 8", "Choice 9", "Choice 10" }, Description = "Test Drop Down with 5 choices" , OnValueChanged = ChoiceTest });
-
-            ModSettingsManager.AddOption(new CheckBox() { ConfigEntry = testBool });
-
-            ModSettingsManager.AddOption(new KeyBind() { ConfigEntry = testKeyboard });
-
-            ModSettingsManager.AddOption(new Slider(testFloat) { Min = 50, Max = 69 });
-
-            ModSettingsManager.AddOption(new StepSlider(testFloatStepped) { Min = 1, Max = 2, Increment = 0.05f });
-
-            //ModSettingsManager.AddOption(new CheckBox() { Name = "Test Override", CategoryName = "Testing New System", DefaultValue = false, Description = "Lig ball" });
-
-            //ModSettingsManager.AddOption(new CheckBox() { Name = "To Be Overridden", CategoryName = "Testing New System", DefaultValue = true, Description = "Lig ball but disabled", Override = checkBoxOverride , OnValueChanged = OverrideTest });
-
-
-            // SliderOverride musicOverride = new SliderOverride()
-            // {
-            //     Name = "Test Override",
-            //     CategoryName = "Testing New System",
-            //     OverrideOnTrue = true,
-            //     ValueToReturnWhenOverriden = 0f
-            // };
-
-
-            //ModSettingsManager.AddOption(new Slider(testFloatOverride) { Name = "Better Name", CategoryName = "Testing New System" , Override = musicOverride});
-
-            //ModSettingsManager.AddSlider("Music Slider", "This is another Description", 50f, 10f, 69f, "Audio");
-
-            //ModSettingsManager.AddKeyBind("Test KeyBind", "This is yet another Description", UnityEngine.KeyCode.G, "Controls", false);
-
-            //ModSettingsManager.AddListener(new UnityAction<bool>(delegate(bool lig)
-            //{
-            //    ModSettingsManager.SetVisibility("Test KeyBind", "Controls", lig);
-            //}), "Enable Test KeyBind", "Controls");
-
-
-            //ModSettingsManager.AddCheckBox("Enable Enemy stuff", "This is a Description", false, "Enemies", true);
-            //ModSettingsManager.AddCheckBox("Do something that doesn't need a restart", "This is a Description", false, "Enemies");
+            
+            ModSettingsManager.AddOption(new CheckBoxOption(testBool, new CheckBoxConfig()));
+            ModSettingsManager.AddOption(new SliderOption(testFloat, new SliderConfig { checkIfDisabled = () => !testBool.Value }));
+            ModSettingsManager.AddOption(new StepSliderOption(testFloatStepped, new StepSliderConfig { min = 0, max = 2, increment = 0.1f, checkIfDisabled = () => testBool.Value }));
+            ModSettingsManager.AddOption(new KeyBindOption(testKeyboard, new KeyBindConfig()));
+            
+            ModSettingsManager.AddOption(new CheckBoxOption(bool1));
+            ModSettingsManager.AddOption(new CheckBoxOption(bool2));
+            ModSettingsManager.AddOption(new CheckBoxOption(bool3));
+            ModSettingsManager.AddOption(new CheckBoxOption(bool4));
+            ModSettingsManager.AddOption(new CheckBoxOption(bool5));
+            ModSettingsManager.AddOption(new CheckBoxOption(bool6));
         }
 
         private void ConfigEntryKeyBindTest(object sender, EventArgs e)
@@ -132,7 +96,7 @@ namespace RiskOfOptions
 
         private void ConfigEntryFloatTest(object sender, EventArgs e)
         {
-            Debug.Log($"Config bool event invoked args {e.ToString()}");
+            Debug.Log($"Config float event invoked args {e}");
         }
 
         private void DoVisibility(bool lig)

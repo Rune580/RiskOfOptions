@@ -43,7 +43,7 @@ namespace RiskOfOptions.Legacy
             description = _description;
             defaultValue = _defaultValue;
 
-            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
+            ModInfo modInfo = Assembly.GetCallingAssembly().GetModInfo();
 
             owner = modInfo.ModGuid;
             modName = modInfo.ModName;

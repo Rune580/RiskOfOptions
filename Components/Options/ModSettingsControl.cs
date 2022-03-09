@@ -1,63 +1,120 @@
-﻿using RoR2.UI;
+﻿using RiskOfOptions.Components.Panel;
+using RiskOfOptions.OptionConfigs;
+using RiskOfOptions.Options;
+using RoR2.UI;
 using UnityEngine;
 
 namespace RiskOfOptions.Components.Options
 {
-    public class ModSettingsControl : MonoBehaviour
+    public abstract class ModSettingsControl<T> : ModSetting
     {
-        public string settingToken;
         public string nameToken;
         public LanguageTextMeshController nameLabel;
         
         private MPEventSystemLocator _eventSystemLocator;
-        private string _originalValue;
+        private T _originalValue;
+        private bool _valueChanged;
 
-        public bool HasChanged => _originalValue != null;
+        private BaseOptionConfig.IsDisabledDelegate _isDisabled;
+        private bool _disabled;
 
-        public void SubmitSetting(string newValue)
+        public void SubmitValue(T newValue)
         {
-            _originalValue ??= GetCurrentValue();
+            if (!_valueChanged)
+                _originalValue = GetCurrentValue();
             
-            if (_originalValue == newValue)
-                _originalValue = null;
+            _valueChanged = true;
             
-            // Todo implement setting value using settingToken.
+            if (_originalValue.Equals(newValue))
+                _valueChanged = false;
+
+            ITypedValue<T> value = (ITypedValue<T>)ModSettingsManager.OptionCollection.GetOption(settingToken);
+            value.SetValue(newValue);
             
+            optionController.OptionChanged();
             UpdateControls();
         }
 
-        public string GetCurrentValue()
+        protected T GetCurrentValue()
         {
-            // Todo implement retrieving value from MSM using settingToken.
-            return "";
+            ITypedValue<T> value = (ITypedValue<T>) ModSettingsManager.OptionCollection.GetOption(settingToken);
+            return value.GetValue();
         }
 
-        public void Revert()
+        public override bool HasChanged()
         {
-            if (!HasChanged)
+            return _valueChanged;
+        }
+
+        public override void Revert()
+        {
+            if (!HasChanged())
                 return;
             
-            SubmitSetting(_originalValue);
-            _originalValue = null;
+            SubmitValue(_originalValue);
+            _valueChanged = false;
+            UpdateControls();
         }
 
-        protected void Awake()
+        protected virtual void Awake()
         {
             _eventSystemLocator = GetComponent<MPEventSystemLocator>();
             
             if (nameLabel && !string.IsNullOrEmpty(nameToken))
                 nameLabel.token = nameToken;
+
+            if (string.IsNullOrEmpty(settingToken))
+                return;
+
+            var option = ModSettingsManager.OptionCollection.GetOption(settingToken);
+            var isDisabled = option.GetConfig().checkIfDisabled;
+
+            if (isDisabled == null)
+                return;
+
+            _isDisabled = isDisabled;
         }
 
         protected void Start()
         {
+            if (nameLabel && !string.IsNullOrEmpty(nameToken))
+                nameLabel.token = nameToken;
+            
             UpdateControls();
+            CheckIfDisabled();
         }
 
         protected void OnEnable()
         {
             UpdateControls();
+            CheckIfDisabled();
         }
+
+        public override void CheckIfDisabled()
+        {
+            if (string.IsNullOrEmpty(settingToken))
+                return;
+            
+            if (_isDisabled == null)
+                return;
+
+            var disabled = _isDisabled.Invoke();
+
+            if (disabled && !_disabled)
+            {
+                Disable();
+                _disabled = true;
+            }
+            else if (!disabled && _disabled)
+            {
+                Enable();
+                _disabled = false;
+            }
+        }
+
+        protected abstract void Disable();
+
+        protected abstract void Enable();
 
         protected bool InUpdateControls { get; private set; }
 
@@ -66,8 +123,13 @@ namespace RiskOfOptions.Components.Options
             if (!this)
                 return;
 
+            if (string.IsNullOrEmpty(settingToken))
+                return;
+
             if (InUpdateControls)
                 return;
+
+            CheckIfDisabled();
 
             InUpdateControls = true;
             OnUpdateControls();

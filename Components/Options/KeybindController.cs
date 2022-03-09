@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BepInEx.Configuration;
 using On.RoR2;
 using RoR2.UI;
 using TMPro;
@@ -10,9 +11,9 @@ using RoR2Application = RoR2.RoR2Application;
 namespace RiskOfOptions.Components.Options
 {
     // ReSharper disable once IdentifierTypo
-    public class KeybindController : BaseSettingsControl
+    public class KeybindController : ModSettingsControl<KeyboardShortcut>
     {
-        private bool _listening = false;
+        private bool _listening;
         private float _timeoutTimer;
 
         private TextMeshProUGUI _keyBindLabel;
@@ -20,14 +21,12 @@ namespace RiskOfOptions.Components.Options
         private SimpleDialogBox _dialogBox;
         private HGButton _bindingButton;
 
-        private List<KeyCode> _heldKeys = new();
-        private List<KeyCode> _keySequence = new();
+        private readonly List<KeyCode> _heldKeys = new();
+        private readonly List<KeyCode> _keySequence = new();
 
         protected new void Awake()
         {
-            settingSource = (SettingSource) 2;
-
-            if (settingName == "")
+            if (settingToken == "")
                 return;
 
             base.Awake();
@@ -44,59 +43,111 @@ namespace RiskOfOptions.Components.Options
             base.Start();
 
             SetDisplay();
-
-            //onValueChangedKeyCode?.Invoke(((KeyCode)int.Parse(base.GetCurrentValue())));
         }
 
-        protected override void Update()
+        protected override void Disable()
         {
-            base.Update();
+            
+        }
 
+        protected override void Enable()
+        {
+            
+        }
+
+        protected void Update()
+        {
             _bindingButton.interactable = !ModSettingsManager.DoingKeybind;
 
             if (!_listening)
                 return;
 
             _timeoutTimer -= Time.unscaledDeltaTime;
-
-            //Debug.Log(Input.inputString);
-
-            if (Input.GetKey(KeyCode.LeftShift))
-            {
-                SetKeyBind(KeyCode.LeftShift);
-            }
-            else if (Input.GetKey(KeyCode.RightShift))
-            {
-                SetKeyBind(KeyCode.RightShift);
-            }
-            else if (Input.GetKey(KeyCode.Mouse0))
-            {
-                SetKeyBind(KeyCode.Mouse0);
-            }
-            else if (Input.GetKey(KeyCode.Mouse1))
-            {
-                SetKeyBind(KeyCode.Mouse1);
-            }
-            else if (Input.GetKey(KeyCode.Mouse2))
-            {
-                SetKeyBind(KeyCode.Mouse2);
-            }
-            else if (Input.GetKey(KeyCode.Mouse3))
-            {
-                SetKeyBind(KeyCode.Mouse3);
-            }
-            else if (Input.GetKey(KeyCode.Mouse4))
-            {
-                SetKeyBind(KeyCode.Mouse4);
-            }
+            
+            ExtraKeyDown();
+            ExtraKeyUp();
 
             UpdateDialogText();
+        }
+
+        protected override void OnUpdateControls()
+        {
+            base.OnUpdateControls();
+            
+            SetDisplay();
+        }
+
+        private void ExtraKeyDown()
+        {
+            if (Input.GetKeyDown(KeyCode.LeftShift))
+            {
+                KeyDown(KeyCode.LeftShift);
+            }
+            else if (Input.GetKeyDown(KeyCode.RightShift))
+            {
+                KeyDown(KeyCode.RightShift);
+            }
+            else if (Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                KeyDown(KeyCode.Mouse0);
+            }
+            else if (Input.GetKeyDown(KeyCode.Mouse1))
+            {
+                KeyDown(KeyCode.Mouse1);
+            }
+            else if (Input.GetKeyDown(KeyCode.Mouse2))
+            {
+                KeyDown(KeyCode.Mouse2);
+            }
+            else if (Input.GetKeyDown(KeyCode.Mouse3))
+            {
+                KeyDown(KeyCode.Mouse3);
+            }
+            else if (Input.GetKeyDown(KeyCode.Mouse4))
+            {
+                KeyDown(KeyCode.Mouse4);
+            }
+        }
+
+        private void ExtraKeyUp()
+        {
+            if (Input.GetKeyUp(KeyCode.LeftShift))
+            {
+                KeyUp(KeyCode.LeftShift);
+            }
+            else if (Input.GetKeyUp(KeyCode.RightShift))
+            {
+                KeyUp(KeyCode.RightShift);
+            }
+            else if (Input.GetKeyUp(KeyCode.Mouse0))
+            {
+                KeyUp(KeyCode.Mouse0);
+            }
+            else if (Input.GetKeyUp(KeyCode.Mouse1))
+            {
+                KeyUp(KeyCode.Mouse1);
+            }
+            else if (Input.GetKeyUp(KeyCode.Mouse2))
+            {
+                KeyUp(KeyCode.Mouse2);
+            }
+            else if (Input.GetKeyUp(KeyCode.Mouse3))
+            {
+                KeyUp(KeyCode.Mouse3);
+            }
+            else if (Input.GetKeyUp(KeyCode.Mouse4))
+            {
+                KeyUp(KeyCode.Mouse4);
+            }
         }
 
         public void StartListening()
         {
             if (_listening || ModSettingsManager.DoingKeybind)
                 return;
+            
+            _heldKeys.Clear();
+            _keySequence.Clear();
 
             _listening = true;
 
@@ -122,7 +173,7 @@ namespace RiskOfOptions.Components.Options
         {
             _dialogBox = SimpleDialogBox.Create(_mpEventSystem);
 
-            On.RoR2.Language.GetString_string += ControlRebindingHook;
+            Language.GetString_string += ControlRebindingHook;
         }
 
         private void DestroyDialogBox()
@@ -134,7 +185,7 @@ namespace RiskOfOptions.Components.Options
                 _dialogBox = null;
             }
 
-            On.RoR2.Language.GetString_string -= ControlRebindingHook;
+            Language.GetString_string -= ControlRebindingHook;
         }
 
         private string ControlRebindingHook(Language.orig_GetString_string orig, string token)
@@ -143,11 +194,11 @@ namespace RiskOfOptions.Components.Options
                 return orig(token);
 
 
-            string controlName = ModSettingsManager.GetOption(settingName).Name;
+            string controlName = ModSettingsManager.OptionCollection.GetOption(settingToken).Name;
 
             int roundedTime = Mathf.RoundToInt(_timeoutTimer);
 
-            return $"Press the button you wish to assign for {controlName}.\n{roundedTime} second(s) remaining.";
+            return $"Press the button(s) you wish to assign for {controlName}.\n{roundedTime} second(s) remaining.";
             //return $"Press the button you wish to assign for {controlName}.\n{(roundedTime == 1 ? roundedTime + " second" : roundedTime + " seconds")} remaining.";
         }
 
@@ -164,8 +215,6 @@ namespace RiskOfOptions.Components.Options
                 token = LanguageTokens.OptionRebindDialogTitle,
                 formatParams = Array.Empty<object>()
             };
-
-            
 
             _dialogBox.descriptionToken = new SimpleDialogBox.TokenParamsPair
             {
@@ -206,12 +255,6 @@ namespace RiskOfOptions.Components.Options
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-
-            //SubmitSetting($"{(int)Event.current.keyCode}");
-
-            StopListening();
-
-            //onValueChangedKeyCode?.Invoke((KeyCode)int.Parse(base.GetCurrentValue()));
         }
 
         private void KeyDown(KeyCode keyCode)
@@ -224,6 +267,9 @@ namespace RiskOfOptions.Components.Options
 
         private void KeyUp(KeyCode keyCode)
         {
+            if (!_heldKeys.Contains(keyCode))
+                return;
+            
             _heldKeys.Remove(keyCode);
             
             if (_keySequence.Contains(keyCode))
@@ -231,42 +277,46 @@ namespace RiskOfOptions.Components.Options
             
             _keySequence.Add(keyCode);
 
-            if (_heldKeys.Count == 0)
+            if (_heldKeys.Count != 0)
+                return;
+            
+            KeyboardShortcut keyBind;
+
+            if (_keySequence.Count > 1)
             {
-                
+                KeyCode[] modifiers = new KeyCode[_keySequence.Count - 1];
+
+                for (int i = 0; i < modifiers.Length; i++)
+                    modifiers[i] = _keySequence[i + 1];
+
+                keyBind = new KeyboardShortcut(_keySequence[0], modifiers);
             }
+            else
+            {
+                keyBind = new KeyboardShortcut(_keySequence[0]);
+            }
+                
+            SetKeyBind(keyBind);
         }
 
         private void SetKeyBind(KeyCode keyCode)
         {
-            SubmitSetting($"{(int)keyCode}");
-            //onValueChangedKeyCode?.Invoke(keyCode);
+            SetKeyBind(new KeyboardShortcut(keyCode));
+        }
 
+        private void SetKeyBind(KeyboardShortcut keyBind)
+        {
+            SubmitValue(keyBind);
+            
             StopListening();
         }
 
         private void SetDisplay()
         {
-            string displayText = ((KeyCode) int.Parse(GetCurrentValue())).ToString();
+            string displayText = GetCurrentValue().ToString();
 
-            switch (displayText)
-            {
-                case "Mouse0":
-                    displayText = "M1";
-                    break;
-                case "Mouse1":
-                    displayText = "M2";
-                    break;
-                case "Mouse2":
-                    displayText = "M3";
-                    break;
-                case "Mouse3":
-                    displayText = "M4";
-                    break;
-                case "Mouse4":
-                    displayText = "M5";
-                    break;
-            }
+            displayText = displayText.Replace("Mouse0", "M1").Replace("Mouse1", "M2")
+                .Replace("Mouse2", "M3").Replace("Mouse3", "M4").Replace("Mouse4", "M5");
 
             char[] characters = displayText.ToCharArray();
 
@@ -280,7 +330,10 @@ namespace RiskOfOptions.Components.Options
                     break;
 
                 if (char.IsUpper(characters[i]) && i != 0)
-                    displayText += " ";
+                {
+                    if (i - 1 > 0 && characters[i - 1] != ' ')
+                        displayText += " ";
+                }
 
                 displayText += characters[i];
 

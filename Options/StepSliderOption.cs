@@ -1,66 +1,71 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using RiskOfOptions.Components.OptionComponents;
+using BepInEx.Configuration;
 using RiskOfOptions.Components.Options;
-using RiskOfOptions.OptionOverrides;
-using RoR2.UI;
+using RiskOfOptions.OptionConfigs;
 using UnityEngine;
-using UnityEngine.Events;
+using Object = UnityEngine.Object;
 
 namespace RiskOfOptions.Options
 {
-    public class StepSliderOption : SliderOption
+    public class StepSliderOption : BaseOption, ITypedValue<float>
     {
-        public float Increment;
+        private readonly ConfigEntry<float> _configEntry;
+        internal StepSliderConfig Config { get; }
 
-        internal StepSliderOption(string modGuid, string modName, string name, object[] description, string defaultValue, float min, float max, float increment, string categoryName, OptionOverride optionOverride, bool visibility, UnityAction<float> unityAction, bool invokeEventOnStart)
-            : base(modGuid, modName, name, description, defaultValue, min, max, categoryName, optionOverride, visibility, unityAction, invokeEventOnStart)
+        public StepSliderOption(ConfigEntry<float> configEntry, StepSliderConfig config)
         {
-            Increment = increment;
-
-            double stepsHighAccuracy = (Math.Abs(min - max) / increment);
-
-            //int steps = (int)Math.Round(stepsHighAccuracy);
-
-            //Debug.Log($"Difference: {Math.Abs(min - max)}, amount of steps: {steps}, remainder: {stepsHighAccuracy - Math.Truncate(stepsHighAccuracy)}");
-
-            if (stepsHighAccuracy - Math.Truncate(stepsHighAccuracy) != 0)
-            {
-                if (stepsHighAccuracy - Math.Truncate(stepsHighAccuracy) < 0.9999) // Checking if accuracy error or actually invalid.
-                {
-                    throw new Exception($"Cannot make Stepped Slider with increment of {increment}! Causes a remainder of {stepsHighAccuracy - Math.Truncate(stepsHighAccuracy)}");
-                }
-            }
-
-            OptionToken = $"{ModSettingsManager.StartingText}.{modGuid}.{modName}.category_{categoryName.Replace(".", "")}.{name}.stepslider".ToUpper().Replace(" ", "_");
-
-            RegisterTokens();
+            _configEntry = configEntry;
+            Config = config;
+            
+            SetCategoryName(configEntry.Definition.Section, config);
+            SetName(configEntry.Definition.Key, config);
+            SetDescription(configEntry.Definition.Section, config);
         }
 
-        public override GameObject CreateOptionGameObject(RiskOfOption option, GameObject prefab, Transform parent)
+        public override string OptionTypeName { get; protected set; } = "step_slider";
+        
+        public override GameObject CreateOptionGameObject(GameObject prefab, Transform parent)
         {
-            GameObject button = GameObject.Instantiate(prefab, parent);
+            GameObject stepSlider = Object.Instantiate(prefab, parent);
+            
+            ModSettingsStepSlider settingsSlider = stepSlider.GetComponentInChildren<ModSettingsStepSlider>();
+            
+            settingsSlider.nameToken = GetNameToken();
+            settingsSlider.settingToken = Identifier;
+            
+            settingsSlider.increment = Config.increment;
+            settingsSlider.minValue = Config.min;
+            settingsSlider.maxValue = Config.max;
+            settingsSlider.formatString = Config.formatString;
+            
+            double stepsHighAccuracy = Math.Abs(Config.min - Config.max) / Config.increment;
+            
+            int steps = (int)Math.Round(stepsHighAccuracy);
+            
+            Debug.Log(stepsHighAccuracy);
 
-            GameObject.DestroyImmediate(button.GetComponent<SettingsSlider>());
+            settingsSlider.slider.minValue = 0;
+            settingsSlider.slider.maxValue = steps;
+            settingsSlider.slider.wholeNumbers = true;
+            
+            stepSlider.name = $"Mod Option Step Slider, {Name}";
 
-            var stepSlider = button.AddComponent<SettingsStepSlider>();
+            return stepSlider;
+        }
+        
+        public override BaseOptionConfig GetConfig()
+        {
+            return Config;
+        }
 
-            stepSlider.settingName = option.ConsoleToken;
-            stepSlider.nameToken = option.NameToken;
+        public void SetValue(float value)
+        {
+            _configEntry.Value = value;
+        }
 
-            stepSlider.settingSource = RooSettingSource;
-
-            stepSlider.minValue = 0;
-            stepSlider.maxValue = 100;
-
-            stepSlider.internalMinValue = Min;
-            stepSlider.internalMaxValue = Max;
-            stepSlider.increment = Increment;
-
-            button.name = $"Mod Option Step Slider, {option.Name}";
-
-            return button;
+        public float GetValue()
+        {
+            return _configEntry.Value;
         }
     }
 }

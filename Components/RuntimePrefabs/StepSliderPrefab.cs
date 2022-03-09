@@ -4,21 +4,21 @@ using UnityEngine;
 
 namespace RiskOfOptions.Components.RuntimePrefabs
 {
-    public class SliderPrefab : IRuntimePrefab
+    public class StepSliderPrefab : IRuntimePrefab
     {
-        public GameObject Slider { get; private set; }
+        public GameObject StepSlider { get; private set; }
         
         public void Instantiate(GameObject settingsPanel)
         {
             Transform verticalLayout = settingsPanel.transform.Find("SafeArea").Find("SubPanelArea")
                 .Find("SettingsSubPanel, Audio").Find("Scroll View").Find("Viewport").Find("VerticalLayout");
 
-            Slider = Object.Instantiate(verticalLayout.Find("SettingsEntryButton, Slider (Master Volume)").gameObject);
-            Slider.name = "Mod Option Prefab, Slider";
+            StepSlider = Object.Instantiate(verticalLayout.Find("SettingsEntryButton, Slider (Master Volume)").gameObject);
+            StepSlider.name = "Mod Option Prefab, Step Slider";
 
-            var settingsSlider = Slider.GetComponentInChildren<SettingsSlider>();
+            var settingsSlider = StepSlider.GetComponentInChildren<SettingsSlider>();
 
-            var sliderController = settingsSlider.gameObject.AddComponent<ModSettingsSlider>();
+            var sliderController = settingsSlider.gameObject.AddComponent<ModSettingsStepSlider>();
 
             sliderController.slider = settingsSlider.slider;
             sliderController.valueText = settingsSlider.valueText;
@@ -29,7 +29,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
 
         public void Destroy()
         {
-            Object.DestroyImmediate(Slider);
+            Object.DestroyImmediate(StepSlider);
         }
     }
 }

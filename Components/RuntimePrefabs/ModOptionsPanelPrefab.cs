@@ -2,6 +2,7 @@
 using LeTai.Asset.TranslucentImage;
 using RiskOfOptions.Components.OptionComponents;
 using RiskOfOptions.Components.Options;
+using RiskOfOptions.Components.Panel;
 using RiskOfOptions.Resources;
 using RoR2;
 using RoR2.UI;
@@ -82,6 +83,8 @@ namespace RiskOfOptions.Components.RuntimePrefabs
 
             _optionsPanel = Object.Instantiate(audioPanel, subPanelArea);
             _optionsPanel!.name = "Empty Panel";
+            
+            Object.DestroyImmediate(_optionsPanel!.GetComponent<SettingsPanelController>());
         }
 
         private void CreateGenericDescriptionPanel(Transform subPanelArea)
@@ -168,7 +171,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             buttonTextRectTransform.anchorMin = new Vector2(0.19f, 0);
             buttonTextRectTransform.anchorMax = new Vector2(1, 1);
             
-            Object.DestroyImmediate(ModListButton.GetComponent<LanguageTextMeshController>());
+            
             
             GameObject modIconGameObject = new GameObject("ModIcon");
 

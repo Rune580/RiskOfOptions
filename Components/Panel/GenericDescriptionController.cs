@@ -1,7 +1,7 @@
 ﻿using RiskOfOptions.Components.Options;
 using UnityEngine;
 
-namespace RiskOfOptions.Components.OptionComponents
+namespace RiskOfOptions.Components.Panel
 {
     class GenericDescriptionController : MonoBehaviour
     {

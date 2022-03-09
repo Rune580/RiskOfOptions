@@ -15,11 +15,9 @@ using R2API;
 using R2API.Utils;
 using RiskOfOptions.Components.OptionComponents;
 using RiskOfOptions.Components.Options;
+using RiskOfOptions.Components.Panel;
 using RiskOfOptions.Containers;
-using RiskOfOptions.Interfaces;
 using RiskOfOptions.Legacy;
-using RiskOfOptions.OptionConstructors;
-using RiskOfOptions.OptionOverrides;
 using RiskOfOptions.Options;
 using RoR2;
 using RoR2.ConVar;
@@ -36,15 +34,15 @@ namespace RiskOfOptions
 {
     public static class ModSettingsManager
     {
-        internal static List<OptionContainer> OptionContainers = new List<OptionContainer>();
+        internal static readonly ModIndexedOptionCollection OptionCollection = new();
 
-        private static List<UnityEngine.Events.UnityAction> Listeners = new List<UnityEngine.Events.UnityAction>();
+        private static List<UnityEngine.Events.UnityAction> Listeners = new();
 
         internal static readonly string StartingText = "risk_of_options";
 
         internal static bool DoingKeybind = false;
 
-        private static bool _initilized = false;
+        private static bool _initialized = false;
 
         internal static ModOptionPanelController InstanceModOptionPanelController;
 
@@ -59,9 +57,7 @@ namespace RiskOfOptions
             LanguageTokens.Register();
 
             Thunderstore.Init();
-
-            BaseSettingsControlOverride.Init();
-
+            
             SettingsModifier.Init();
 
             On.RoR2.PauseManager.CCTogglePause += PauseManagerOnCCTogglePause;
@@ -88,24 +84,23 @@ namespace RiskOfOptions
 
             Debug.Log($"Registering options to console.");
 
-            foreach (var option in OptionContainers.SelectMany(container => container.GetModOptionsCached()))
-            {
-                option.ConVar.SetString(option.GetInternalValueAsString());
-
-
-                self.InvokeMethod("RegisterConVarInternal", new object[] { option.ConVar });
-
-                if (option.invokeValueChangedEventOnStart)
-                {
-                    option.Invoke();
-                }
-            }
+            // foreach (var option in OptionContainers.SelectMany(container => container.GetModOptionsCached()))
+            // {
+            //     option.ConVar.SetString(option.GetInternalValueAsString());
+            //     
+            //     self.InvokeMethod("RegisterConVarInternal", new object[] { option.ConVar });
+            //
+            //     if (option.invokeValueChangedEventOnStart)
+            //     {
+            //         option.Invoke();
+            //     }
+            // }
 
             Debug.Log($"Finished registering to console!");
             
             Thunderstore.GrabIcons();
 
-            _initilized = true;
+            _initialized = true;
         }
 
         private static void PauseManagerOnCCTogglePause(PauseManager.orig_CCTogglePause orig, ConCommandArgs args)
@@ -116,356 +111,84 @@ namespace RiskOfOptions
             orig(args);
         }
 
-        public static void AddListener(UnityEngine.Events.UnityAction<bool> unityAction, string name, string categoryName = "Main")
-        {
-            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
-            Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
-
-            if (OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer] is IBoolProvider boolProvider)
-                boolProvider.OnValueChanged.AddListener(unityAction);
-        }
-
-        public static void AddListener(UnityEngine.Events.UnityAction<float> unityAction, string name, string categoryName = "Main")
-        {
-            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
-            Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
-
-            if (OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer] is IFloatProvider floatProvider)
-                floatProvider.OnValueChanged.AddListener(unityAction);
-        }
-
-        public static void AddListener(UnityEngine.Events.UnityAction<KeyCode> unityAction, string name, string categoryName = "Main")
-        {
-            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
-            Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
-
-            if (OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer] is IKeyCodeProvider keyCodeProvider)
-                keyCodeProvider.OnValueChanged.AddListener(unityAction);
-        }
-
-        public static void AddListener(UnityEngine.Events.UnityAction<int> unityAction, string name, string categoryName = "Main")
-        {
-            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
-            Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
-
-            if (OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer] is IIntProvider intProvider)
-                intProvider.OnValueChanged.AddListener(unityAction);
-        }
-
-        public static RiskOfOption GetOption(string name, string categoryName)
-        {
-            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
-            Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
-
-            return OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer];
-        }
-
-        internal static RiskOfOption GetOption(string name, string categoryName, string modGuid)
-        {
-            Indexes indexes = OptionContainers.GetIndexes(modGuid, name, categoryName);
-
-            return OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer];
-        }
-
-
         public static void SetPanelDescription(string description)
         {
-            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
+            ModInfo modInfo = Assembly.GetCallingAssembly().GetModInfo();
 
             SetPanelDescription(modInfo, new object[] { description });
         }
 
         public static void SetPanelDescription(object[] description)
         {
-            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
+            ModInfo modInfo = Assembly.GetCallingAssembly().GetModInfo();
 
             SetPanelDescription(modInfo, description);
         }
 
         private static void SetPanelDescription(ModInfo modInfo, object[] description)
         {
-            OptionContainers[OptionContainers.GetContainerIndex(modInfo.ModGuid, modInfo.ModName, true)].Description = description;
+            //OptionContainers[OptionContainers.GetContainerIndex(modInfo.ModGuid, modInfo.ModName, true)].Description = description;
         }
 
         public static void SetPanelTitle(string title)
         {
-            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
+            ModInfo modInfo = Assembly.GetCallingAssembly().GetModInfo();
 
-            OptionContainers[OptionContainers.GetContainerIndex(modInfo.ModGuid, modInfo.ModName, true)].Title = title;
+            //OptionContainers[OptionContainers.GetContainerIndex(modInfo.ModGuid, modInfo.ModName, true)].Title = title;
         }
 
         public static void SetModIcon(Sprite iconSprite)
         {
-            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
+            ModInfo modInfo = Assembly.GetCallingAssembly().GetModInfo();
 
             Thunderstore.AddIcon(modInfo.ModGuid, iconSprite);
         }
 
         public static void SetVisibility(string name, string categoryName, bool visibility)
         {
-            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
-            Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
-
-            OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer].Visibility = visibility;
-
-            if (InstanceModOptionPanelController)
-            {
-                InstanceModOptionPanelController.UpdateVisibility(OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer].OptionToken, visibility);
-            }
+            // ModInfo modInfo = Assembly.GetCallingAssembly().GetModInfo();
+            // Indexes indexes = OptionContainers.GetIndexes(modInfo.ModGuid, name, categoryName);
+            //
+            // OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer].Visibility = visibility;
+            //
+            // if (InstanceModOptionPanelController)
+            // {
+            //     InstanceModOptionPanelController.UpdateVisibility(OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer].OptionToken, visibility);
+            // }
         }
 
-        public static void RegisterOption(RiskOfOption option)
+        public static void AddOption(BaseOption option)
         {
-            option.ConVar = option switch
-            {
-                IBoolProvider boolProvider => new BoolConVar(option.ConsoleToken, RoR2.ConVarFlags.None, option.DefaultValue, option.GetDescriptionAsString()),
-                IFloatProvider floatProvider => new FloatConVar(option.ConsoleToken, RoR2.ConVarFlags.None, option.DefaultValue, option.GetDescriptionAsString()),
-                IKeyCodeProvider keyCodeProvider => new KeyConVar(option.ConsoleToken, RoR2.ConVarFlags.None, option.DefaultValue, option.GetDescriptionAsString()),
-                IIntProvider intProvider => new IntConVar(option.ConsoleToken, RoR2.ConVarFlags.None, option.DefaultValue, option.GetDescriptionAsString()),
-                IStringProvider stringProvider => new StringConVar(option.ConsoleToken, ConVarFlags.None, option.DefaultValue, option.GetDescriptionAsString()),
-                _ => throw new Exception($"Option {option.Name} somehow managed to not implement a provider interface! please contact me on github or discord.")
-            };
+            ModInfo modInfo = Assembly.GetCallingAssembly().GetModInfo();
 
-            if (option.CategoryName == "Main")
-            {
-                CreateCategory(option.CategoryName, option.ModGuid, option.ModName);
-            }
-
-            string loadedValue = OptionSerializer.Load(option.ConsoleToken);
+            option.ModGuid = modInfo.ModGuid;
+            option.ModName = modInfo.ModName;
+            option.Identifier = $"{modInfo.ModGuid}.{option.Category}.{option.Name}.{option.OptionTypeName}".Replace(" ", "_").ToUpper();
             
-            if (!string.IsNullOrEmpty(loadedValue))
-                option.SetInternalValue(loadedValue);
-
-            OptionContainers.Add(ref option);
-        }
-
-        public static void AddOption(OptionConstructorBase option)
-        {
-            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
-
-            if (_initilized)
-                throw new Exception($"An AddOption() was called with the option name: {option.Name} from the mod {modInfo.ModName}, after initialization of RiskOfOptions. \n This usually means you are calling this after Awake()");
+            LanguageAPI.Add(option.GetNameToken(), option.Name);
             
-            
-            switch (option)
-            {
-                case CheckBox checkBox:
-                    if (checkBox.ConfigEntry != null)
-                    {
-                        if (string.IsNullOrEmpty(checkBox.Name))
-                            checkBox.Name = checkBox.ConfigEntry.Definition.Key;
-
-                        if (string.IsNullOrEmpty(checkBox.CategoryName))
-                            checkBox.CategoryName = checkBox.ConfigEntry.Definition.Section;
-
-                        if (string.IsNullOrEmpty((string)checkBox.descriptionArray[0]))
-                            checkBox.Description = checkBox.ConfigEntry.Description.Description;
-
-                        checkBox.DefaultValue = checkBox.ConfigEntry.Value;
-                    }
-                    
-                    ValidateOption(checkBox, modInfo.ModName);
-                    
-                    RegisterOption(new CheckBoxOption(modInfo.ModGuid, modInfo.ModName, checkBox.Name,
-                        option.descriptionArray, checkBox.value, checkBox.CategoryName,
-                        checkBox.Override, checkBox.IsVisible, checkBox.RestartRequired, checkBox.OnValueChanged,
-                        checkBox.InvokeValueChangedEventOnStart)
-                        {ConfigEntry = checkBox.ConfigEntry});
-                    break;
-                case StepSlider stepSlider:
-                    if (stepSlider.ConfigEntry != null)
-                    {
-                        if (string.IsNullOrEmpty(stepSlider.Name))
-                            stepSlider.Name = stepSlider.ConfigEntry.Definition.Key;
-
-                        if (string.IsNullOrEmpty(stepSlider.CategoryName))
-                            stepSlider.CategoryName = stepSlider.ConfigEntry.Definition.Section;
-
-                        if (string.IsNullOrEmpty((string)stepSlider.descriptionArray[0]))
-                            stepSlider.Description = stepSlider.ConfigEntry.Description.Description;
-
-                        stepSlider.DefaultValue = stepSlider.ConfigEntry.Value;
-                    }
-                    
-                    ValidateOption(stepSlider, modInfo.ModName);
-                    
-                    RegisterOption(new StepSliderOption(modInfo.ModGuid, modInfo.ModName, stepSlider.Name, stepSlider.descriptionArray,
-                        stepSlider.value, stepSlider.Min, stepSlider.Max, stepSlider.Increment, stepSlider.CategoryName,
-                        stepSlider.Override, stepSlider.IsVisible, stepSlider.OnValueChanged, stepSlider.InvokeValueChangedEventOnStart)
-                        {ConfigEntry = stepSlider.ConfigEntry});
-                    break;
-                case Slider slider:
-                    if (slider.ConfigEntry != null)
-                    {
-                        if (string.IsNullOrEmpty(slider.Name))
-                            slider.Name = slider.ConfigEntry.Definition.Key;
-
-                        if (string.IsNullOrEmpty(slider.CategoryName))
-                            slider.CategoryName = slider.ConfigEntry.Definition.Section;
-
-                        if (string.IsNullOrEmpty((string)slider.descriptionArray[0]))
-                            slider.Description = slider.ConfigEntry.Description.Description;
-
-                        slider.DefaultValue = slider.ConfigEntry.Value;
-                    }
-                    
-                    ValidateOption(slider, modInfo.ModName);
-                    
-                    RegisterOption(new SliderOption(modInfo.ModGuid, modInfo.ModName, slider.Name, slider.descriptionArray,
-                        slider.value, slider.Min, slider.Max, slider.CategoryName, slider.Override,
-                        slider.IsVisible, slider.OnValueChanged, slider.InvokeValueChangedEventOnStart)
-                        {ConfigEntry = slider.ConfigEntry});
-                    break;
-                case KeyBind keyBind:
-                    if (keyBind.ConfigEntry != null)
-                    {
-                        if (string.IsNullOrEmpty(keyBind.Name))
-                            keyBind.Name = keyBind.ConfigEntry.Definition.Key;
-
-                        if (string.IsNullOrEmpty(keyBind.CategoryName))
-                            keyBind.CategoryName = keyBind.ConfigEntry.Definition.Section;
-
-                        if (string.IsNullOrEmpty((string)keyBind.descriptionArray[0]))
-                            keyBind.Description = keyBind.ConfigEntry.Description.Description;
-
-                        keyBind.DefaultValue = keyBind.ConfigEntry.Value.MainKey;
-
-                        if (keyBind.ConfigEntry.Value.Modifiers.Any())
-                            throw new WarningException($"The KeyBind {keyBind.Name} contains modifier keys! Currently Risk Of Options doesn't support modifier keys!");
-                    }
-                    
-                    ValidateOption(keyBind, modInfo.ModName);
-                    
-                    RegisterOption(new KeyBindOption(modInfo.ModGuid, modInfo.ModName, keyBind.Name, keyBind.descriptionArray,
-                        keyBind.value, keyBind.CategoryName, keyBind.IsVisible, keyBind.OnValueChanged, keyBind.InvokeValueChangedEventOnStart)
-                        {ConfigEntry = keyBind.ConfigEntry});
-                    break;
-                case DropDown dropDown:
-                    ValidateOption(dropDown, modInfo.ModName);
-                    
-                    RegisterOption(new DropDownOption(modInfo.ModGuid, modInfo.ModName, dropDown.Name,
-                        dropDown.descriptionArray, dropDown.value, dropDown.CategoryName, dropDown.Choices,
-                        dropDown.IsVisible, dropDown.RestartRequired, dropDown.OnValueChanged,
-                        dropDown.InvokeValueChangedEventOnStart));
-                    break;
-                case InputField inputField:
-                    ValidateOption(inputField, modInfo.ModName);
-
-                    RegisterOption(new InputFieldOption(modInfo.ModGuid, modInfo.ModName, inputField.Name, inputField.descriptionArray,
-                        inputField.value, inputField.CategoryName, inputField.IsVisible, inputField.RestartRequired,
-                        inputField.OnValueChanged ,inputField.InvokeValueChangedEventOnStart, inputField.ValidateOnEnter, inputField.StringValidator,
-                        inputField.CharacterValidation));
-                    break;
-            }
-        }
-
-        public static void CreateCategory(string name)
-        {
-            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
-
-            if (!OptionContainers.Contains(modInfo.ModGuid))
-                OptionContainers.Add(new OptionContainer(modInfo.ModGuid, modInfo.ModName));
-
-
-            for (int i = 0; i < OptionContainers[OptionContainers.GetContainerIndex(modInfo.ModGuid, modInfo.ModName)].GetCategoriesCached().Count; i++)
-            {
-                if (OptionContainers[OptionContainers.GetContainerIndex(modInfo.ModGuid, modInfo.ModName)].GetCategoriesCached()[i].Name == name)
-                {
-                    Debug.Log($"Category {name} already exists!, please make sure you aren't assigning a category before creating one, or you aren't creating the same category twice!", BepInEx.Logging.LogLevel.Warning);
-                    return;
-                }
-            }
-
-            OptionCategory newCategory = new OptionCategory(name, modInfo.ModGuid);
-
-            OptionContainers[OptionContainers.GetContainerIndex(modInfo.ModGuid, modInfo.ModName)].Add(ref newCategory);
-        }
-
-
-        internal static void CreateCategory(string name, string modGuid, string modName)
-        {
-            if (!OptionContainers.Contains(modGuid))
-                OptionContainers.Add(new OptionContainer(modGuid, modName));
-
-            for (int i = 0; i < OptionContainers[OptionContainers.GetContainerIndex(modGuid, modName)].GetCategoriesCached().Count; i++)
-            {
-                if (OptionContainers[OptionContainers.GetContainerIndex(modGuid, modName)].GetCategoriesCached()[i].Name == name)
-                {
-                    //Debug.Log($"Category {Name} already exists!, please make sure you aren't assigning a category before creating one, or you aren't creating the same category twice!", BepInEx.Logging.LogLevel.Warning);
-                    return;
-                }
-            }
-
-            OptionCategory newCategory = new OptionCategory(name, modGuid);
-
-
-            OptionContainers[OptionContainers.GetContainerIndex(modGuid, modName)].Insert(ref newCategory);
-        }
-
-        internal static RiskOfOption GetOption(string consoleToken)
-        {
-            foreach (OptionContainer container in OptionContainers)
-            {
-                for (int i = 0; i < container.GetModOptionsCached().Count; i++)
-                {
-                    if (container.GetModOptionsCached()[i].ConsoleToken == consoleToken)
-                    {
-                        return container.GetModOptionsCached()[i];
-                    }
-                }
-            }
-
-            throw new Exception($"An ROO couldn't be found for {consoleToken}!");
+            OptionCollection.AddOption(ref option);
         }
 
         internal static Thunderstore.ModSearchEntry[] GetIconSearchEntries()
         {
             List<Thunderstore.ModSearchEntry> modSearchEntries = new List<Thunderstore.ModSearchEntry>();
 
-            foreach (var container in OptionContainers)
-            {
-                modSearchEntries.Add(new Thunderstore.ModSearchEntry()
-                {
-                    fullName = $"{container.ModGuid.Split('.')[1]}-{container.ModGuid.Split('.')[2]}",
-                    fullNameWithUnderscores = $"{container.ModGuid.Split('.')[1]}-{container.ModName.Replace(" ", "_")}",
-                    fullNameWithoutSpaces = $"{container.ModGuid.Split('.')[1]}-{container.ModName.Replace(" ", "")}",
-                    nameWithUnderscores = $"{container.ModName.Replace(" ", "_")}",
-                    nameWithoutSpaces = $"{container.ModName.Replace(" ", "")}",
-                    modGuid = container.ModGuid,
-                    modName = container.ModName
-                });
-                //Debug.Log($"Search terms for {container.ModGuid} are:" +
-                //          $"\n {modSearchEntries[modSearchEntries.Count - 1].fullName}" +
-                //          $"\n {modSearchEntries[modSearchEntries.Count - 1].fullNameWithUnderscores}" +
-                //          $"\n {modSearchEntries[modSearchEntries.Count - 1].fullNameWithoutSpaces}" +
-                //          $"\n {modSearchEntries[modSearchEntries.Count - 1].nameWithUnderscores}" +
-                //          $"\n {modSearchEntries[modSearchEntries.Count - 1].nameWithoutSpaces}");
-            }
+            // foreach (var container in OptionContainers)
+            // {
+            //     modSearchEntries.Add(new Thunderstore.ModSearchEntry()
+            //     {
+            //         fullName = $"{container.ModGuid.Split('.')[1]}-{container.ModGuid.Split('.')[2]}",
+            //         fullNameWithUnderscores = $"{container.ModGuid.Split('.')[1]}-{container.ModName.Replace(" ", "_")}",
+            //         fullNameWithoutSpaces = $"{container.ModGuid.Split('.')[1]}-{container.ModName.Replace(" ", "")}",
+            //         nameWithUnderscores = $"{container.ModName.Replace(" ", "_")}",
+            //         nameWithoutSpaces = $"{container.ModName.Replace(" ", "")}",
+            //         modGuid = container.ModGuid,
+            //         modName = container.ModName
+            //     });
+            // }
 
             return modSearchEntries.ToArray();
-        }
-
-        private static void ValidateOption(OptionConstructorBase option, string modName)
-        {
-            bool invalidName = string.IsNullOrEmpty(option.Name);
-            bool invalidCategory = string.IsNullOrEmpty(option.CategoryName);
-
-            if (!invalidName && !invalidCategory)
-                return;
-            
-            string error = "";
-
-            if (invalidName)
-            {
-                error += "Invalid Name";
-            }
-
-            if (invalidCategory)
-            {
-                error += error.Length > 1 ? "and an Invalid Category" : "Invalid Category";
-            }
-            
-            throw new Exception($"An option was created by {modName} with an {error}!");
         }
 
         #region ModOption Legacy Stuff
@@ -484,108 +207,108 @@ namespace RiskOfOptions
         [Obsolete()]
         public static void setPanelTitle(string title)
         {
-            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
+            ModInfo modInfo = Assembly.GetCallingAssembly().GetModInfo();
 
-            OptionContainers[OptionContainers.GetContainerIndex(modInfo.ModGuid, modInfo.ModName, true)].Title = title;
+            //OptionContainers[OptionContainers.GetContainerIndex(modInfo.ModGuid, modInfo.ModName, true)].Title = title;
         }
 
         // ReSharper disable once InconsistentNaming
         [Obsolete()]
         public static void setPanelDescription(string description)
         {
-            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
+            ModInfo modInfo = Assembly.GetCallingAssembly().GetModInfo();
 
             SetPanelDescription(modInfo, new object[] { description });
         }
 
-        [Obsolete("Usage of ModOption is depreciated, use RiskOfOption instead.")]
+        // [Obsolete("Usage of ModOption is depreciated, use RiskOfOption instead.")]
         // ReSharper disable once UnusedMember.Global
         // ReSharper disable once InconsistentNaming
-        public static void addListener(ModOption modOption, UnityEngine.Events.UnityAction<float> unityAction)
-        {
-            Indexes indexes = OptionContainers.GetIndexes(modOption.owner, modOption.name);
+        // public static void addListener(ModOption modOption, UnityEngine.Events.UnityAction<float> unityAction)
+        // {
+            // Indexes indexes = OptionContainers.GetIndexes(modOption.owner, modOption.name);
+            //
+            // if (OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer] is IFloatProvider floatProvider)
+            //     floatProvider.OnValueChanged.AddListener(unityAction);
+        // }
 
-            if (OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer] is IFloatProvider floatProvider)
-                floatProvider.OnValueChanged.AddListener(unityAction);
-        }
-
-        [Obsolete("Usage of ModOption is depreciated, use RiskOfOption instead.")]
+        // [Obsolete("Usage of ModOption is depreciated, use RiskOfOption instead.")]
         // ReSharper disable once UnusedMember.Global
         // ReSharper disable once InconsistentNaming
-        public static void addListener(ModOption modOption, UnityEngine.Events.UnityAction<bool> unityAction)
-        {
-            Indexes indexes = OptionContainers.GetIndexes(modOption.owner, modOption.name);
+        // public static void addListener(ModOption modOption, UnityEngine.Events.UnityAction<bool> unityAction)
+        // {
+            // Indexes indexes = OptionContainers.GetIndexes(modOption.owner, modOption.name);
+            //
+            // if (OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer] is IBoolProvider boolProvider)
+            //     boolProvider.OnValueChanged.AddListener(unityAction);
+        // }
 
-            if (OptionContainers[indexes.ContainerIndex].GetModOptionsCached()[indexes.OptionIndexInContainer] is IBoolProvider boolProvider)
-                boolProvider.OnValueChanged.AddListener(unityAction);
-        }
-
-        [Obsolete("ModOptions are handled internally now. Please use AddCheckBox, AddSlider, etc", false)]
+        // [Obsolete("ModOptions are handled internally now. Please use AddCheckBox, AddSlider, etc", false)]
         // ReSharper disable once UnusedMember.Global
         // ReSharper disable once InconsistentNaming
-        public static void addOption(ModOption mo)
-        {
-            Debug.Log($"Legacy ModOption {mo.name} constructed, converting to RiskOfOption...");
+        // public static void addOption(ModOption mo)
+        // {
+            // Debug.Log($"Legacy ModOption {mo.name} constructed, converting to RiskOfOption...");
+            //
+            // ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
+            //
+            // RiskOfOption newOption = mo.optionType switch
+            // {
+            //     ModOption.OptionType.Bool => new CheckBoxOption(modInfo.ModGuid, modInfo.ModName, mo.name,
+            //         new object[] {mo.description}, mo.defaultValue, "Main", null, true, false, null, false),
+            //     ModOption.OptionType.Slider => new SliderOption(modInfo.ModGuid, modInfo.ModName, mo.name,
+            //         new object[] {mo.description}, mo.defaultValue, 0, 100, "Main", null, true, null, false),
+            //     ModOption.OptionType.Keybinding => throw new NotImplementedException("KeyBinds are not supported with the legacy ModOptions! use the new AddKeyBinding() method instead."),
+            //     _ => throw new ArgumentOutOfRangeException()
+            // };
+            //
+            // RegisterOption(newOption);
+        // }
 
-            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
-
-            RiskOfOption newOption = mo.optionType switch
-            {
-                ModOption.OptionType.Bool => new CheckBoxOption(modInfo.ModGuid, modInfo.ModName, mo.name,
-                    new object[] {mo.description}, mo.defaultValue, "Main", null, true, false, null, false),
-                ModOption.OptionType.Slider => new SliderOption(modInfo.ModGuid, modInfo.ModName, mo.name,
-                    new object[] {mo.description}, mo.defaultValue, 0, 100, "Main", null, true, null, false),
-                ModOption.OptionType.Keybinding => throw new NotImplementedException("KeyBinds are not supported with the legacy ModOptions! use the new AddKeyBinding() method instead."),
-                _ => throw new ArgumentOutOfRangeException()
-            };
-
-            RegisterOption(newOption);
-        }
-
-        [Obsolete("ModOption is obsolete, please use RiskOfOption instead.")]
+        // [Obsolete("ModOption is obsolete, please use RiskOfOption instead.")]
         // ReSharper disable once UnusedMember.Global
         // ReSharper disable once InconsistentNaming
-        public static ModOption getOption(string name)
-        {
-            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
-
-            foreach (var item in OptionContainers[OptionContainers.GetContainerIndex(modInfo.ModGuid, modInfo.ModName)].GetModOptionsCached())
-            {
-                if (!string.Equals(item.Name, name, StringComparison.InvariantCultureIgnoreCase))
-                    continue;
-
-                ModOption temp = item switch
-                {
-                    IBoolProvider checkBoxOption => new ModOption(ModOption.OptionType.Bool, item.Name, item.GetDescriptionAsString(), item.DefaultValue) { conVar = item.ConVar },
-                    IFloatProvider sliderOption => new ModOption(ModOption.OptionType.Slider, item.Name, item.GetDescriptionAsString(), item.DefaultValue) { conVar = item.ConVar },
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-
-                temp.SetOwner(modInfo.ModGuid);
-
-                return temp;
-            }
-
-            Debug.Log($"ModOption {name} not found!", BepInEx.Logging.LogLevel.Error);
-            return null;
-        }
+        // public static ModOption getOption(string name)
+        // {
+            // ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
+            //
+            // foreach (var item in OptionContainers[OptionContainers.GetContainerIndex(modInfo.ModGuid, modInfo.ModName)].GetModOptionsCached())
+            // {
+            //     if (!string.Equals(item.Name, name, StringComparison.InvariantCultureIgnoreCase))
+            //         continue;
+            //
+            //     ModOption temp = item switch
+            //     {
+            //         IBoolProvider checkBoxOption => new ModOption(ModOption.OptionType.Bool, item.Name, item.GetDescriptionAsString(), item.DefaultValue) { conVar = item.ConVar },
+            //         IFloatProvider sliderOption => new ModOption(ModOption.OptionType.Slider, item.Name, item.GetDescriptionAsString(), item.DefaultValue) { conVar = item.ConVar },
+            //         _ => throw new ArgumentOutOfRangeException()
+            //     };
+            //
+            //     temp.SetOwner(modInfo.ModGuid);
+            //
+            //     return temp;
+            // }
+            //
+            // Debug.Log($"ModOption {name} not found!", BepInEx.Logging.LogLevel.Error);
+            // return null;
+        // }
 
 
         //[Obsolete("Use GetOption(Name, Category).GetBool() / .GetFloat() / .GetKeyCode() instead")]
         // ReSharper disable once UnusedMember.Global
         // ReSharper disable once InconsistentNaming
-        public static string getOptionValue(string name)
-        {
-            ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
-
-            BaseConVar conVar = (from item in OptionContainers[OptionContainers.GetContainerIndex(modInfo.ModGuid, modInfo.ModName)].GetModOptionsCached() where string.Equals(item.Name, name, StringComparison.InvariantCultureIgnoreCase) select RoR2.Console.instance.FindConVar(item.ConsoleToken)).FirstOrDefault();
-
-            if (conVar != null)
-                return conVar.GetString();
-
-            Debug.Log($"Convar {name} not found in convars.", BepInEx.Logging.LogLevel.Error);
-            return "";
-        }
+        // public static string getOptionValue(string name)
+        // {
+        //     ModInfo modInfo = Assembly.GetCallingAssembly().GetExportedTypes().GetModInfo();
+        //
+        //     BaseConVar conVar = (from item in OptionContainers[OptionContainers.GetContainerIndex(modInfo.ModGuid, modInfo.ModName)].GetModOptionsCached() where string.Equals(item.Name, name, StringComparison.InvariantCultureIgnoreCase) select RoR2.Console.instance.FindConVar(item.ConsoleToken)).FirstOrDefault();
+        //
+        //     if (conVar != null)
+        //         return conVar.GetString();
+        //
+        //     Debug.Log($"Convar {name} not found in convars.", BepInEx.Logging.LogLevel.Error);
+        //     return "";
+        // }
         #endregion
     }
 }

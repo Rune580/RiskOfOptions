@@ -2,14 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using LeTai.Asset.TranslucentImage;
 using R2API;
 using R2API.Utils;
 using RiskOfOptions.Components.OptionComponents;
+using RiskOfOptions.Components.Options;
 using RiskOfOptions.Components.RuntimePrefabs;
 using RiskOfOptions.Containers;
 using RiskOfOptions.Options;
-using RiskOfOptions.Resources;
 using RoR2;
 using RoR2.UI;
 using RoR2.UI.SkinControllers;
@@ -19,7 +18,7 @@ using UnityEngine.UI;
 
 #pragma warning disable 618
 
-namespace RiskOfOptions.Components.Options
+namespace RiskOfOptions.Components.Panel
 {
     public class ModOptionPanelController : MonoBehaviour
     {
@@ -29,6 +28,7 @@ namespace RiskOfOptions.Components.Options
 
         private GameObject _checkBoxPrefab;
         private GameObject _sliderPrefab;
+        private GameObject _stepSliderPrefab;
         private GameObject _keyBindPrefab;
         private GameObject _dropDownPrefab;
         private GameObject _inputFieldPrefab;
@@ -36,11 +36,11 @@ namespace RiskOfOptions.Components.Options
         private GameObject _leftButton;
         private GameObject _rightButton;
 
+        private MPButton _revertButton;
+
         //private GameObject _leftGlyph;
         //private GameObject _rightGlyph;
-
-        private OverrideController[] _controllers;
-
+        
         public Color warningColor = Color.red;
 
         public float degreesPerSecond = 2f;
@@ -50,6 +50,7 @@ namespace RiskOfOptions.Components.Options
         private IEnumerator _animateRoutine;
 
         private ModOptionsPanelPrefab _panel;
+        private ModSetting[] _modSettings = Array.Empty<ModSetting>();
 
 
         public void Start()
@@ -67,6 +68,9 @@ namespace RiskOfOptions.Components.Options
 
             _panel = RuntimePrefabManager.Get<ModOptionsPanelPrefab>();
             
+            _revertButton = transform.Find("SafeArea").Find("FooterContainer").Find("FooterPanel, M&KB").Find("RevertAndBack (JUICED)").Find("NakedButton (Revert)").GetComponent<HGButton>();
+            _revertButton.onClick.AddListener(RevertChanges);
+            
             Transform subPanelArea = transform.Find("SafeArea").Find("SubPanelArea");
             //Transform headerArea = transform.Find("SafeArea").Find("HeaderContainer").Find("Header (JUICED)");
 
@@ -78,27 +82,16 @@ namespace RiskOfOptions.Components.Options
 
             //_leftGlyph.GetComponentInChildren<HGTextMeshProUGUI>().SetText("<sprite=\"tmpsprXboxOneGlyphs\" name=\"texXBoxOneGlyphs_5\">");
             //_rightGlyph.GetComponentInChildren<HGTextMeshProUGUI>().SetText("<sprite=\"tmpsprXboxOneGlyphs\" name=\"texXBoxOneGlyphs_9\">");
-            
-            //GameObject verticalLayout = RuntimePrefabManager.Get<ModOptionsPanelPrefab>().transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").gameObject;
-
-            //GameObject modButtonPrefab = GameObject.Instantiate(verticalLayout.transform.Find("SettingsEntryButton, Bool (Audio Focus)").gameObject);
 
             _checkBoxPrefab = RuntimePrefabManager.Get<CheckBoxPrefab>().CheckBoxButton;
             _sliderPrefab = RuntimePrefabManager.Get<SliderPrefab>().Slider;
-            _keyBindPrefab = GameObject.Instantiate(subPanelArea.Find("SettingsSubPanel, Controls (M&KB)").Find("Scroll View").Find("Viewport").Find("VerticalLayout").Find("SettingsEntryButton, Binding (Jump)").gameObject);
+            _stepSliderPrefab = RuntimePrefabManager.Get<StepSliderPrefab>().StepSlider;
+            _keyBindPrefab = RuntimePrefabManager.Get<KeyBindPrefab>().KeyBind;
+            
             _dropDownPrefab = GameObject.Instantiate(subPanelArea.Find("SettingsSubPanel, Video").Find("Scroll View").Find("Viewport").Find("VerticalLayout").Find("Option, Resolution").gameObject);
             _inputFieldPrefab = GameObject.Instantiate(_checkBoxPrefab);
 
             _dropDownPrefab.SetActive(false);
-
-            #region KeybindPrefabCleaning
-
-            GameObject.DestroyImmediate(_keyBindPrefab.GetComponentInChildren<InputBindingControl>());
-            GameObject.DestroyImmediate(_keyBindPrefab.GetComponentInChildren<InputBindingDisplayController>());
-
-            _keyBindPrefab.AddComponent<KeybindController>();
-
-            #endregion
 
             #region DropDown Prefab Setup
 
@@ -293,10 +286,6 @@ namespace RiskOfOptions.Components.Options
 
             #endregion
 
-            _checkBoxPrefab.SetActive(false);
-            _sliderPrefab.SetActive(false);
-            _keyBindPrefab.SetActive(false);
-
             // if (!RooDropdown.CheckBoxPrefab)
             // {
             //     RooDropdown.CheckBoxPrefab = _checkBoxPrefab;
@@ -332,6 +321,10 @@ namespace RiskOfOptions.Components.Options
 
             _leftButton.SetActive(false);
             _rightButton.SetActive(false);
+            _checkBoxPrefab.SetActive(false);
+            _sliderPrefab.SetActive(false);
+            _stepSliderPrefab.SetActive(false);
+            _keyBindPrefab.SetActive(false);
         }
 
         private void CreatePanel()
@@ -342,17 +335,13 @@ namespace RiskOfOptions.Components.Options
         private void AddPanelsToSettings()
         {
             Transform headerArea = transform.Find("SafeArea").Find("HeaderContainer").Find("Header (JUICED)");
-
-            //GameObject modOptionsPanel = Instantiate(_modOptionsPanelPrefab.Canvas, subPanelArea);
-
+            
             HGHeaderNavigationController navigationController = GetComponent<HGHeaderNavigationController>();
-
-            LanguageAPI.Add(Prefabs.HeaderButtonTextToken, "Mod Options");
 
             GameObject modOptionsHeaderButton = Instantiate(_panel.ModOptionsHeaderButton, headerArea);
 
             modOptionsHeaderButton.name = "GenericHeaderButton (Mod Options)";
-            modOptionsHeaderButton.GetComponentInChildren<LanguageTextMeshController>().token = Prefabs.HeaderButtonTextToken;
+            modOptionsHeaderButton.GetComponentInChildren<LanguageTextMeshController>().token = SettingsModifier.HeaderToken;
             modOptionsHeaderButton.GetComponentInChildren<HGButton>().onClick.RemoveAllListeners();
             modOptionsHeaderButton.GetComponentInChildren<HGButton>().onClick.AddListener(delegate ()
             {
@@ -390,35 +379,35 @@ namespace RiskOfOptions.Components.Options
             Transform modListVerticalLayout = _panel.ModListPanel.transform.Find("Scroll View").Find("Viewport")
                 .Find("VerticalLayout");
 
-            for (int i = 0; i < ModSettingsManager.OptionContainers.Count; i++)
+            foreach (var collection in ModSettingsManager.OptionCollection)
             {
-                var container = ModSettingsManager.OptionContainers[i];
-
                 GameObject newModButton = Instantiate(_panel.ModListButton, modListVerticalLayout);
 
-                LanguageAPI.Add($"{ModSettingsManager.StartingText}.{container.ModGuid}.{container.ModName}.ModListOption".ToUpper().Replace(" ", "_"), container.Title);
-
-                newModButton.GetComponentInChildren<HGTextMeshProUGUI>().text = container.Title;
-                newModButton.GetComponent<ModListButton>().description = container.GetDescriptionAsString();
-                newModButton.GetComponent<ModListButton>().tmp = _panel.ModDescriptionPanel.GetComponentInChildren<HGTextMeshProUGUI>();
-                newModButton.GetComponent<ModListButton>().containerIndex = i;
-                newModButton.GetComponent<ModListButton>().navigationController = navigationController;
-                newModButton.GetComponent<ModListButton>().hoverToken = $"{ModSettingsManager.StartingText}.{container.ModGuid}.{container.ModName}.ModListOption".ToUpper().Replace(" ", "_");
+                //LanguageAPI.Add($"{ModSettingsManager.StartingText}.{collection.ModName}.ModListOption".ToUpper().Replace(" ", "_"), collection.title);
+                
+                ModListButton modListButton = newModButton.GetComponent<ModListButton>();
+                
+                modListButton.description = collection.description;
+                modListButton.nameLabel = modListButton.GetComponent<LanguageTextMeshController>();
+                modListButton.token = collection.NameToken;
+                modListButton.modGuid = collection.ModGuid;
+                modListButton.navigationController = navigationController;
+                modListButton.descriptionText = _panel.ModDescriptionPanel.GetComponentInChildren<HGTextMeshProUGUI>();
 
                 RectTransform modIconRectTransform = newModButton.transform.Find("ModIcon").gameObject.GetComponent<RectTransform>();
 
                 modIconRectTransform.localPosition = new Vector3(-147f, -0.32f, 0f);
                 modIconRectTransform.sizeDelta = Vector2.zero;
                 modIconRectTransform.anchoredPosition = Vector2.zero;
-                modIconRectTransform.gameObject.AddComponent<FetchIconWhenReady>().modGuid = container.ModGuid;
+                modIconRectTransform.gameObject.AddComponent<FetchIconWhenReady>().modGuid = collection.ModGuid;
 
-                newModButton.name = $"ModListButton ({container.ModName})";
+                newModButton.name = $"ModListButton ({collection.ModName})";
                 newModButton.SetActive(true);
 
                 HGHeaderNavigationController.Header header = new HGHeaderNavigationController.Header
                 {
                     headerButton = newModButton.GetComponent<ModListButton>(),
-                    headerName = $"ModListButton ({container.ModName})",
+                    headerName = $"ModListButton ({collection.ModName})",
                     tmpHeaderText = newModButton.GetComponentInChildren<HGTextMeshProUGUI>(),
                     headerRoot = null
                 };
@@ -436,9 +425,9 @@ namespace RiskOfOptions.Components.Options
             navigationController.currentHeaderIndex = -1;
         }
 
-        internal void LoadModOptionsFromContainer(int containerIndex)
+        internal void LoadModOptionsFromOptionCollection(string modGuid)
         {
-            OptionContainer container = ModSettingsManager.OptionContainers[containerIndex];
+            OptionCollection collection = ModSettingsManager.OptionCollection[modGuid];
             
             GameObject categoriesObject = _panel.CategoryHeader.transform.Find("Scroll View").Find("Viewport").Find("Categories (JUICED)").gameObject;
 
@@ -462,12 +451,12 @@ namespace RiskOfOptions.Components.Options
             navigationController.currentHeaderIndex = 0;
 
             var categoryScrollRect = _panel.CategoryHeader.GetComponentInChildren<CategoryScrollRect>();
-            categoryScrollRect.Categories = container.GetCategoriesCached().Count;
+            categoryScrollRect.Categories = collection.CategoryCount;
 
             var previousPageButton = Instantiate(_leftButton, _panel.CategoryHeader.transform.Find("Scroll View"));
             previousPageButton.SetActive(true);
 
-            for (int i = 0; i < container.GetCategoriesCached().Count; i++)
+            for (int i = 0; i < collection.CategoryCount; i++)
             {
                 GameObject newCategoryButton = Instantiate(_panel.ModOptionsHeaderButton, categoriesObject.transform);
 
@@ -475,8 +464,8 @@ namespace RiskOfOptions.Components.Options
 
                 le.preferredWidth = 200;
 
-                newCategoryButton.GetComponentInChildren<LanguageTextMeshController>().token = container.GetCategoriesCached()[i].NameToken;
-                newCategoryButton.GetComponentInChildren<HGTextMeshProUGUI>().SetText(container.GetCategoriesCached()[i].Name);
+                newCategoryButton.GetComponentInChildren<LanguageTextMeshController>().token = collection[i].NameToken;
+                newCategoryButton.GetComponentInChildren<HGTextMeshProUGUI>().SetText(collection[i].name);
                 newCategoryButton.GetComponentInChildren<HGButton>().onClick.RemoveAllListeners();
 
                 var categoryIndex = i;
@@ -485,16 +474,16 @@ namespace RiskOfOptions.Components.Options
                 {
                     navigationController.ChooseHeaderByButton(newCategoryButton.GetComponentInChildren<HGButton>());
 
-                    LoadOptionListFromCategory(containerIndex, categoryIndex, container.GetCategoriesCached().Count);
+                    LoadOptionListFromCategory(modGuid, categoryIndex, headers.Count);
                 });
 
-                newCategoryButton.name = $"Category Button, {container.GetCategoriesCached()[i].Name}";
+                newCategoryButton.name = $"Category Button, {collection[i].name}";
                 newCategoryButton.SetActive(true);
 
                 HGHeaderNavigationController.Header header = new HGHeaderNavigationController.Header
                 {
                     headerButton = newCategoryButton.GetComponent<HGButton>(),
-                    headerName = $"Category Button, {container.GetCategoriesCached()[i].Name}",
+                    headerName = $"Category Button, {collection[i].name}",
                     tmpHeaderText = newCategoryButton.GetComponentInChildren<HGTextMeshProUGUI>(),
                     headerRoot = null
                 };
@@ -505,69 +494,72 @@ namespace RiskOfOptions.Components.Options
 
             navigationController.InvokeMethod("RebuildHeaders");
 
-            var nextPageButton = GameObject.Instantiate(_rightButton, _panel.CategoryHeader.transform.Find("Scroll View"));
+            var nextPageButton = Instantiate(_rightButton, _panel.CategoryHeader.transform.Find("Scroll View"));
 
             //nextPageButton.transform.SetAsLastSibling();
             nextPageButton.SetActive(true);
 
             categoryScrollRect.Init();
 
-            LoadOptionListFromCategory(containerIndex, navigationController.currentHeaderIndex, navigationController.headers.Length);
+            LoadOptionListFromCategory(collection.ModGuid, navigationController.currentHeaderIndex, navigationController.headers.Length);
         }
 
-        internal void LoadOptionListFromCategory(int containerIndex, int categoryIndex, int categories)
+        internal void LoadOptionListFromCategory(string modGuid, int categoryIndex, int headerCount)
         {
             UnloadExistingOptionButtons();
 
-            _panel.CategoryHeader.transform.Find("Scroll View").Find("Scrollbar Horizontal").gameObject.GetComponent<CustomScrollbar>().value = (1f / ((float)categories) - 1) * ((float)categoryIndex);
+            _panel.CategoryHeader.transform.Find("Scroll View").Find("Scrollbar Horizontal").gameObject.GetComponent<CustomScrollbar>().value = (1f / ((float)headerCount) - 1) * ((float)categoryIndex);
 
             _panel.ModOptionsDescriptionPanel.GetComponentInChildren<HGTextMeshProUGUI>().SetText("");
 
-            OptionCategory category = ModSettingsManager.OptionContainers[containerIndex].GetCategoriesCached()[categoryIndex];
+            Category category = ModSettingsManager.OptionCollection[modGuid][categoryIndex];
 
             var verticalLayoutTransform = _panel.ModOptionsPanel.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout");
 
             Selectable lastSelectable = null;
 
-            for (int i = 0; i < category.GetModOptionsCached().Count; i++)
+            _modSettings = new ModSetting[category.OptionCount];
+
+            for (int i = 0; i < category.OptionCount; i++)
             {
-                var option = category.GetModOptionsCached()[i];
+                var option = category[i];
 
                 GameObject button = option switch
                 {
-                    CheckBoxOption checkBoxOption => option.CreateOptionGameObject(option, _checkBoxPrefab, verticalLayoutTransform),
-                    StepSliderOption stepSliderOption => option.CreateOptionGameObject(option, _sliderPrefab, verticalLayoutTransform),
-                    SliderOption sliderOption => option.CreateOptionGameObject(option, _sliderPrefab, verticalLayoutTransform),
-                    KeyBindOption keyBindOption => option.CreateOptionGameObject(option, _keyBindPrefab, verticalLayoutTransform),
-                    DropDownOption dropDownOption => option.CreateOptionGameObject(option, _dropDownPrefab, verticalLayoutTransform),
-                    InputFieldOption inputFieldOption => option.CreateOptionGameObject(option, _inputFieldPrefab, verticalLayoutTransform),
+                    CheckBoxOption checkBoxOption => option.CreateOptionGameObject(_checkBoxPrefab, verticalLayoutTransform),
+                    SliderOption sliderOption => option.CreateOptionGameObject(_sliderPrefab, verticalLayoutTransform),
+                    StepSliderOption stepSliderOption => option.CreateOptionGameObject(_stepSliderPrefab, verticalLayoutTransform),
+                    KeyBindOption keyBindOption => option.CreateOptionGameObject(_keyBindPrefab, verticalLayoutTransform),
+                    // DropDownOption dropDownOption => option.CreateOptionGameObject(option, _dropDownPrefab, verticalLayoutTransform),
+                    // InputFieldOption inputFieldOption => option.CreateOptionGameObject(option, _inputFieldPrefab, verticalLayoutTransform),
                     _ => throw new ArgumentOutOfRangeException(option.Name)
                 };
 
-                button.AddComponent<OptionIdentity>().optionToken = option.OptionToken;
+                _modSettings[i] = button.GetComponentInChildren<ModSetting>();
+                _modSettings[i].optionController = this;
 
-                if (option.OptionOverride != null)
-                {
-                    OverrideController overrideController = button.AddComponent<OverrideController>();
-
-                    overrideController.modGuid = option.ModGuid;
-
-                    overrideController.overridingName = option.OptionOverride.Name;
-                    overrideController.overridingCategoryName = option.OptionOverride.CategoryName;
-
-                    overrideController.CheckForOverride(true);
-                }
+                // if (option.OptionOverride != null)
+                // {
+                //     OverrideController overrideController = button.AddComponent<OverrideController>();
+                //
+                //     overrideController.modGuid = option.ModGuid;
+                //
+                //     overrideController.overridingName = option.OptionOverride.Name;
+                //     overrideController.overridingCategoryName = option.OptionOverride.CategoryName;
+                //
+                //     overrideController.CheckForOverride(true);
+                // }
 
                 CanvasGroup canvasGroup = button.AddComponent<CanvasGroup>();
 
                 var buttonComponent = button.GetComponentInChildren<HGButton>();
                 if (buttonComponent)
                 {
-                    button.GetComponentInChildren<HGButton>().hoverToken = option.OptionToken;
+                    button.GetComponentInChildren<HGButton>().hoverToken = option.GetNameToken();
 
                     button.GetComponentInChildren<HGButton>().onSelect.AddListener(delegate
                     {
-                        _panel.ModOptionsDescriptionPanel.GetComponentInChildren<HGTextMeshProUGUI>().SetText(option.GetDescriptionAsString());
+                        _panel.ModOptionsDescriptionPanel.GetComponentInChildren<HGTextMeshProUGUI>().SetText(option.Description);
                     });
                 }
 
@@ -578,7 +570,7 @@ namespace RiskOfOptions.Components.Options
                     var selectableNavigation = selectable.navigation;
                     selectableNavigation.mode = Navigation.Mode.Explicit;
                     
-                    if (i == 0 || i > category.GetModOptionsCached().Count)
+                    if (i == 0 || i > category.OptionCount)
                     {
                         // Todo if at top of list, select category.
                     }
@@ -599,13 +591,13 @@ namespace RiskOfOptions.Components.Options
                     lastSelectable = null;
                 }
 
-                if (!option.Visibility)
-                {
-                    canvasGroup.alpha = 1;
-                    canvasGroup.blocksRaycasts = false;
-                    button.GetComponent<LayoutElement>().ignoreLayout = true;
-                    continue;
-                }
+                // if (!option.Visibility)
+                // {
+                //     canvasGroup.alpha = 1;
+                //     canvasGroup.blocksRaycasts = false;
+                //     button.GetComponent<LayoutElement>().ignoreLayout = true;
+                //     continue;
+                // }
 
                 button.SetActive(true);
             }
@@ -613,19 +605,19 @@ namespace RiskOfOptions.Components.Options
 
         internal void CheckIfRestartNeeded()
         {
-            if (BaseSettingsControlOverride._restartOptions.Count > 0)
-            {
-                if (_warningShown)
-                    return;
-
-                ShowRestartWarning();
-                _warningShown = true;
-            }
-            else
-            {
-                HideRestartWarning();
-                _warningShown = false;
-            }
+            // if (BaseSettingsControlOverride._restartOptions.Count > 0)
+            // {
+            //     if (_warningShown)
+            //         return;
+            //
+            //     ShowRestartWarning();
+            //     _warningShown = true;
+            // }
+            // else
+            // {
+            //     HideRestartWarning();
+            //     _warningShown = false;
+            // }
         }
 
         public void ShowRestartWarning()
@@ -725,30 +717,19 @@ namespace RiskOfOptions.Components.Options
             }
         }
 
-        public void UpdateExistingOptionButtons()
-        {
-            if (_controllers == null || _controllers.Length == 0)
-                _controllers = GetComponentsInChildren<OverrideController>();
-
-            foreach (var controller in _controllers)
-            {
-                controller.CheckForOverride();
-            }
-        }
-
         public void UpdateVisibility(string optionToken, bool visible)
         {
-            foreach (var optionIdentity in GetComponentsInChildren<OptionIdentity>())
+            foreach (var modSetting in GetComponentsInChildren<ModSetting>())
             {
-                if (optionIdentity.optionToken != optionToken)
+                if (modSetting.settingToken != optionToken)
                     continue;
 
-                var canvasGroup = optionIdentity.GetComponent<CanvasGroup>();
+                var canvasGroup = modSetting.GetComponent<CanvasGroup>();
 
                 canvasGroup.alpha = visible ? 1 : 0;
                 canvasGroup.blocksRaycasts = visible;
 
-                optionIdentity.GetComponent<LayoutElement>().ignoreLayout = !visible;
+                modSetting.GetComponent<LayoutElement>().ignoreLayout = !visible;
                 break;
             }
         }
@@ -802,14 +783,10 @@ namespace RiskOfOptions.Components.Options
 
         private void UnloadExistingOptionButtons()
         {
-            _controllers = Array.Empty<OverrideController>();
-
-            OptionIdentity[] activeOptionButtons = _panel.ModOptionsPanel.GetComponentsInChildren<OptionIdentity>();
-
-            if (activeOptionButtons.Length <= 0)
+            if (_modSettings.Length <= 0)
                 return;
 
-            foreach (var button in activeOptionButtons)
+            foreach (var button in _modSettings)
             {
                 if (button.gameObject == null)
                     continue;
@@ -836,12 +813,36 @@ namespace RiskOfOptions.Components.Options
             
             RuntimePrefabManager.DestroyPrefabs();
 
-            OptionSerializer.Save(ModSettingsManager.OptionContainers.ToArray());
+            //OptionSerializer.Save(ModSettingsManager.OptionContainers.ToArray());
         }
 
         public void OnEnable()
         {
             initialized = true;
+        }
+
+        public void Update()
+        {
+            bool interactable = false;
+            foreach (var modSetting in _modSettings)
+            {
+                if (modSetting.HasChanged())
+                    interactable = true;
+            }
+
+            _revertButton.interactable = interactable;
+        }
+
+        public void RevertChanges()
+        {
+            foreach (var modSetting in _modSettings)
+                modSetting.Revert();
+        }
+
+        public void OptionChanged()
+        {
+            foreach (var modSetting in _modSettings)
+                modSetting.CheckIfDisabled();
         }
     }
 }
