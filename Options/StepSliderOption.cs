@@ -42,8 +42,6 @@ namespace RiskOfOptions.Options
             
             int steps = (int)Math.Round(stepsHighAccuracy);
             
-            Debug.Log(stepsHighAccuracy);
-
             settingsSlider.slider.minValue = 0;
             settingsSlider.slider.maxValue = steps;
             settingsSlider.slider.wholeNumbers = true;

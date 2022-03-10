@@ -1,4 +1,5 @@
 ﻿using R2API.Utils;
+using RiskOfOptions.Components.Options;
 using RoR2.UI;
 using TMPro;
 using Language = On.RoR2.Language;

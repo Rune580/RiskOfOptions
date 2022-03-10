@@ -18,7 +18,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             KeyBind.name = "Mod Option Prefab, KeyBind";
             
             var inputBindingControl = KeyBind.GetComponentInChildren<InputBindingControl>();
-            var controller = KeyBind.AddComponent<KeybindController>();
+            var controller = KeyBind.AddComponent<KeyBindController>();
 
             controller.nameLabel = inputBindingControl.nameLabel;
             

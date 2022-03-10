@@ -1,16 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using BepInEx;
-using BepInEx.Logging;
-using R2API;
-using R2API.Utils;
-using RiskOfOptions.Containers;
-using RiskOfOptions.Options;
-using RoR2.ConVar;
-using RoR2.UI;
-using RoR2.UI.SkinControllers;
+
 using UnityEngine;
 
 namespace RiskOfOptions
@@ -149,12 +140,6 @@ namespace RiskOfOptions
         {
             internal string ModGuid;
             internal string ModName;
-        }
-
-        internal struct Indexes
-        {
-            internal int ContainerIndex;
-            internal int OptionIndexInContainer;
         }
     }
 }

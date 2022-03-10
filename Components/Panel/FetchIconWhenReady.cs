@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace RiskOfOptions.Components
+namespace RiskOfOptions.Components.Panel
 {
     public class FetchIconWhenReady : MonoBehaviour
     {

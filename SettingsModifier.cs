@@ -1,16 +1,10 @@
 ﻿using R2API;
 using RoR2.UI;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RiskOfOptions.Components.OptionComponents;
-using RiskOfOptions.Components.Options;
 using RiskOfOptions.Components.Panel;
 using RiskOfOptions.Components.RuntimePrefabs;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using Object = UnityEngine.Object;
 
 namespace RiskOfOptions
 {

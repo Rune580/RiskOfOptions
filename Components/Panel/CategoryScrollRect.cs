@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace RiskOfOptions.Components
+namespace RiskOfOptions.Components.Panel
 {
     public class CategoryScrollRect : ScrollRect
     {

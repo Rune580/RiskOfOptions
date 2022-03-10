@@ -27,7 +27,7 @@ namespace RiskOfOptions.Options
         {
             GameObject keyBind = Object.Instantiate(prefab, parent);
 
-            KeybindController controller = keyBind.GetComponentInChildren<KeybindController>();
+            KeyBindController controller = keyBind.GetComponentInChildren<KeyBindController>();
 
             controller.nameToken = GetNameToken();
             controller.settingToken = Identifier;

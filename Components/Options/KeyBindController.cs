@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using BepInEx.Configuration;
 using On.RoR2;
 using RoR2.UI;
@@ -11,7 +10,7 @@ using RoR2Application = RoR2.RoR2Application;
 namespace RiskOfOptions.Components.Options
 {
     // ReSharper disable once IdentifierTypo
-    public class KeybindController : ModSettingsControl<KeyboardShortcut>
+    public class KeyBindController : ModSettingsControl<KeyboardShortcut>
     {
         private bool _listening;
         private float _timeoutTimer;
