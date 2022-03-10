@@ -2,20 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using R2API;
 using R2API.Utils;
-using RiskOfOptions.Components.OptionComponents;
 using RiskOfOptions.Components.Options;
 using RiskOfOptions.Components.RuntimePrefabs;
 using RiskOfOptions.Containers;
 using RiskOfOptions.Options;
-using RoR2;
 using RoR2.UI;
-using RoR2.UI.SkinControllers;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Object = UnityEngine.Object;
 
 #pragma warning disable 618
 
@@ -46,10 +40,10 @@ namespace RiskOfOptions.Components.Panel
         private bool _warningShown = false;
 
         private IEnumerator _animateRoutine;
-
+        
         private ModOptionsPanelPrefab _panel;
         private ModSetting[] _modSettings = Array.Empty<ModSetting>();
-
+        private readonly List<string> _restartRequiredOptions = new();
 
         public void Start()
         {
@@ -510,19 +504,7 @@ namespace RiskOfOptions.Components.Panel
 
                 _modSettings[i] = button.GetComponentInChildren<ModSetting>();
                 _modSettings[i].optionController = this;
-
-                // if (option.OptionOverride != null)
-                // {
-                //     OverrideController overrideController = button.AddComponent<OverrideController>();
-                //
-                //     overrideController.modGuid = option.ModGuid;
-                //
-                //     overrideController.overridingName = option.OptionOverride.Name;
-                //     overrideController.overridingCategoryName = option.OptionOverride.CategoryName;
-                //
-                //     overrideController.CheckForOverride(true);
-                // }
-
+                
                 CanvasGroup canvasGroup = button.AddComponent<CanvasGroup>();
 
                 var buttonComponent = button.GetComponentInChildren<HGButton>();
@@ -576,26 +558,35 @@ namespace RiskOfOptions.Components.Panel
             }
         }
 
-        internal void CheckIfRestartNeeded()
+        internal void AddRestartRequired(string settingToken)
         {
-            // if (BaseSettingsControlOverride._restartOptions.Count > 0)
-            // {
-            //     if (_warningShown)
-            //         return;
-            //
-            //     ShowRestartWarning();
-            //     _warningShown = true;
-            // }
-            // else
-            // {
-            //     HideRestartWarning();
-            //     _warningShown = false;
-            // }
+            if (!_restartRequiredOptions.Contains(settingToken))
+                _restartRequiredOptions.Add(settingToken);
         }
 
-        public void ShowRestartWarning()
+        internal void RemoveRestartRequired(string settingToken)
         {
-            RectTransform modListScrollViewRT = _panel.WarningPanel.GetComponent<RectTransform>();
+            if (_restartRequiredOptions.Contains(settingToken))
+                _restartRequiredOptions.Remove(settingToken);
+        }
+
+        private void CheckIfRestartNeeded()
+        {
+            _warningShown = _restartRequiredOptions.Count > 0;
+
+            if (_warningShown)
+            {
+                ShowRestartWarning();
+            }
+            else
+            {
+                HideRestartWarning();
+            }
+        }
+
+        private void ShowRestartWarning()
+        {
+            RectTransform modListScrollViewRT = _panel.ModListPanel.transform.Find("Scroll View").GetComponent<RectTransform>();
             RectTransform warningPanelRT = _panel.WarningPanel.GetComponent<RectTransform>();
 
             warningPanelRT.gameObject.SetActive(true);
@@ -612,10 +603,9 @@ namespace RiskOfOptions.Components.Panel
             _animateRoutine = AnimateWarningPanel(modListScrollViewRT, new Vector2(0f, 0.074f), warningPanelRT, new Vector2(1f, 0.08f), showColor, degreesPerSecond, 720f);
 
             StartCoroutine(_animateRoutine);
-
         }
 
-        public void HideRestartWarning()
+        private void HideRestartWarning()
         {
             RectTransform modListScrollViewRT = _panel.WarningPanel.GetComponent<RectTransform>();
             RectTransform warningPanelRT = _panel.WarningPanel.GetComponent<RectTransform>();
@@ -677,7 +667,10 @@ namespace RiskOfOptions.Components.Panel
                         break;
                 }
 
-                if (ExtensionMethods.CloseEnough(modListTransform.anchorMin, newModListPos) && ExtensionMethods.CloseEnough(warningTransform.anchorMax, newWarningPos) && ExtensionMethods.CloseEnough(warningText.color, textColor) && ExtensionMethods.CloseEnough(restartIcon.color, textColor))
+                if (ExtensionMethods.CloseEnough(modListTransform.anchorMin, newModListPos) &&
+                    ExtensionMethods.CloseEnough(warningTransform.anchorMax, newWarningPos) &&
+                    ExtensionMethods.CloseEnough(warningText.color, textColor) &&
+                    ExtensionMethods.CloseEnough(restartIcon.color, textColor))
                 {
                     modListTransform.anchorMin = newModListPos;
                     warningTransform.anchorMax = newWarningPos;
@@ -807,6 +800,8 @@ namespace RiskOfOptions.Components.Panel
 
         public void OptionChanged()
         {
+            CheckIfRestartNeeded();
+            
             foreach (var modSetting in _modSettings)
                 modSetting.CheckIfDisabled();
         }

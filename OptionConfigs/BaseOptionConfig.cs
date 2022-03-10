@@ -20,9 +20,8 @@ namespace RiskOfOptions.OptionConfigs
         public string category = "";
         
         /// <summary>
-        /// Not yet implemented
+        /// When true, the user will be notified that a restart is required if the ConfigEntry value gets changed.
         /// </summary>
-        [Obsolete("Not yet implemented")]
         public bool restartRequired = false;
         
         /// <summary>

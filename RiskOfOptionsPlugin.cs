@@ -23,6 +23,26 @@ namespace RiskOfOptions
         private void Awake()
         {
             ModSettingsManager.Init();
+
+            ConfigEntry<bool> testBool = Config.Bind("Test", "Description Test", false, "");
+
+            string description = "";
+
+            for (int i = 0; i < 100; i++)
+                description += "The quick brown fox jumps over the lazy dog, some more random bullshit so this line becomes ridiculously long and stuff and things and stuff.\n";
+            
+            ModSettingsManager.AddOption(new CheckBoxOption(testBool, new CheckBoxConfig { description = description }));
+            
+            ConfigEntry<bool> testBool1 = Config.Bind("Test", "Restart Required 1", false, "test");
+            ModSettingsManager.AddOption(new CheckBoxOption(testBool1, true));
+            
+            ConfigEntry<bool> testBool2 = Config.Bind("Test", "No Restart Required", false, "test");
+            ModSettingsManager.AddOption(new CheckBoxOption(testBool2, false));
+            
+            ConfigEntry<bool> testBool3 = Config.Bind("Test", "Restart Required 2", false, "test");
+            ModSettingsManager.AddOption(new CheckBoxOption(testBool3, true));
+            
+            ModSettingsManager.SetModDescription(description);
         }
     }
 }

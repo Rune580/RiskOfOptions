@@ -7,8 +7,9 @@ using Object = UnityEngine.Object;
 
 namespace RiskOfOptions.Options
 {
-    public class StepSliderOption : BaseOption, ITypedValue<float>
+    public class StepSliderOption : BaseOption, ITypedValueHolder<float>
     {
+        private readonly float _originalValue;
         private readonly ConfigEntry<float> _configEntry;
         internal StepSliderConfig Config { get; }
 
@@ -16,6 +17,7 @@ namespace RiskOfOptions.Options
 
         public StepSliderOption(ConfigEntry<float> configEntry, StepSliderConfig config)
         {
+            _originalValue = configEntry.Value;
             _configEntry = configEntry;
             Config = config;
             
@@ -58,6 +60,12 @@ namespace RiskOfOptions.Options
             return Config;
         }
 
+        public override bool ValueChanged()
+        {
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
+            return GetValue() != GetOriginalValue();
+        }
+
         public void SetValue(float value)
         {
             _configEntry.Value = value;
@@ -66,6 +74,11 @@ namespace RiskOfOptions.Options
         public float GetValue()
         {
             return _configEntry.Value;
+        }
+
+        public float GetOriginalValue()
+        {
+            return _originalValue;
         }
     }
 }

@@ -6,8 +6,9 @@ using UnityEngine;
 
 namespace RiskOfOptions.Options
 {
-    public class KeyBindOption : BaseOption, ITypedValue<KeyboardShortcut>
+    public class KeyBindOption : BaseOption, ITypedValueHolder<KeyboardShortcut>
     {
+        private readonly KeyboardShortcut _originalValue;
         private readonly ConfigEntry<KeyboardShortcut> _configEntry;
         internal KeyBindConfig Config { get; }
 
@@ -15,9 +16,10 @@ namespace RiskOfOptions.Options
         
         public KeyBindOption(ConfigEntry<KeyboardShortcut> configEntry, KeyBindConfig config)
         {
+            _originalValue = configEntry.Value;
             _configEntry = configEntry;
             Config = config;
-            
+
             SetCategoryName(configEntry.Definition.Section, config);
             SetName(configEntry.Definition.Key, config);
             SetDescription(configEntry.Description.Description, config);
@@ -48,6 +50,11 @@ namespace RiskOfOptions.Options
             return Config;
         }
 
+        public override bool ValueChanged()
+        {
+            return !GetValue().Equals(GetOriginalValue());
+        }
+
         public void SetValue(KeyboardShortcut value)
         {
             _configEntry.Value = value;
@@ -56,6 +63,11 @@ namespace RiskOfOptions.Options
         public KeyboardShortcut GetValue()
         {
             return _configEntry.Value;
+        }
+
+        public KeyboardShortcut GetOriginalValue()
+        {
+            return _originalValue;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using RiskOfOptions.OptionConfigs;
+﻿using System;
+using RiskOfOptions.OptionConfigs;
 using UnityEngine;
 
 namespace RiskOfOptions.Options
@@ -59,5 +60,26 @@ namespace RiskOfOptions.Options
         public abstract GameObject CreateOptionGameObject(GameObject prefab, Transform parent);
 
         public abstract BaseOptionConfig GetConfig();
+
+        public abstract bool ValueChanged();
+
+        public override bool Equals(object obj)
+        {
+            if (obj is null)
+                return false;
+
+            return obj is BaseOption other && Equals(other);
+        }
+
+        private bool Equals(BaseOption other)
+        {
+            return string.Equals(Identifier, other.Identifier, StringComparison.InvariantCulture);
+        }
+
+        public override int GetHashCode()
+        {
+            // ReSharper disable twice NonReadonlyMemberInGetHashCode
+            return (Identifier != null ? StringComparer.InvariantCulture.GetHashCode(Identifier) : 0);
+        }
     }
 }

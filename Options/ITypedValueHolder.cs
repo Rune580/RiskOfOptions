@@ -1,9 +1,11 @@
 ﻿namespace RiskOfOptions.Options
 {
-    public interface ITypedValue<T>
+    public interface ITypedValueHolder<T>
     {
         void SetValue(T value);
 
         T GetValue();
+
+        T GetOriginalValue();
     }
 }

@@ -89,7 +89,7 @@ namespace RiskOfOptions
 
         internal static bool CloseEnough(Vector2 a, Vector2 b)
         {
-            return Mathf.Abs(a.x - b.x) < 0.00001f && Mathf.Abs(a.y - b.y) < 0.00001f;
+            return Mathf.Abs(a.x - b.x) < 0.0001f && Mathf.Abs(a.y - b.y) < 0.0001f;
         }
 
         internal static bool CloseEnough(Color a, Color b)

@@ -7,7 +7,6 @@ using UnityEngine;
 
 using static RiskOfOptions.ExtensionMethods;
 using ConCommandArgs = RoR2.ConCommandArgs;
-using Console = On.RoR2.Console;
 using PauseManager = On.RoR2.PauseManager;
 
 #pragma warning disable 618

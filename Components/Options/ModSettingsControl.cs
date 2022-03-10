@@ -12,11 +12,14 @@ namespace RiskOfOptions.Components.Options
         public LanguageTextMeshController nameLabel;
         
         private MPEventSystemLocator _eventSystemLocator;
+        private ITypedValueHolder<T> _valueHolder;
+        private BaseOption _option;
         private T _originalValue;
         private bool _valueChanged;
 
         private BaseOptionConfig.IsDisabledDelegate _isDisabled;
         private bool _disabled;
+        private bool _restartRequired;
 
         public void SubmitValue(T newValue)
         {
@@ -27,9 +30,8 @@ namespace RiskOfOptions.Components.Options
             
             if (_originalValue.Equals(newValue))
                 _valueChanged = false;
-
-            ITypedValue<T> value = (ITypedValue<T>)ModSettingsManager.OptionCollection.GetOption(settingToken);
-            value.SetValue(newValue);
+            
+            _valueHolder.SetValue(newValue);
             
             optionController.OptionChanged();
             UpdateControls();
@@ -37,8 +39,7 @@ namespace RiskOfOptions.Components.Options
 
         protected T GetCurrentValue()
         {
-            ITypedValue<T> value = (ITypedValue<T>) ModSettingsManager.OptionCollection.GetOption(settingToken);
-            return value.GetValue();
+            return _valueHolder.GetValue();
         }
 
         public override bool HasChanged()
@@ -66,9 +67,13 @@ namespace RiskOfOptions.Components.Options
             if (string.IsNullOrEmpty(settingToken))
                 return;
 
-            var option = ModSettingsManager.OptionCollection.GetOption(settingToken);
-            var isDisabled = option.GetConfig().checkIfDisabled;
+            _option = ModSettingsManager.OptionCollection.GetOption(settingToken);
+            
+            _valueHolder ??= (ITypedValueHolder<T>)_option;
 
+            _restartRequired = _option.GetConfig().restartRequired;
+            
+            var isDisabled = _option.GetConfig().checkIfDisabled;
             if (isDisabled == null)
                 return;
 
@@ -112,6 +117,21 @@ namespace RiskOfOptions.Components.Options
             }
         }
 
+        private void RestartRequiredCheck()
+        {
+            if (!_restartRequired)
+                return;
+            
+            if (_option.ValueChanged())
+            {
+                optionController.AddRestartRequired(settingToken);
+            }
+            else
+            {
+                optionController.RemoveRestartRequired(settingToken);
+            }
+        }
+
         protected abstract void Disable();
 
         protected abstract void Enable();
@@ -130,6 +150,7 @@ namespace RiskOfOptions.Components.Options
                 return;
 
             CheckIfDisabled();
+            RestartRequiredCheck();
 
             InUpdateControls = true;
             OnUpdateControls();
@@ -137,7 +158,5 @@ namespace RiskOfOptions.Components.Options
         }
         
         protected virtual void OnUpdateControls() {}
-
-        
     }
 }

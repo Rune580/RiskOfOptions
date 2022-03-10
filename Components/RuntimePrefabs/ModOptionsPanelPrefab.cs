@@ -257,11 +257,34 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             ModDescriptionPanel.GetComponent<RectTransform>().anchorMin = new Vector2(0.275f, 0f);
             ModDescriptionPanel.GetComponent<RectTransform>().anchorMax = new Vector2(1f, 1f);
 
-            Transform mdpVerticalLayout = ModDescriptionPanel.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout");
-            Object.Instantiate(_genericDescriptionPanel, mdpVerticalLayout);
+            Transform mdpVerticalLayout = ModDescriptionPanel.transform.Find("Scroll View").Find("Viewport");
+            GameObject descriptionPanel = Object.Instantiate(_genericDescriptionPanel, mdpVerticalLayout);
 
             ModDescriptionPanel.SetActive(true);
             ModDescriptionPanel.name = "Mod Description Panel";
+            
+            descriptionPanel.transform.Find("ContentSizeFitter").Find("DescriptionText").SetParent(descriptionPanel.transform);
+
+            Object.DestroyImmediate(descriptionPanel.transform.Find("ContentSizeFitter").gameObject);
+            
+            descriptionPanel.GetComponent<RectTransform>().anchorMin = Vector2.zero;
+
+            var descriptionText = descriptionPanel.transform.Find("DescriptionText").gameObject;
+
+            var sizeFitter = descriptionText.AddComponent<ContentSizeFitter>();
+            sizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            sizeFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            
+            var descriptionTransform = descriptionText.GetComponent<RectTransform>();
+            descriptionTransform.pivot = new Vector2(0, 1);
+            descriptionTransform.anchorMin = Vector2.zero;
+            descriptionTransform.anchorMax = Vector2.one;
+            descriptionTransform.anchoredPosition = Vector2.zero;
+
+            descriptionText.GetComponent<HGTextMeshProUGUI>().margin = new Vector4(8, 8, 8, 8);
+            
+            var scrollRect = ModDescriptionPanel.GetComponentInChildren<ScrollRect>();
+            scrollRect.content = descriptionText.GetComponent<RectTransform>();;
         }
 
         private void CreateCategoryHeader(GameObject parent, GameObject headerArea)
@@ -487,17 +510,18 @@ namespace RiskOfOptions.Components.RuntimePrefabs
         private void CreateModOptionsDescriptionPanel()
         {
             ModOptionsDescriptionPanel = Object.Instantiate(ModDescriptionPanel, Canvas.transform);
-            
-            ModOptionsDescriptionPanel.GetComponent<RectTransform>().anchorMin = new Vector2(0.65f, 0);
-            ModOptionsDescriptionPanel.GetComponent<RectTransform>().anchorMax = new Vector2(1f, 0.82f);
             ModOptionsDescriptionPanel.SetActive(false);
             ModOptionsDescriptionPanel.name = "Option Description Panel";
+
+            var panelTransform = ModOptionsDescriptionPanel.GetComponent<RectTransform>();
+            panelTransform.anchorMin = new Vector2(0.65f, 0);
+            panelTransform.anchorMax = new Vector2(1f, 0.82f);
         }
 
         private void CreateWarningPanel()
         {
             WarningPanel = Object.Instantiate(_genericDescriptionPanel, ModListPanel.transform);
-
+            
             WarningPanel.GetComponent<RectTransform>().anchorMin = new Vector2(0f, 0f);
             WarningPanel.GetComponent<RectTransform>().anchorMax = new Vector2(1f, 0f);
             WarningPanel.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -9f);
@@ -531,7 +555,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             LayoutElement restartIconLayoutElement = restartIconGameObject.AddComponent<LayoutElement>();
             restartIconLayoutElement.ignoreLayout = true;
 
-            Image restartIcon = restartIconGameObject.AddComponent<UnityEngine.UI.Image>();
+            Image restartIcon = restartIconGameObject.AddComponent<Image>();
             restartIcon.sprite = Assets.Load<Sprite>("assets/RiskOfOptions/ror2RestartSymbol.png");
             restartIcon.preserveAspect = true;
 

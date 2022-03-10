@@ -104,3 +104,8 @@ ModSettingsManager.SetModIcon(icon);
 
 # Quick Showcase
 [Showcase](https://gfycat.com/GloomyShowyArrowana)
+
+# Changelog
+```
+
+```
