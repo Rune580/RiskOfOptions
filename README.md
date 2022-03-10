@@ -24,6 +24,9 @@ Next you need to add Risk Of Options as a dependency for your mod.
 [BepInDependency("com.rune580.riskofoptions")]
 ```
 
+Finally make sure you know how to use [BepInEx Config](https://github.com/risk-of-thunder/R2Wiki/wiki/Configuration
+)
+
 Now you're ready to start adding options.
 
 ### Adding an option
