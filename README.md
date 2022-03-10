@@ -1,5 +1,5 @@
 # RiskOfOptions
-![Animated icon made by UnsavedTrash#0001](https://thumbs.gfycat.com/YawningTintedFish-size_restricted.gif)
+![Animated icon made by UnsavedTrash#0001](https://thumbs.gfycat.com/LimitedFlashyCowbird-size_restricted.gif)
 
 An API to provide a user interface in game to interact with BepInEx ConfigEntry's.
 
@@ -49,7 +49,7 @@ ModSettingsManager.AddOption(new SliderOption(limitedRangeFloat, new SliderConfi
 
 What about a slider that goes in increments of 0.15 and is limited between 1 - 5?
 ```C#
-ModSettingsManager.AddOption(new StepSliderOption(incrementedFloat, new StepSliderConfig() { min = 1, max = 5, increment = 0.15 }));
+ModSettingsManager.AddOption(new StepSliderOption(incrementedFloat, new StepSliderConfig() { min = 1, max = 5, increment = 0.15f }));
 ```
 
 Enough about floats, let's talk about the spaghetti and meatballs, KeyBinds.
@@ -99,7 +99,5 @@ Sprite icon = ...;
 ModSettingsManager.SetModIcon(icon);
 ```
 
-## Previews
-
-![Preview 1](https://i.imgur.com/Dz18iu7.png)
-![Preview 2](/images/example2.jpg)
+# Quick Showcase
+[Showcase](https://gfycat.com/GloomyShowyArrowana)

@@ -1,5 +1,9 @@
 ﻿using BepInEx;
+using BepInEx.Configuration;
 using R2API.Utils;
+using RiskOfOptions.OptionConfigs;
+using RiskOfOptions.Options;
+using UnityEngine;
 
 namespace RiskOfOptions
 {
