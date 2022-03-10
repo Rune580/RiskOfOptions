@@ -18,8 +18,6 @@ namespace RiskOfOptions
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Awake is automatically called by Unity")]
         private void Awake()
         {
-            Debug.Init(Logger);
-
             ModSettingsManager.Init();
         }
     }

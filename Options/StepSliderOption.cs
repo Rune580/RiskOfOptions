@@ -12,6 +12,8 @@ namespace RiskOfOptions.Options
         private readonly ConfigEntry<float> _configEntry;
         internal StepSliderConfig Config { get; }
 
+        public StepSliderOption(ConfigEntry<float> configEntry) : this(configEntry, new StepSliderConfig()) { }
+
         public StepSliderOption(ConfigEntry<float> configEntry, StepSliderConfig config)
         {
             _configEntry = configEntry;

@@ -1,8 +1,17 @@
 # RiskOfOptions
-An API to add Mod Options in game to ROR2.
+![Animated icon made by UnsavedTrash#0001](https://thumbs.gfycat.com/YawningTintedFish-size_restricted.gif)
+
+An API to provide a user interface in game to interact with BepInEx ConfigEntry's.
+
+## Currently supported options
+- CheckBoxes
+- Sliders and Stepped Sliders
+- KeyBinds
+
+Feature requests welcome on my [repository](https://github.com/Rune580/RiskOfOptions).
 
 ## Getting Started
-First you need to grab the latest release from the [Thunderstore](https://thunderstore.io/package/Rune48a891aab771429d/Risk_Of_Options/).
+First you need to grab the latest release from the [Thunderstore](https://thunderstore.io/package/Rune580/Risk_Of_Options/).
 Extract the mod to your plugins folder, and then add a reference to the dll in your project in Visual Studio. [Project->Add Reference...->Browse]
 
 Then add to where ever you will use this.
@@ -10,7 +19,7 @@ Then add to where ever you will use this.
 using RiskOfOptions;
 ```
 
-Next you need to add Risk Of Options as a dependecy for your mod.
+Next you need to add Risk Of Options as a dependency for your mod.
 ```C#
 [BepInDependency("com.rune580.riskofoptions")]
 ```
@@ -18,75 +27,79 @@ Next you need to add Risk Of Options as a dependecy for your mod.
 Now you're ready to start adding options.
 
 ### Adding an option
-This needs to be run on Awake()
+Given a `ConfigEntry<bool>`
 ```C#
-ModSettingsManager.addOption(new ModOption(ModOption.OptionType.Slider, "Test Slider", "This is a Slider test."));
+ConfigEntry<bool> enableThing = Config.Bind(...);
 
-ModSettingsManager.addOption(new ModOption(ModOption.OptionType.Bool, "Test Bool", "This is a Bool test."));
+ModSettingsManager.AddOption(new CheckBoxOption(enableThing);
 ```
-and with default values
+
+Need a volume slider?
 ```C#
-ModSettingsManager.addOption(new ModOption(ModOption.OptionType.Slider, "Test Slider", "This is a Slider test.", "20"));
+ConfigEntry<float> volume = Config.Bind(...);
 
-ModSettingsManager.addOption(new ModOption(ModOption.OptionType.Bool, "Test Bool", "This is a Bool test.", "1"));
+ModSettingsManager.AddOption(new SliderOption(volume));
 ```
 
-
-### Changing the description of the mod panel
+Every option constructor can take a Config for the example above it would be `SliderConfig`.
+Say you need a slider that only goes between 60 - 130. You would do:
 ```C#
-ModSettingsManager.setPanelDescription("Testing stuff");
+ModSettingsManager.AddOption(new SliderOption(limitedRangeFloat, new SliderConfig() { min = 60, max = 130 }));
 ```
 
-### Changing the title of the mod panel
+What about a slider that goes in increments of 0.15 and is limited between 1 - 5?
 ```C#
-ModSettingsManager.setPanelTitle("Risk of Options Testing Stuff");
+ModSettingsManager.AddOption(new StepSliderOption(incrementedFloat, new StepSliderConfig() { min = 1, max = 5, increment = 0.15 }));
 ```
 
-### Firing an event at the earliest time after values are initilized
+Enough about floats, let's talk about the spaghetti and meatballs, KeyBinds.
 ```C#
-ModSettingsManager.addStartupListener(new UnityEngine.Events.UnityAction(loadModels));
+ConfigEntry<KeyboardShortcut> keyBind = Config.Bind(...);
 
-public void loadModels()
-        {
-                Debug.log("Do Something");
-        }
+ModSettingsManager.AddOption(new KeyBindOption(keyBind)); // This also has a KeyBindConfig but can be omitted if defaults are desired.
 ```
+And that's it, said KeyboardShortcut will show up on the ModOptions menu.
 
-### Fire event when value has changed
-for a slider
+Checkbox and Slider configs can be set with a delegate that will be used to check if said option should be disabled in the menu.
 ```C#
-ModSettingsManager.addListener(ModSettingsManager.getOption("Test Slider"), new UnityEngine.Events.UnityAction<float>(floatEvent));
+ConfigEntry<bool> disableThing = Config.Bind(...);
+ConfigEntry<bool> overridenThing = Config.Bind(...); 
 
-public void floatEvent(float f)
-        {
-            Debug.Log(f);
-        }
+ModSettingsManager.AddOption(new CheckBoxOption(disableThing));
+ModSettingsManager.AddOption(new CheckBoxOption(overridenThing, new CheckBoxConfig() { checkIfDisabled = Check }));
+
+...
+
+private bool Check()
+{
+    return disabledThing.value;
+}
 ```
-or for a bool
+When `disableThing` is enabled `overridenThing` will show up as non-interactable in the menu.
+
+"Okay that's all fine but how do I, you know, do stuff when an value is changed?"
+Well thankfully `ConfigEntry`'s have this innately:
 ```C#
-ModSettingsManager.addListener(ModSettingsManager.getOption("Test Bool"), new UnityEngine.Events.UnityAction<bool>(boolEvent));
+ConfigEntry<bool> toggleThing = Config.Bind(...);
 
-public void boolEvent(bool b)
-        {
-            Debug.Log(b);
-        }
+toggleThing.SettingChanged += (object, args) => { Debug.Log(toggleThing.Value) };
+```
+Of course when an option changes the value of a passed `ConfigEntry`, the value updates in real time,
+so in some cases where you are checking the value of the entry directly you don't need to do anything.
+
+### Setting the description of the mod
+```C#
+ModSettingsManager.SetModDescription("Describe your mod in incredible detail over the course of the next 2 hours");
 ```
 
-### Get the current value of an option
-```
-string b = ModSettingsManager.getOptionValue("Test Bool");
+### Setting the icon of the mod
+```C#
+Sprite icon = ...;
 
-// BaseConVar returns a string as a value.
-// for example it could be "1" or "0"
-
-```
-
-### Get the ModOption of an option
-```
-ModSettingsManager.getOption("Test Bool")
+ModSettingsManager.SetModIcon(icon);
 ```
 
 ## Previews
 
-![Preview 1](/images/example1.jpg)
+![Preview 1](https://i.imgur.com/Dz18iu7.png)
 ![Preview 2](/images/example2.jpg)

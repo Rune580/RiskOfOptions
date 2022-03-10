@@ -9,6 +9,8 @@ namespace RiskOfOptions.Options
     {
         private readonly ConfigEntry<float> _configEntry;
         internal SliderConfig Config { get; }
+        
+        public SliderOption(ConfigEntry<float> configEntry) : this(configEntry, new SliderConfig()) { }
 
         public SliderOption(ConfigEntry<float> configEntry, SliderConfig config)
         {

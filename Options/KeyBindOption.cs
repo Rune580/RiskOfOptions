@@ -10,6 +10,8 @@ namespace RiskOfOptions.Options
     {
         private readonly ConfigEntry<KeyboardShortcut> _configEntry;
         internal KeyBindConfig Config { get; }
+
+        public KeyBindOption(ConfigEntry<KeyboardShortcut> configEntry) : this(configEntry, new KeyBindConfig()) { }
         
         public KeyBindOption(ConfigEntry<KeyboardShortcut> configEntry, KeyBindConfig config)
         {
