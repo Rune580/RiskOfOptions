@@ -42,7 +42,7 @@ namespace RiskOfOptions.Components.Panel
 
             //_icon = GetComponentInChildren<UnityEngine.UI.Image>();
 
-            base.onClick.AddListener(delegate
+            onClick.AddListener(delegate
             {
                 navigationController.ChooseHeaderByButton(this);
 

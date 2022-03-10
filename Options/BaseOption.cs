@@ -48,7 +48,12 @@ namespace RiskOfOptions.Options
         
         public string GetNameToken()
         {
-            return $"{ModSettingsManager.StartingText}.{ModGuid}.{Category}.{Name}.{OptionTypeName}".Replace(" ", "_").ToUpper();
+            return $"{ModSettingsManager.StartingText}.{ModGuid}.{Category}.{Name}.{OptionTypeName}.name".Replace(" ", "_").ToUpper();
+        }
+
+        public string GetDescriptionToken()
+        {
+            return $"{ModSettingsManager.StartingText}.{ModGuid}.{Category}.{Name}.{OptionTypeName}.description".Replace(" ", "_").ToUpper();
         }
         
         public abstract GameObject CreateOptionGameObject(GameObject prefab, Transform parent);

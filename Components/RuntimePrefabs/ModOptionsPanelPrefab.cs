@@ -1,12 +1,11 @@
 ﻿using JetBrains.Annotations;
 using LeTai.Asset.TranslucentImage;
-using RiskOfOptions.Components.OptionComponents;
-using RiskOfOptions.Components.Options;
 using RiskOfOptions.Components.Panel;
 using RiskOfOptions.Resources;
 using RoR2;
 using RoR2.UI;
 using RoR2.UI.SkinControllers;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,6 +26,11 @@ namespace RiskOfOptions.Components.RuntimePrefabs
         public GameObject ModDescriptionPanel { get; private set; }
         public GameObject CategoryHeader { get; private set; }
         public GameObject CategoryHeaderHighlight { get; private set; }
+        public GameObject CategoryPageIndicators { get; private set; }
+        public GameObject CategoryPageIndicator { get; private set; }
+        public GameObject CategoryPageIndicatorOutline { get; private set; }
+        public GameObject CategoryLeftButton { get; private set; }
+        public GameObject CategoryRightButton { get; private set; }
         public GameObject ModOptionsPanel { get; private set; }
         public GameObject ModOptionsDescriptionPanel { get; private set; }
         public GameObject WarningPanel { get; private set; }
@@ -50,6 +54,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             CreateModListPanel(settingsPanel);
             CreateModDescriptionPanel();
             CreateCategoryHeader(settingsPanel, headerArea.gameObject);
+            CreateAdditionalCategoryStuff();
             CreateModOptionsPanel();
             
             Object.DestroyImmediate(_optionsPanel);
@@ -70,6 +75,11 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             Object.DestroyImmediate(ModListPanel);
             Object.DestroyImmediate(ModListHighlight);
             Object.DestroyImmediate(ModDescriptionPanel);
+            Object.DestroyImmediate(CategoryPageIndicators);
+            Object.DestroyImmediate(CategoryPageIndicator);
+            Object.DestroyImmediate(CategoryPageIndicatorOutline);
+            Object.DestroyImmediate(CategoryLeftButton);
+            Object.DestroyImmediate(CategoryRightButton);
             Object.DestroyImmediate(CategoryHeader);
             Object.DestroyImmediate(CategoryHeaderHighlight);
             Object.DestroyImmediate(ModOptionsPanel);
@@ -170,9 +180,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
 
             buttonTextRectTransform.anchorMin = new Vector2(0.19f, 0);
             buttonTextRectTransform.anchorMax = new Vector2(1, 1);
-            
-            
-            
+
             GameObject modIconGameObject = new GameObject("ModIcon");
 
             RectTransform modIconRectTransform = modIconGameObject.AddComponent<RectTransform>();
@@ -295,15 +303,12 @@ namespace RiskOfOptions.Components.RuntimePrefabs
 
             foreach (var oldButton in oldButtons)
             {
-                if (oldButton != null)
-                {
-                    if (oldButton != headers.GetComponent<RectTransform>())
-                    {
-                        Object.DestroyImmediate(oldButton.gameObject);
-                    }
-                }
+                if (oldButton == null)
+                    continue;
+                
+                if (oldButton != headers.GetComponent<RectTransform>())
+                    Object.DestroyImmediate(oldButton.gameObject);
             }
-
 
             CategoryHeaderHighlight = Object.Instantiate(parent.GetComponent<HGHeaderNavigationController>().headerHighlightObject,
                 parent.GetComponent<HGHeaderNavigationController>().headerHighlightObject.transform.parent);
@@ -358,6 +363,114 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             hlg.childControlHeight = true;
             hlg.childForceExpandWidth = true;
             hlg.childForceExpandHeight = true;
+        }
+
+        private void CreateAdditionalCategoryStuff()
+        {
+            GameObject scrollView = CategoryHeader.transform.Find("Scroll View").gameObject;
+
+            CategoryPageIndicators = new GameObject("Indicators", typeof(RectTransform));
+            CategoryPageIndicators.transform.SetParent(scrollView.transform);
+            
+            GameObject layoutGroup = new GameObject("LayoutGroup", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(ContentSizeFitter));
+            layoutGroup.transform.SetParent(CategoryPageIndicators.transform);
+
+            var horizontalLayoutGroup = layoutGroup.GetComponent<HorizontalLayoutGroup>();
+
+            horizontalLayoutGroup.spacing = CategoryScrollRect.Spacing;
+            horizontalLayoutGroup.childControlHeight = true;
+            horizontalLayoutGroup.childControlWidth = true;
+            horizontalLayoutGroup.childForceExpandHeight = true;
+            horizontalLayoutGroup.childForceExpandWidth = true;
+            horizontalLayoutGroup.childAlignment = TextAnchor.LowerCenter;
+
+            var layoutRectTransform = layoutGroup.GetComponent<RectTransform>();
+
+            layoutRectTransform.anchorMin = new Vector2(0.5f, 0);
+            layoutRectTransform.anchorMax = new Vector2(0.5f, 1);
+            layoutRectTransform.anchoredPosition = new Vector2(0, 51);
+            layoutRectTransform.pivot = new Vector2(0.5f, 0.5f);
+
+            var fitter = layoutGroup.GetComponent<ContentSizeFitter>();
+            
+            fitter.horizontalFit = ContentSizeFitter.FitMode.MinSize;
+            fitter.verticalFit = ContentSizeFitter.FitMode.Unconstrained;
+
+            var holderRectTransform = CategoryPageIndicators.GetComponent<RectTransform>();
+
+            holderRectTransform.sizeDelta = Vector2.zero;
+            holderRectTransform.anchorMin = new Vector2(0, 0f);
+            holderRectTransform.anchorMax = new Vector2(1, 0.23f);
+            holderRectTransform.pivot = new Vector2(0.5f, 1f);
+            holderRectTransform.anchoredPosition = new Vector2(0, 0);
+
+            CategoryPageIndicator = new GameObject("Indicator Dot", typeof(RectTransform), typeof(LayoutElement), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+            CategoryPageIndicator.transform.SetParent(CategoryPageIndicators.transform);
+            CategoryPageIndicator.SetActive(false);
+
+            var image = CategoryPageIndicator.GetComponent<Image>();
+            image.sprite = Assets.Load<Sprite>("assets/RiskOfOptions/IndicatorDot.png");
+            image.preserveAspect = true;
+
+            var dotRectTransform = CategoryPageIndicator.GetComponent<RectTransform>();
+            dotRectTransform.pivot = Vector2.zero;
+
+            var dotLayoutElement = CategoryPageIndicator.GetComponent<LayoutElement>();
+            dotLayoutElement.minWidth = CategoryScrollRect.DotScale;
+            
+            CategoryPageIndicatorOutline = new GameObject("Indicator Outline", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            CategoryPageIndicatorOutline.transform.SetParent(CategoryPageIndicators.transform);
+            CategoryPageIndicatorOutline.SetActive(true);
+            
+            CategoryPageIndicatorOutline.GetComponent<Image>().sprite = Assets.Load<Sprite>("assets/RiskOfOptions/IndicatorOutline.png");
+            
+            var outlineRectTransform = CategoryPageIndicatorOutline.GetComponent<RectTransform>();
+            outlineRectTransform.pivot = Vector2.zero;
+
+            CategoryLeftButton = Object.Instantiate(EmptyButton, scrollView.transform);
+            Object.DestroyImmediate(CategoryLeftButton.GetComponent<LayoutElement>());
+
+            var leftButtonRectTransform = CategoryLeftButton.GetComponent<RectTransform>();
+            leftButtonRectTransform.sizeDelta = new Vector2(64, 64);
+            leftButtonRectTransform.anchoredPosition = new Vector2(60, -54);
+
+            CategoryLeftButton.GetComponentInChildren<LanguageTextMeshController>().token = LanguageTokens.LeftPageButton;
+
+            var leftButtonText = CategoryLeftButton.GetComponentInChildren<HGTextMeshProUGUI>();
+            leftButtonText.alignment = TextAlignmentOptions.Midline;
+            leftButtonText.enableAutoSizing = false;
+            leftButtonText.fontSize = 72;
+
+            CategoryLeftButton.GetComponent<HGButton>().onClick.RemoveAllListeners();
+            
+            CategoryRightButton = Object.Instantiate(CategoryLeftButton, scrollView.transform);
+
+            CategoryRightButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(1064, -54);
+             
+            CategoryRightButton.GetComponentInChildren<LanguageTextMeshController>().token = LanguageTokens.RightPageButton;
+
+            CategoryLeftButton.name = "Previous Category Page Button";
+            CategoryRightButton.name = "Next Category Page Button";
+            
+            var scrollRect = scrollView.GetComponent<CategoryScrollRect>();
+            
+            scrollRect.leftButton = CategoryLeftButton.GetComponent<HGButton>();
+            scrollRect.rightButton = CategoryRightButton.GetComponent<HGButton>();
+
+            scrollRect.leftButton.disablePointerClick = false;
+            scrollRect.rightButton.disablePointerClick = false;
+            
+            scrollRect.leftButton.onClick.AddListener(scrollRect.Previous);
+            scrollRect.rightButton.onClick.AddListener(scrollRect.Next);
+
+            scrollRect.indicatorPrefab = CategoryPageIndicator;
+            scrollRect.emptyPrefab = ModOptionsHeaderButton;
+            scrollRect.categoryTransform = CategoryHeader.transform.Find("Scroll View").Find("Viewport").Find("Categories (JUICED)");
+            scrollRect.outline = CategoryPageIndicatorOutline;
+            
+            CategoryPageIndicatorOutline.SetActive(false);
+            CategoryLeftButton.SetActive(false);
+            CategoryRightButton.SetActive(false);
         }
 
         private void CreateModOptionsPanel()

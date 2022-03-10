@@ -1,6 +1,7 @@
 ﻿using System.Collections;
-using RiskOfOptions.Resources;
+using System.Collections.Generic;
 using RoR2.UI;
+using RoR2.UI.SkinControllers;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -19,132 +20,71 @@ namespace RiskOfOptions.Components
             }
         }
 
-        private HGButton _leftButton;
-        private HGButton _rightButton;
+        public HGButton leftButton;
+        public HGButton rightButton;
+        public GameObject indicatorPrefab;
+        public GameObject emptyPrefab;
+        public Transform categoryTransform;
+        public GameObject outline;
 
-        private GameObject _indicatorHolder;
-        private GameObject _indicatorDot;
-        //private GameObject _indicatorOutline;
+        public List<GameObject> categoryButtons = new();
 
+        private GameObject _layoutGroup;
         private GameObject[] _indicators;
-
+        
         private int _currentPage;
         private int _pages;
+        private int _categories;
         
         private IEnumerator _pageAnimator;
         private IEnumerator _indicatorAnimator;
         private IEnumerator _colorAnimator;
-
-        private const int Spacing = 0;
-        private const int DotScale = 20;
-
-        private static readonly Color InActiveColor = new Color(0.3f, 0.3f, 0.3f, 1);
-
-        //public float value = 0f;
-
-        private int _categories;
-
-        private bool Initialized => ButtonsInitialized && IndicatorsInitialized;
         
-        private bool ButtonsInitialized => _leftButton && _rightButton;
-        private bool IndicatorsInitialized => _indicatorHolder && _indicatorDot;
+        private bool _lateInit;
 
-        public void Init()
+        public const int Spacing = -8;
+        public const int DotScale = 25;
+
+        private static readonly Color InactiveColor = new Color(0.3f, 0.3f, 0.3f, 1);
+
+        protected override void Start()
         {
-            if (!Initialized)
-            {
-                InitializeButtons();
-                CreateIndicatorPrefabs();
-            }
+            if (!_layoutGroup)
+                _layoutGroup = transform.Find("Indicators").Find("LayoutGroup").gameObject;
             
             AddIndicators();
             RefreshButtons();
             StartIndicators();
-        }
-
-        private void InitializeButtons()
-        {
-            _leftButton = transform.Find("Previous Category Page Button(Clone)").GetComponent<HGButton>();
-            _rightButton = transform.Find("Next Category Page Button(Clone)").GetComponent<HGButton>();
-
-            if (!ButtonsInitialized)
-                return;
-
-            _leftButton.disablePointerClick = false;
-            _rightButton.disablePointerClick = false;
-
-            _leftButton.onClick.RemoveAllListeners();
-            _rightButton.onClick.RemoveAllListeners();
-
-            _leftButton.onClick.AddListener(Previous);
-            _rightButton.onClick.AddListener(Next);
-        }
-
-        private void CreateIndicatorPrefabs()
-        {
-            _indicatorHolder = new GameObject("Indicators", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(ContentSizeFitter));
-            _indicatorHolder.transform.SetParent(transform);
-
-            var horizontalLayoutGroup = _indicatorHolder.GetComponent<HorizontalLayoutGroup>();
-
-            horizontalLayoutGroup.spacing = Spacing;
-
-            horizontalLayoutGroup.childControlHeight = true;
-            horizontalLayoutGroup.childControlWidth = true;
-            horizontalLayoutGroup.childForceExpandHeight = true;
-            horizontalLayoutGroup.childForceExpandWidth = true;
-            horizontalLayoutGroup.childAlignment = TextAnchor.LowerCenter;
-
-            var fitter = _indicatorHolder.GetComponent<ContentSizeFitter>();
-
-            fitter.horizontalFit = ContentSizeFitter.FitMode.MinSize;
-            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-
-            var holderRectTransform = _indicatorHolder.GetComponent<RectTransform>();
-
-            holderRectTransform.anchorMin = new Vector2(0, 0.5f);
-            holderRectTransform.anchorMax = new Vector2(1, 0.6f);
-            holderRectTransform.sizeDelta = Vector2.zero;
-            holderRectTransform.anchoredPosition = new Vector2(0, -38);
-
-            _indicatorDot = new GameObject("Indicator Dot", typeof(RectTransform), typeof(LayoutElement), typeof(CanvasRenderer), typeof(Image), typeof(Button));
-            _indicatorDot.transform.SetParent(transform);
-            _indicatorDot.SetActive(false);
-
-            var image = _indicatorDot.GetComponent<Image>();
-            image.sprite = Assets.Load<Sprite>("assets/RiskOfOptions/IndicatorDot.png");
-            image.preserveAspect = true;
-
-            var dotRectTransform = _indicatorDot.GetComponent<RectTransform>();
             
-            dotRectTransform.pivot = Vector2.zero;
-            //dotRectTransform.localScale = new Vector3(0.7f, 0.7f, 1f);
+            //UpdateOutline(0);
+            SetPage(0);
+        }
 
-            var dotLayoutElement = _indicatorDot.GetComponent<LayoutElement>();
-
-            dotLayoutElement.minHeight = DotScale;
-
-            // _indicatorOutline = new GameObject("Indicator Outline", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-            // _indicatorOutline.transform.SetParent(transform);
-            // _indicatorOutline.SetActive(true);
-            //
-            // _indicatorOutline.GetComponent<Image>().sprite = Assets.Load<Sprite>("assets/RiskOfOptions/IndicatorOutline.png");
-            //
-            // var outlineRectTransform = _indicatorOutline.GetComponent<RectTransform>();
-            //
-            // outlineRectTransform.pivot = Vector2.zero;
-            // outlineRectTransform.sizeDelta = new Vector2(DotScale, DotScale);
-            // outlineRectTransform.anchorMin = new Vector2(0, 1);
-            // outlineRectTransform.anchorMax = new Vector2(0, 1);
+        protected override void LateUpdate()
+        {
+            base.LateUpdate();
+            
+            if (_lateInit)
+                return;
+            
+            //UpdateOutline(0);
+            SetPage(0);
+            _lateInit = true;
         }
 
         private void AddIndicators()
         {
+            if (_indicators != null)
+            {
+                foreach (var indicator in _indicators)
+                    DestroyImmediate(indicator);
+            }
+            
             _indicators = new GameObject[_pages];
 
             for (int i = 0; i < _pages; i++)
             {
-                var indicator = GameObject.Instantiate(_indicatorDot, _indicatorHolder.transform);
+                var indicator = Instantiate(indicatorPrefab, _layoutGroup.transform);
 
                 var button = indicator.GetComponent<Button>();
 
@@ -162,56 +102,33 @@ namespace RiskOfOptions.Components
 
         private void RefreshButtons()
         {
-            _leftButton.interactable = _currentPage - 1 >= 0;
-            _rightButton.interactable = _currentPage + 1 <= _pages - 1;
+            leftButton.interactable = _currentPage - 1 >= 0;
+            rightButton.interactable = _currentPage + 1 <= _pages - 1;
         }
 
         public void Previous()
         {
             if (_currentPage - 1 >= 0)
-            {
                 SetPage(_currentPage - 1);
-            }
         }
 
         public void Next()
         {
             if (_currentPage + 1 <= _pages - 1)
-            {
                 SetPage(_currentPage + 1);
-            }
         }
 
         private void StartIndicators()
         {
-            //_indicatorOutline.transform.SetAsLastSibling();
-
             for (int i = 0; i < _indicators.Length; i++)
             {
                 var image = _indicators[i].GetComponent<Image>();
 
-                image.color = i == 0 ? Color.white : InActiveColor;
+                image.color = i == 0 ? Color.white : InactiveColor;
             }
-        }
-
-        public override void OnBeginDrag(PointerEventData eventData)
-        {
-
-        }
-
-        public override void OnDrag(PointerEventData eventData)
-        {
             
-        }
-
-        public override void OnEndDrag(PointerEventData eventData)
-        {
-
-        }
-
-        public override void OnScroll(PointerEventData eventData)
-        {
-
+            //outline.SetActive(true);
+            //UpdateOutline(0);
         }
 
         internal void SetPage(int page)
@@ -239,50 +156,59 @@ namespace RiskOfOptions.Components
             RefreshButtons();
         }
 
+        private void UpdateOutline(int page)
+        {
+            var outlineTransform = outline.GetComponent<RectTransform>();
+            var indicatorTransform = _indicators[page].GetComponent<RectTransform>();
+            
+            outline.transform.SetParent(_indicators[page].transform);
+            outlineTransform.localPosition = Vector3.zero;
+            
+            outlineTransform.pivot = indicatorTransform.pivot;
+            outlineTransform.sizeDelta = new Vector2(DotScale, DotScale);
+
+            outlineTransform.position = indicatorTransform.position;
+        }
+
         private IEnumerator AnimMove(float newPos)
         {
-            double incrementPerAllPages = 1 / _pages - 1;
-            double incrementPerActualPages = 1 / (((float) _categories / 4) - 1);
-            
-            double differenceBetweenPages = ExtensionMethods.Abs(incrementPerAllPages - incrementPerActualPages);
-
-            double compensatedMax = ((incrementPerAllPages + differenceBetweenPages) * (_pages - 1)).RoundUpToDecimalPlace(3);
-            
-            float remappedPos = newPos.Remap(0, 1, 0, (float) compensatedMax);
-            
-            while (Mathf.Abs(horizontalNormalizedPosition - remappedPos) > 0.000001f)
+            while (Mathf.Abs(horizontalNormalizedPosition - newPos) > 0.001f)
             {
-                horizontalNormalizedPosition = Mathf.Lerp(horizontalNormalizedPosition, remappedPos, 6f * Time.deltaTime);
+                horizontalNormalizedPosition = Mathf.Lerp(horizontalNormalizedPosition, newPos, 6f * Time.deltaTime);
 
                 yield return new WaitForEndOfFrame();
             }
 
-            horizontalNormalizedPosition = remappedPos;
+            horizontalNormalizedPosition = newPos;
         }
 
         private IEnumerator SetIndicator(int page)
         {
             var image = _indicators[page].GetComponent<Image>();
 
-            // var indicatorRectTransform = _indicatorOutline.GetComponent<RectTransform>();
+            //var outlineTransform = outline.GetComponent<RectTransform>();
+            //var indicatorTransform = _indicators[page].GetComponent<RectTransform>();
 
-            // var newPos = _indicators[page].GetComponent<RectTransform>().position;
+            //var sizeDelta = indicatorTransform.sizeDelta;
+            //outlineTransform.sizeDelta = new Vector2(sizeDelta.x, sizeDelta.x);
+            
+            //var newPos = indicatorTransform.position;
 
-            while (!ExtensionMethods.CloseEnough(image.color, Color.white))
+            while (!ExtensionMethods.CloseEnough(image.color, Color.white) )
             {
-                // indicatorRectTransform.position = Vector2.Lerp(indicatorRectTransform.position, newPos, 10f * Time.deltaTime);
+                //outlineTransform.position = Vector2.Lerp(outlineTransform.position, newPos, 10f * Time.deltaTime);
                 image.color = Color.Lerp(image.color, Color.white, 10f * Time.deltaTime);
                 
                 yield return new WaitForEndOfFrame();
             }
             
-            // indicatorRectTransform.position = newPos;
+            //outlineTransform.position = newPos;
         }
 
         private IEnumerator IndicatorColor(int ignore)
         {
             Color[] colors = new Color[_indicators.Length];
-            while (!ExtensionMethods.CloseEnough(colors, InActiveColor))
+            while (!ExtensionMethods.CloseEnough(colors, InactiveColor))
             {
                 
                 for (int i = 0; i < _indicators.Length; i++)
@@ -292,12 +218,49 @@ namespace RiskOfOptions.Components
                 
                     var image = _indicators[i].GetComponent<Image>();
 
-                    colors[i] = Color.Lerp(image.color, InActiveColor, 10f * Time.deltaTime);
+                    colors[i] = Color.Lerp(image.color, InactiveColor, 10f * Time.deltaTime);
                     image.color = colors[i];
                 }
 
                 yield return new WaitForEndOfFrame();
             }
+        }
+
+        internal void FixExtra()
+        {
+            int extraButtons = _pages * 4 - _categories;
+
+            while (extraButtons != 0)
+            {
+                GameObject blank = Instantiate(emptyPrefab, categoryTransform);
+                
+                blank.transform.SetAsLastSibling();
+                blank.AddComponent<LayoutElement>().preferredWidth = 200;
+                
+                DestroyImmediate(blank.GetComponent<HGButton>());
+                DestroyImmediate(blank.GetComponent<LanguageTextMeshController>());
+                DestroyImmediate(blank.GetComponent<Image>());
+                DestroyImmediate(blank.GetComponent<ButtonSkinController>());
+                
+                for (int i = 0; i < blank.transform.childCount; i++)
+                    blank.transform.GetChild(i).gameObject.SetActive(false);
+                
+                categoryButtons.Add(blank);
+                
+                extraButtons--;
+            }
+        }
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            
+            AddIndicators();
+            RefreshButtons();
+            StartIndicators();
+            
+            //UpdateOutline(0);
+            SetPage(0);
         }
 
         protected override void OnDisable()
@@ -306,10 +269,26 @@ namespace RiskOfOptions.Components
 
             foreach (var indicator in _indicators)
                 DestroyImmediate(indicator);
+        }
+        
+        public override void OnBeginDrag(PointerEventData eventData)
+        {
+
+        }
+
+        public override void OnDrag(PointerEventData eventData)
+        {
             
-            DestroyImmediate(_indicatorHolder);
-            DestroyImmediate(_indicatorDot);
-            // DestroyImmediate(_indicatorOutline);
+        }
+
+        public override void OnEndDrag(PointerEventData eventData)
+        {
+
+        }
+
+        public override void OnScroll(PointerEventData eventData)
+        {
+
         }
     }
 }

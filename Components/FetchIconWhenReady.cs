@@ -1,6 +1,5 @@
-﻿using System.Collections;
+﻿using RiskOfOptions.Resources;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.UI;
 
 namespace RiskOfOptions.Components
@@ -12,48 +11,22 @@ namespace RiskOfOptions.Components
 
         private void Awake()
         {
-            _image = GetComponent<UnityEngine.UI.Image>();
+            _image = GetComponent<Image>();
         }
 
         private void Start()
         {
-            _image.sprite = Thunderstore.defaultIcon;
+            _image.sprite = Assets.Load<Sprite>("assets/RiskOfOptions/missing_icon.png");
 
-            StartCoroutine(SetTexture());
+            SetTexture();
         }
 
-        private void Update()
+        private void SetTexture()
         {
+            var icon = ModSettingsManager.OptionCollection[modGuid].icon;
             
-
-        }
-
-        private IEnumerator SetTexture()
-        {
-            yield return new WaitUntil(() => Thunderstore.doneFetching);
-
-            var modIconInfo = Thunderstore.GetModIcon(modGuid);
-
-            //Debug.Log($"modGuid: {modIconInfo.modGuid}, IconPath: {modIconInfo.IconPath}, Icon {modIconInfo.Icon}");
-
-            if (!modIconInfo.Icon && modIconInfo.IconPath != string.Empty)
-            {
-                UnityWebRequest www = new UnityWebRequest($"file://{modIconInfo.IconPath}");
-
-                DownloadHandlerTexture downloadHandler = new DownloadHandlerTexture(true);
-
-                www.downloadHandler = downloadHandler;
-
-                www.SendWebRequest();
-
-                yield return new WaitUntil(() => downloadHandler.isDone);
-
-                _image.sprite = Sprite.Create(downloadHandler.texture, new Rect(0f, 0f, downloadHandler.texture.width, downloadHandler.texture.height), new Vector2(0.5f, 0.5f));
-            }
-            else if (modIconInfo.Icon)
-            {
-                _image.sprite = modIconInfo.Icon;
-            }
+            if (icon)
+                _image.sprite = icon;
         }
     }
 }

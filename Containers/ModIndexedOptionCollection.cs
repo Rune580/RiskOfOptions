@@ -26,7 +26,16 @@ namespace RiskOfOptions.Containers
             return _optionCollections[modGuid].GetOption(identifier);
         }
 
-        internal OptionCollection this[string modGuid] => _optionCollections[modGuid];
+        internal bool ContainsModGuid(string modGuid)
+        {
+            return _optionCollections.ContainsKey(modGuid);
+        }
+
+        internal OptionCollection this[string modGuid]
+        {
+            get => _optionCollections[modGuid];
+            set => _optionCollections[modGuid] = value;
+        }
 
         internal int Count => _optionCollections.Count;
         

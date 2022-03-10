@@ -82,6 +82,8 @@ namespace RiskOfOptions
             ModSettingsManager.AddOption(new CheckBoxOption(bool4));
             ModSettingsManager.AddOption(new CheckBoxOption(bool5));
             ModSettingsManager.AddOption(new CheckBoxOption(bool6));
+            
+            ModSettingsManager.SetModDescription("Ligma dude balls");
         }
 
         private void ConfigEntryKeyBindTest(object sender, EventArgs e)
@@ -97,11 +99,6 @@ namespace RiskOfOptions
         private void ConfigEntryFloatTest(object sender, EventArgs e)
         {
             Debug.Log($"Config float event invoked args {e}");
-        }
-
-        private void DoVisibility(bool lig)
-        {
-            ModSettingsManager.SetVisibility("Test KeyBind", "Testing New System", lig);
         }
         
         private void OverrideTest(bool lig)

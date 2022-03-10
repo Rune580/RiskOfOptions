@@ -16,8 +16,6 @@ namespace RiskOfOptions
 {
     internal static class SettingsModifier
     {
-        internal const string HeaderToken = "RISK_OF_OPTIONS_MOD_OPTIONS_HEADER_BUTTON_TEXT";
-        
         public static void Init()
         {
             GameObject pauseMenuPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/UI/PauseScreen.prefab").WaitForCompletion();
@@ -28,7 +26,7 @@ namespace RiskOfOptions
             pauseMenuPrefab.GetComponentInChildren<PauseScreenController>().settingsPanelPrefab
                 .AddComponent<ModOptionPanelController>();
             
-            LanguageAPI.Add(HeaderToken, "MOD OPTIONS");
+            LanguageAPI.Add(LanguageTokens.HeaderToken, "MOD OPTIONS");
             
             RuntimePrefabManager.Register<ModOptionsPanelPrefab>();
             RuntimePrefabManager.Register<CheckBoxPrefab>();

@@ -22,6 +22,8 @@ namespace RiskOfOptions
         public static string OptionInputField =
             $"{ModSettingsManager.StartingText.ToUpper()}_OPTION_INPUT_FIELD_TEXT_TOKEN";
 
+        public const string HeaderToken = "RISK_OF_OPTIONS_MOD_OPTIONS_HEADER_BUTTON_TEXT";
+
         public static void Register()
         {
             LanguageAPI.Add(OptionRebindDialogTitle, "Rebind Control...");

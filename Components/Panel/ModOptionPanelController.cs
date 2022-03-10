@@ -15,6 +15,7 @@ using RoR2.UI.SkinControllers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 #pragma warning disable 618
 
@@ -30,11 +31,8 @@ namespace RiskOfOptions.Components.Panel
         private GameObject _sliderPrefab;
         private GameObject _stepSliderPrefab;
         private GameObject _keyBindPrefab;
-        private GameObject _dropDownPrefab;
-        private GameObject _inputFieldPrefab;
-
-        private GameObject _leftButton;
-        private GameObject _rightButton;
+        // private GameObject _dropDownPrefab;
+        // private GameObject _inputFieldPrefab;
 
         private MPButton _revertButton;
 
@@ -88,203 +86,203 @@ namespace RiskOfOptions.Components.Panel
             _stepSliderPrefab = RuntimePrefabManager.Get<StepSliderPrefab>().StepSlider;
             _keyBindPrefab = RuntimePrefabManager.Get<KeyBindPrefab>().KeyBind;
             
-            _dropDownPrefab = GameObject.Instantiate(subPanelArea.Find("SettingsSubPanel, Video").Find("Scroll View").Find("Viewport").Find("VerticalLayout").Find("Option, Resolution").gameObject);
-            _inputFieldPrefab = GameObject.Instantiate(_checkBoxPrefab);
-
-            _dropDownPrefab.SetActive(false);
-
-            #region DropDown Prefab Setup
-
-            GameObject.DestroyImmediate(_dropDownPrefab.transform.Find("CarouselRect").GetComponent<ResolutionControl>()); // Removing this entirely since it seems to mostly be made for resolution stuff.
-            GameObject.DestroyImmediate(_dropDownPrefab.transform.Find("CarouselRect").Find("RefreshRateDropdown").gameObject); // I only really need one Drop down element.
-            GameObject.DestroyImmediate(_dropDownPrefab.transform.Find("CarouselRect").Find("ApplyButton").gameObject); // I think most use cases don't need an apply button. If I think otherwise later I can make this optional
-            GameObject.DestroyImmediate(_dropDownPrefab.GetComponent<SelectableDescriptionUpdater>());
-            GameObject.DestroyImmediate(_dropDownPrefab.GetComponent<PanelSkinController>());
-            GameObject.DestroyImmediate(_dropDownPrefab.GetComponent<Image>());
-
-
-            GameObject.Instantiate(_checkBoxPrefab.transform.Find("BaseOutline").gameObject, _dropDownPrefab.transform);
-            GameObject dropDownHoverOutline = GameObject.Instantiate(_checkBoxPrefab.transform.Find("HoverOutline").gameObject, _dropDownPrefab.transform);
-
-            HGButton dropDownButton = _dropDownPrefab.AddComponent<HGButton>(_checkBoxPrefab.GetComponent<HGButton>());
-
-            dropDownButton.imageOnHover = dropDownHoverOutline.GetComponent<Image>();
-
-            var dropDownImage = _dropDownPrefab.AddComponent(_checkBoxPrefab.GetComponent<Image>());
-
-            _dropDownPrefab.AddComponent<ButtonSkinController>(_checkBoxPrefab.GetComponent<ButtonSkinController>());
-
-            var dropDownTargetGraphic = dropDownImage;
-
-            dropDownButton.targetGraphic = dropDownTargetGraphic;
-            dropDownButton.navigation = new Navigation();
-
-            dropDownButton.onClick.RemoveAllListeners();
-
-            _dropDownPrefab.AddComponent<DropDownController>().nameLabel = _dropDownPrefab.transform.Find("Text, Name").GetComponent<LanguageTextMeshController>();
-
-            var dropDownGameObject = _dropDownPrefab.transform.Find("CarouselRect").Find("ResolutionDropdown").gameObject;
-
-            dropDownGameObject.name = "Dropdown";
-
-            var dropDownLayoutElement = dropDownGameObject.GetComponent<LayoutElement>();
-            dropDownLayoutElement.minWidth = 300;
-            dropDownLayoutElement.preferredWidth = 300;
-
-            if (!RooDropdown.CheckMarkSprite)
-            {
-                RooDropdown.CheckMarkSprite = dropDownGameObject.transform.Find("Template").Find("Viewport").Find("Content").Find("Item").Find("Item Checkmark").GetComponent<Image>().sprite;
-            }
-
-            GameObject.DestroyImmediate(dropDownGameObject.GetComponent<MPDropdown>());
-            GameObject.DestroyImmediate(dropDownGameObject.transform.Find("Template").gameObject);
-
-            dropDownGameObject.AddComponent<RooDropdown>().colors = _checkBoxPrefab.GetComponent<HGButton>().colors;
-
-
-            #endregion
-
-            #region InputField Setup
-
-            _inputFieldPrefab.SetActive(false);
-
-            _inputFieldPrefab.name = "Input Field";
-
-            GameObject.DestroyImmediate(_inputFieldPrefab.GetComponentInChildren<CarouselController>());
-            //GameObject.DestroyImmediate(_inputFieldPrefab.GetComponentInChildren<ButtonSkinController>());
-            //GameObject.DestroyImmediate(_inputFieldPrefab.GetComponentInChildren<HGButton>());
-            GameObject.DestroyImmediate(_inputFieldPrefab.transform.Find("CarouselRect").gameObject);
-
-            _inputFieldPrefab.AddComponent<InputFieldController>();
-
-            ColorBlock inputColors = _inputFieldPrefab.GetComponent<HGButton>().colors;
-
-            GameObject textPreview = new GameObject("Text Preview", typeof(RectTransform), typeof(HorizontalLayoutGroup));
-
-            textPreview.transform.SetParent(_inputFieldPrefab.transform);
-
-            var textPreviewHorizontalLayoutGroup = textPreview.GetComponent<HorizontalLayoutGroup>();
-
-            textPreviewHorizontalLayoutGroup.childAlignment = TextAnchor.MiddleRight;
-            textPreviewHorizontalLayoutGroup.padding = new RectOffset(8, 8, 0, 0);
-            textPreviewHorizontalLayoutGroup.spacing = 8;
-            textPreviewHorizontalLayoutGroup.childForceExpandWidth = false;
-            textPreviewHorizontalLayoutGroup.childForceExpandHeight = false;
-
-            var textPreviewRectTransform = textPreview.GetComponent<RectTransform>();
-
-            textPreviewRectTransform.anchorMin = new Vector2(0, 0);
-            textPreviewRectTransform.anchorMax = new Vector2(1, 1);
-            textPreviewRectTransform.pivot = new Vector2(1, 0.5f);
-            textPreviewRectTransform.anchoredPosition = new Vector2(-6, 0);
-
-
-            GameObject placeHolderTextArea = new GameObject("Text Area", typeof(RectTransform), typeof(RectMask2D), typeof(CanvasRenderer), typeof(LayoutElement), typeof(GraphicRaycaster));
-
-            placeHolderTextArea.transform.SetParent(textPreview.transform);
-
-            placeHolderTextArea.AddComponent<Image>(_checkBoxPrefab.GetComponent<Image>());
-
-            var placeHolderLayoutElement = placeHolderTextArea.GetComponent<LayoutElement>();
-
-            placeHolderLayoutElement.minWidth = 256;
-            placeHolderLayoutElement.minHeight = 48;
-            placeHolderLayoutElement.preferredWidth = 256;
-
-            placeHolderTextArea.name = "Text Area";
-
-
-            GameObject textPlaceHolder = new GameObject("Text", typeof(RectTransform), typeof(RectMask2D), typeof(CanvasRenderer));
-
-            textPlaceHolder.transform.SetParent(placeHolderTextArea.transform);
-
-            textPlaceHolder.AddComponent<HGTextMeshProUGUI>(_inputFieldPrefab.transform.Find("ButtonText").GetComponent<HGTextMeshProUGUI>());
-
-            textPlaceHolder.AddComponent<LanguageTextMeshController>();
-
-
-            var textPlaceHolderRectTransform = textPlaceHolder.GetComponent<RectTransform>();
-
-            textPlaceHolderRectTransform.anchorMin = new Vector2(0.03f, 0.5f);
-            textPlaceHolderRectTransform.anchorMax = new Vector2(1, 0.5f);
-            textPlaceHolderRectTransform.sizeDelta = new Vector2(0, 100);
-
-            textPlaceHolder.name = "Text";
-
-            GameObject textCanvas = new GameObject("Text Overlay", typeof(RectTransform), typeof(RectMask2D), typeof(Canvas), typeof(GraphicRaycaster), typeof(CanvasGroup));
-
-            textCanvas.SetActive(false);
-            textCanvas.transform.SetParent(_inputFieldPrefab.transform);
-
-            //var textCanvasImage = textCanvas.AddComponent<Image>(_inputFieldPrefab.GetComponent<Image>());
-
-            //textCanvas.AddComponent<TranslucentImage>(Prefabs.MoPanelPrefab.transform.Find("Scroll View").Find("BlurPanel").gameObject.GetComponent<TranslucentImage>());
-
-            //textCanvasImage.color = inputColors.normalColor;
-
-            textCanvas.AddComponent<RooInputFieldOverlay>();
-
-            var textCanvasRectTransform = textCanvas.GetComponent<RectTransform>();
-
-            textCanvasRectTransform.anchoredPosition = new Vector2(0, -50);
-            textCanvasRectTransform.sizeDelta = new Vector2(525, 48);
-
-            textCanvas.name = "Text Overlay";
-
-            //GameObject.Instantiate(_modOptionsPanelPrefab.OptionsPanel.transform.Find("Scroll View").Find("BlurPanel").gameObject, textCanvas.transform);
-            //GameObject.Instantiate(_modOptionsPanelPrefab.OptionsPanel.transform.Find("Scroll View").Find("ImagePanel").gameObject, textCanvas.transform);
-
-            //GameObject.Instantiate(_inputFieldPrefab.transform.Find("BaseOutline"), textCanvas.transform);
-
-
-            GameObject textArea = new GameObject("Text Area", typeof(RectTransform), typeof(RectMask2D), typeof(CanvasRenderer), typeof(GraphicRaycaster));
-
-            textArea.transform.SetParent(textCanvas.transform);
-
-            var textAreaRectTransform = textArea.GetComponent<RectTransform>();
-
-            textAreaRectTransform.anchorMin = new Vector2(0, 0);
-            textAreaRectTransform.anchorMax = new Vector2(1, 1);
-            textAreaRectTransform.anchoredPosition = Vector2.zero;
-            textAreaRectTransform.sizeDelta = Vector2.zero;
-
-            var textAreaImage = textArea.AddComponent<Image>(_inputFieldPrefab.GetComponent<Image>());
-
-            textAreaImage.color = inputColors.normalColor;
-
-            textArea.name = "Text Area";
-
-
-            GameObject inputText = new GameObject("Text", typeof(RectTransform), typeof(CanvasRenderer)); 
-
-            inputText.transform.SetParent(textAreaRectTransform.transform);
-
-            inputText.AddComponent<HGTextMeshProUGUI>(_inputFieldPrefab.transform.Find("ButtonText").GetComponent<HGTextMeshProUGUI>());
-
-            var inputTextRectTransform = inputText.GetComponent<RectTransform>();
-
-            inputTextRectTransform.anchorMin = new Vector2(0.02f, 0);
-            inputTextRectTransform.anchorMax = new Vector2(0.98f, 1);
-            inputTextRectTransform.anchoredPosition = Vector2.zero; 
-            inputTextRectTransform.sizeDelta = Vector2.zero;
-
-            inputText.name = "Text";
-
-            var tmpInputField = placeHolderTextArea.AddComponent<RooInputField>();
-
-            tmpInputField.overlay = textCanvas;
-
-            tmpInputField.textViewport = textAreaRectTransform;
-            tmpInputField.textComponent = inputText.GetComponent<HGTextMeshProUGUI>();
-
-            tmpInputField.colors = inputColors;
-
-
-            //textCanvas.transform.SetAsFirstSibling();
-            //textPreview.transform.SetAsFirstSibling();
-            
-
-            #endregion
+            //_dropDownPrefab = GameObject.Instantiate(subPanelArea.Find("SettingsSubPanel, Video").Find("Scroll View").Find("Viewport").Find("VerticalLayout").Find("Option, Resolution").gameObject);
+            //_inputFieldPrefab = GameObject.Instantiate(_checkBoxPrefab);
+
+            //_dropDownPrefab.SetActive(false);
+
+            // #region DropDown Prefab Setup
+            //
+            // GameObject.DestroyImmediate(_dropDownPrefab.transform.Find("CarouselRect").GetComponent<ResolutionControl>()); // Removing this entirely since it seems to mostly be made for resolution stuff.
+            // GameObject.DestroyImmediate(_dropDownPrefab.transform.Find("CarouselRect").Find("RefreshRateDropdown").gameObject); // I only really need one Drop down element.
+            // GameObject.DestroyImmediate(_dropDownPrefab.transform.Find("CarouselRect").Find("ApplyButton").gameObject); // I think most use cases don't need an apply button. If I think otherwise later I can make this optional
+            // GameObject.DestroyImmediate(_dropDownPrefab.GetComponent<SelectableDescriptionUpdater>());
+            // GameObject.DestroyImmediate(_dropDownPrefab.GetComponent<PanelSkinController>());
+            // GameObject.DestroyImmediate(_dropDownPrefab.GetComponent<Image>());
+            //
+            //
+            // GameObject.Instantiate(_checkBoxPrefab.transform.Find("BaseOutline").gameObject, _dropDownPrefab.transform);
+            // GameObject dropDownHoverOutline = GameObject.Instantiate(_checkBoxPrefab.transform.Find("HoverOutline").gameObject, _dropDownPrefab.transform);
+            //
+            // HGButton dropDownButton = _dropDownPrefab.AddComponent<HGButton>(_checkBoxPrefab.GetComponent<HGButton>());
+            //
+            // dropDownButton.imageOnHover = dropDownHoverOutline.GetComponent<Image>();
+            //
+            // var dropDownImage = _dropDownPrefab.AddComponent(_checkBoxPrefab.GetComponent<Image>());
+            //
+            // _dropDownPrefab.AddComponent<ButtonSkinController>(_checkBoxPrefab.GetComponent<ButtonSkinController>());
+            //
+            // var dropDownTargetGraphic = dropDownImage;
+            //
+            // dropDownButton.targetGraphic = dropDownTargetGraphic;
+            // dropDownButton.navigation = new Navigation();
+            //
+            // dropDownButton.onClick.RemoveAllListeners();
+            //
+            // _dropDownPrefab.AddComponent<DropDownController>().nameLabel = _dropDownPrefab.transform.Find("Text, Name").GetComponent<LanguageTextMeshController>();
+            //
+            // var dropDownGameObject = _dropDownPrefab.transform.Find("CarouselRect").Find("ResolutionDropdown").gameObject;
+            //
+            // dropDownGameObject.name = "Dropdown";
+            //
+            // var dropDownLayoutElement = dropDownGameObject.GetComponent<LayoutElement>();
+            // dropDownLayoutElement.minWidth = 300;
+            // dropDownLayoutElement.preferredWidth = 300;
+            //
+            // if (!RooDropdown.CheckMarkSprite)
+            // {
+            //     RooDropdown.CheckMarkSprite = dropDownGameObject.transform.Find("Template").Find("Viewport").Find("Content").Find("Item").Find("Item Checkmark").GetComponent<Image>().sprite;
+            // }
+            //
+            // GameObject.DestroyImmediate(dropDownGameObject.GetComponent<MPDropdown>());
+            // GameObject.DestroyImmediate(dropDownGameObject.transform.Find("Template").gameObject);
+            //
+            // dropDownGameObject.AddComponent<RooDropdown>().colors = _checkBoxPrefab.GetComponent<HGButton>().colors;
+            //
+            //
+            // #endregion
+            //
+            // #region InputField Setup
+            //
+            // _inputFieldPrefab.SetActive(false);
+            //
+            // _inputFieldPrefab.name = "Input Field";
+            //
+            // GameObject.DestroyImmediate(_inputFieldPrefab.GetComponentInChildren<CarouselController>());
+            // //GameObject.DestroyImmediate(_inputFieldPrefab.GetComponentInChildren<ButtonSkinController>());
+            // //GameObject.DestroyImmediate(_inputFieldPrefab.GetComponentInChildren<HGButton>());
+            // GameObject.DestroyImmediate(_inputFieldPrefab.transform.Find("CarouselRect").gameObject);
+            //
+            // _inputFieldPrefab.AddComponent<InputFieldController>();
+            //
+            // ColorBlock inputColors = _inputFieldPrefab.GetComponent<HGButton>().colors;
+            //
+            // GameObject textPreview = new GameObject("Text Preview", typeof(RectTransform), typeof(HorizontalLayoutGroup));
+            //
+            // textPreview.transform.SetParent(_inputFieldPrefab.transform);
+            //
+            // var textPreviewHorizontalLayoutGroup = textPreview.GetComponent<HorizontalLayoutGroup>();
+            //
+            // textPreviewHorizontalLayoutGroup.childAlignment = TextAnchor.MiddleRight;
+            // textPreviewHorizontalLayoutGroup.padding = new RectOffset(8, 8, 0, 0);
+            // textPreviewHorizontalLayoutGroup.spacing = 8;
+            // textPreviewHorizontalLayoutGroup.childForceExpandWidth = false;
+            // textPreviewHorizontalLayoutGroup.childForceExpandHeight = false;
+            //
+            // var textPreviewRectTransform = textPreview.GetComponent<RectTransform>();
+            //
+            // textPreviewRectTransform.anchorMin = new Vector2(0, 0);
+            // textPreviewRectTransform.anchorMax = new Vector2(1, 1);
+            // textPreviewRectTransform.pivot = new Vector2(1, 0.5f);
+            // textPreviewRectTransform.anchoredPosition = new Vector2(-6, 0);
+            //
+            //
+            // GameObject placeHolderTextArea = new GameObject("Text Area", typeof(RectTransform), typeof(RectMask2D), typeof(CanvasRenderer), typeof(LayoutElement), typeof(GraphicRaycaster));
+            //
+            // placeHolderTextArea.transform.SetParent(textPreview.transform);
+            //
+            // placeHolderTextArea.AddComponent<Image>(_checkBoxPrefab.GetComponent<Image>());
+            //
+            // var placeHolderLayoutElement = placeHolderTextArea.GetComponent<LayoutElement>();
+            //
+            // placeHolderLayoutElement.minWidth = 256;
+            // placeHolderLayoutElement.minHeight = 48;
+            // placeHolderLayoutElement.preferredWidth = 256;
+            //
+            // placeHolderTextArea.name = "Text Area";
+            //
+            //
+            // GameObject textPlaceHolder = new GameObject("Text", typeof(RectTransform), typeof(RectMask2D), typeof(CanvasRenderer));
+            //
+            // textPlaceHolder.transform.SetParent(placeHolderTextArea.transform);
+            //
+            // textPlaceHolder.AddComponent<HGTextMeshProUGUI>(_inputFieldPrefab.transform.Find("ButtonText").GetComponent<HGTextMeshProUGUI>());
+            //
+            // textPlaceHolder.AddComponent<LanguageTextMeshController>();
+            //
+            //
+            // var textPlaceHolderRectTransform = textPlaceHolder.GetComponent<RectTransform>();
+            //
+            // textPlaceHolderRectTransform.anchorMin = new Vector2(0.03f, 0.5f);
+            // textPlaceHolderRectTransform.anchorMax = new Vector2(1, 0.5f);
+            // textPlaceHolderRectTransform.sizeDelta = new Vector2(0, 100);
+            //
+            // textPlaceHolder.name = "Text";
+            //
+            // GameObject textCanvas = new GameObject("Text Overlay", typeof(RectTransform), typeof(RectMask2D), typeof(Canvas), typeof(GraphicRaycaster), typeof(CanvasGroup));
+            //
+            // textCanvas.SetActive(false);
+            // textCanvas.transform.SetParent(_inputFieldPrefab.transform);
+            //
+            // //var textCanvasImage = textCanvas.AddComponent<Image>(_inputFieldPrefab.GetComponent<Image>());
+            //
+            // //textCanvas.AddComponent<TranslucentImage>(Prefabs.MoPanelPrefab.transform.Find("Scroll View").Find("BlurPanel").gameObject.GetComponent<TranslucentImage>());
+            //
+            // //textCanvasImage.color = inputColors.normalColor;
+            //
+            // textCanvas.AddComponent<RooInputFieldOverlay>();
+            //
+            // var textCanvasRectTransform = textCanvas.GetComponent<RectTransform>();
+            //
+            // textCanvasRectTransform.anchoredPosition = new Vector2(0, -50);
+            // textCanvasRectTransform.sizeDelta = new Vector2(525, 48);
+            //
+            // textCanvas.name = "Text Overlay";
+            //
+            // //GameObject.Instantiate(_modOptionsPanelPrefab.OptionsPanel.transform.Find("Scroll View").Find("BlurPanel").gameObject, textCanvas.transform);
+            // //GameObject.Instantiate(_modOptionsPanelPrefab.OptionsPanel.transform.Find("Scroll View").Find("ImagePanel").gameObject, textCanvas.transform);
+            //
+            // //GameObject.Instantiate(_inputFieldPrefab.transform.Find("BaseOutline"), textCanvas.transform);
+            //
+            //
+            // GameObject textArea = new GameObject("Text Area", typeof(RectTransform), typeof(RectMask2D), typeof(CanvasRenderer), typeof(GraphicRaycaster));
+            //
+            // textArea.transform.SetParent(textCanvas.transform);
+            //
+            // var textAreaRectTransform = textArea.GetComponent<RectTransform>();
+            //
+            // textAreaRectTransform.anchorMin = new Vector2(0, 0);
+            // textAreaRectTransform.anchorMax = new Vector2(1, 1);
+            // textAreaRectTransform.anchoredPosition = Vector2.zero;
+            // textAreaRectTransform.sizeDelta = Vector2.zero;
+            //
+            // var textAreaImage = textArea.AddComponent<Image>(_inputFieldPrefab.GetComponent<Image>());
+            //
+            // textAreaImage.color = inputColors.normalColor;
+            //
+            // textArea.name = "Text Area";
+            //
+            //
+            // GameObject inputText = new GameObject("Text", typeof(RectTransform), typeof(CanvasRenderer)); 
+            //
+            // inputText.transform.SetParent(textAreaRectTransform.transform);
+            //
+            // inputText.AddComponent<HGTextMeshProUGUI>(_inputFieldPrefab.transform.Find("ButtonText").GetComponent<HGTextMeshProUGUI>());
+            //
+            // var inputTextRectTransform = inputText.GetComponent<RectTransform>();
+            //
+            // inputTextRectTransform.anchorMin = new Vector2(0.02f, 0);
+            // inputTextRectTransform.anchorMax = new Vector2(0.98f, 1);
+            // inputTextRectTransform.anchoredPosition = Vector2.zero; 
+            // inputTextRectTransform.sizeDelta = Vector2.zero;
+            //
+            // inputText.name = "Text";
+            //
+            // var tmpInputField = placeHolderTextArea.AddComponent<RooInputField>();
+            //
+            // tmpInputField.overlay = textCanvas;
+            //
+            // tmpInputField.textViewport = textAreaRectTransform;
+            // tmpInputField.textComponent = inputText.GetComponent<HGTextMeshProUGUI>();
+            //
+            // tmpInputField.colors = inputColors;
+            //
+            //
+            // //textCanvas.transform.SetAsFirstSibling();
+            // //textPreview.transform.SetAsFirstSibling();
+            //
+            //
+            // #endregion
 
             // if (!RooDropdown.CheckBoxPrefab)
             // {
@@ -296,31 +294,6 @@ namespace RiskOfOptions.Components.Panel
             //     RooDropdown.PanelPrefab = _modOptionsPanelPrefab.OptionsPanel;
             // }
 
-            _leftButton = GameObject.Instantiate(_panel.EmptyButton);
-            GameObject.DestroyImmediate(_leftButton.GetComponent<LayoutElement>());
-
-            var leftButtonRectTransform = _leftButton.GetComponent<RectTransform>();
-            leftButtonRectTransform.sizeDelta = new Vector2(64, 64);
-            leftButtonRectTransform.anchoredPosition = new Vector2(60, -54);
-
-            _leftButton.GetComponentInChildren<LanguageTextMeshController>().token = LanguageTokens.LeftPageButton;
-
-            var leftButtonText = _leftButton.GetComponentInChildren<HGTextMeshProUGUI>();
-            leftButtonText.alignment = TextAlignmentOptions.Midline;
-            leftButtonText.enableAutoSizing = false;
-            leftButtonText.fontSize = 72;
-
-            _rightButton = GameObject.Instantiate(_leftButton);
-
-            _rightButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(1064, -54);
-
-            _rightButton.GetComponentInChildren<LanguageTextMeshController>().token = LanguageTokens.RightPageButton;
-
-            _leftButton.name = "Previous Category Page Button";
-            _rightButton.name = "Next Category Page Button";
-
-            _leftButton.SetActive(false);
-            _rightButton.SetActive(false);
             _checkBoxPrefab.SetActive(false);
             _sliderPrefab.SetActive(false);
             _stepSliderPrefab.SetActive(false);
@@ -341,7 +314,7 @@ namespace RiskOfOptions.Components.Panel
             GameObject modOptionsHeaderButton = Instantiate(_panel.ModOptionsHeaderButton, headerArea);
 
             modOptionsHeaderButton.name = "GenericHeaderButton (Mod Options)";
-            modOptionsHeaderButton.GetComponentInChildren<LanguageTextMeshController>().token = SettingsModifier.HeaderToken;
+            modOptionsHeaderButton.GetComponentInChildren<LanguageTextMeshController>().token = LanguageTokens.HeaderToken;
             modOptionsHeaderButton.GetComponentInChildren<HGButton>().onClick.RemoveAllListeners();
             modOptionsHeaderButton.GetComponentInChildren<HGButton>().onClick.AddListener(delegate ()
             {
@@ -433,8 +406,9 @@ namespace RiskOfOptions.Components.Panel
 
             HGHeaderNavigationController navigationController = categoriesObject.GetComponent<HGHeaderNavigationController>();
             
-            bool existingCategory = _panel.CategoryHeader.GetComponentsInChildren<HGButton>().Length > 0;
-            if (_panel.CategoryHeader.activeSelf || _panel.ModOptionsPanel.activeSelf || _panel.ModOptionsDescriptionPanel.activeSelf || existingCategory)
+            CategoryScrollRect categoryScrollRect = _panel.CategoryHeader.GetComponentInChildren<CategoryScrollRect>();
+
+            if (_panel.CategoryHeader.activeSelf || _panel.ModOptionsPanel.activeSelf || _panel.ModOptionsDescriptionPanel.activeSelf || categoryScrollRect.categoryButtons.Count > 0)
                 UnloadExistingCategoryButtons();
 
             if (_panel.ModDescriptionPanel.activeSelf || !_panel.CategoryHeader.activeSelf || !_panel.ModOptionsPanel.activeSelf || !_panel.ModOptionsDescriptionPanel.activeSelf)
@@ -449,12 +423,11 @@ namespace RiskOfOptions.Components.Panel
 
             List<HGHeaderNavigationController.Header> headers = new List<HGHeaderNavigationController.Header>();
             navigationController.currentHeaderIndex = 0;
-
-            var categoryScrollRect = _panel.CategoryHeader.GetComponentInChildren<CategoryScrollRect>();
+            
             categoryScrollRect.Categories = collection.CategoryCount;
 
-            var previousPageButton = Instantiate(_leftButton, _panel.CategoryHeader.transform.Find("Scroll View"));
-            previousPageButton.SetActive(true);
+            _panel.CategoryLeftButton.SetActive(true);
+            _panel.CategoryLeftButton.transform.SetSiblingIndex(_panel.CategoryPageIndicators.transform.GetSiblingIndex() - 1);
 
             for (int i = 0; i < collection.CategoryCount; i++)
             {
@@ -487,19 +460,19 @@ namespace RiskOfOptions.Components.Panel
                     tmpHeaderText = newCategoryButton.GetComponentInChildren<HGTextMeshProUGUI>(),
                     headerRoot = null
                 };
+                
+                categoryScrollRect.categoryButtons.Add(newCategoryButton);
 
                 headers.Add(header);
             }
+            categoryScrollRect.SetPage(0);
+            categoryScrollRect.FixExtra();
+                
             navigationController.headers = headers.ToArray();
-
             navigationController.InvokeMethod("RebuildHeaders");
 
-            var nextPageButton = Instantiate(_rightButton, _panel.CategoryHeader.transform.Find("Scroll View"));
-
-            //nextPageButton.transform.SetAsLastSibling();
-            nextPageButton.SetActive(true);
-
-            categoryScrollRect.Init();
+            _panel.CategoryRightButton.SetActive(true);
+            _panel.CategoryRightButton.transform.SetAsLastSibling();
 
             LoadOptionListFromCategory(collection.ModGuid, navigationController.currentHeaderIndex, navigationController.headers.Length);
         }
@@ -555,7 +528,7 @@ namespace RiskOfOptions.Components.Panel
                 var buttonComponent = button.GetComponentInChildren<HGButton>();
                 if (buttonComponent)
                 {
-                    button.GetComponentInChildren<HGButton>().hoverToken = option.GetNameToken();
+                    button.GetComponentInChildren<HGButton>().hoverToken = option.GetDescriptionToken();
 
                     button.GetComponentInChildren<HGButton>().onSelect.AddListener(delegate
                     {
@@ -761,12 +734,9 @@ namespace RiskOfOptions.Components.Panel
             _panel.CategoryHeaderHighlight.transform.SetParent(transform);
             _panel.CategoryHeaderHighlight.SetActive(false);
 
-            HGButton[] activeCategoryButtons = _panel.CategoryHeader.GetComponentsInChildren<HGButton>();
+            var scrollRect = _panel.CategoryHeader.GetComponentInChildren<CategoryScrollRect>();
 
-            if (activeCategoryButtons.Length <= 0)
-                return;
-
-            foreach (var activeCategoryButton in activeCategoryButtons)
+            foreach (var activeCategoryButton in scrollRect.categoryButtons)
             {
                 if (activeCategoryButton.gameObject == null)
                     continue;
@@ -776,6 +746,8 @@ namespace RiskOfOptions.Components.Panel
 
                 DestroyImmediate(buttonGameObject);
             }
+            
+            scrollRect.categoryButtons.Clear();
 
             //_leftGlyph.SetActive(false);
             //_rightGlyph.SetActive(false);
@@ -800,20 +772,14 @@ namespace RiskOfOptions.Components.Panel
 
         public void OnDisable()
         {
-            //Debug.Log("Unloading Assets");
-
             initialized = false;
             
-            GameObject.DestroyImmediate(_keyBindPrefab);
-            GameObject.DestroyImmediate(modListHighlight);
-            GameObject.DestroyImmediate(_leftButton);
-            GameObject.DestroyImmediate(_rightButton);
-            GameObject.DestroyImmediate(_dropDownPrefab);
-            GameObject.DestroyImmediate(_inputFieldPrefab);
+            DestroyImmediate(_keyBindPrefab);
+            DestroyImmediate(modListHighlight);
+            // GameObject.DestroyImmediate(_dropDownPrefab);
+            // GameObject.DestroyImmediate(_inputFieldPrefab);
             
             RuntimePrefabManager.DestroyPrefabs();
-
-            //OptionSerializer.Save(ModSettingsManager.OptionContainers.ToArray());
         }
 
         public void OnEnable()

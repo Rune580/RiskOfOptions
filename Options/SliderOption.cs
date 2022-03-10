@@ -17,7 +17,7 @@ namespace RiskOfOptions.Options
             
             SetCategoryName(configEntry.Definition.Section, config);
             SetName(configEntry.Definition.Key, config);
-            SetDescription(configEntry.Definition.Section, config);
+            SetDescription(configEntry.Description.Description, config);
         }
 
         public override string OptionTypeName { get; protected set; } = "slider";

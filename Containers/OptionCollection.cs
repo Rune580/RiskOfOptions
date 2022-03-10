@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using R2API;
 using RiskOfOptions.Options;
+using UnityEngine;
 
 namespace RiskOfOptions.Containers
 {
@@ -15,6 +16,8 @@ namespace RiskOfOptions.Containers
         public string ModGuid { get; }
 
         public string description = "";
+        public Sprite icon = null;
+
         internal int CategoryCount => _categories.Count;
         internal string NameToken => $"{ModSettingsManager.StartingText}.{ModGuid}.mod_list_button".Replace(" ", "_").ToUpper();
 
