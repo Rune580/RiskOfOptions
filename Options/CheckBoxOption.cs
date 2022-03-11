@@ -9,7 +9,7 @@ namespace RiskOfOptions.Options
     {
         private readonly bool _originalValue;
         private readonly ConfigEntry<bool> _configEntry;
-        internal CheckBoxConfig Config { get; }
+        private CheckBoxConfig Config { get; }
 
         public CheckBoxOption(ConfigEntry<bool> configEntry) : this(configEntry, new CheckBoxConfig()) { }
         

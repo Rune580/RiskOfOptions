@@ -529,18 +529,27 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             GameObject warningBlur = Object.Instantiate(ModListPanel.transform.Find("Scroll View").Find("BlurPanel").gameObject, WarningPanel.transform);
             GameObject warningImage = Object.Instantiate(ModListPanel.transform.Find("Scroll View").Find("ImagePanel").gameObject, WarningPanel.transform);
 
-            WarningPanel.transform.Find("ContentSizeFitter").GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+            var sizeFitterObject = WarningPanel.transform.Find("ContentSizeFitter").gameObject;
+            sizeFitterObject.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+
+            Object.DestroyImmediate(sizeFitterObject.GetComponent<VerticalLayoutGroup>());
+
+            var layoutGroup = sizeFitterObject.AddComponent<HorizontalLayoutGroup>();
+            layoutGroup.childAlignment = TextAnchor.MiddleLeft;
+            layoutGroup.spacing = 16;
+            layoutGroup.childForceExpandHeight = false;
+
+            var sizeFitter = sizeFitterObject.GetComponent<ContentSizeFitter>();
+            sizeFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            sizeFitter.verticalFit = ContentSizeFitter.FitMode.Unconstrained;
 
             RectTransform warningDescriptionRectTransform = WarningPanel.transform.Find("ContentSizeFitter").Find("DescriptionText").GetComponent<RectTransform>();
-            warningDescriptionRectTransform.anchorMin = new Vector2(0.1f, 0);
-            warningDescriptionRectTransform.anchorMax = new Vector2(1, 0.5f);
+            
+            warningDescriptionRectTransform.gameObject.AddComponent<LayoutElement>();
 
-            LayoutElement warningDescriptionLayoutElement = warningDescriptionRectTransform.gameObject.AddComponent<LayoutElement>();
-            warningDescriptionLayoutElement.ignoreLayout = true;
-
-            WarningPanel.transform.Find("ContentSizeFitter").SetAsLastSibling();
+            sizeFitterObject.transform.SetAsLastSibling();
             WarningPanel.AddComponent<RectMask2D>();
-
+            
             warningBlur.GetComponent<TranslucentImage>().color = Color.red;
             warningImage.GetComponent<Image>().color = Color.red;
 
@@ -553,21 +562,14 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             restartIconGameObject.AddComponent<CanvasRenderer>();
 
             LayoutElement restartIconLayoutElement = restartIconGameObject.AddComponent<LayoutElement>();
-            restartIconLayoutElement.ignoreLayout = true;
+            restartIconLayoutElement.preferredWidth = 30;
 
             Image restartIcon = restartIconGameObject.AddComponent<Image>();
             restartIcon.sprite = Assets.Load<Sprite>("assets/RiskOfOptions/ror2RestartSymbol.png");
             restartIcon.preserveAspect = true;
 
-            restartIconRectTransform.pivot = new Vector2(0.5f, 0.5f);
-            restartIconRectTransform.localScale = new Vector3(0.9f, 0.9f, 0.9f);
-            restartIconRectTransform.anchorMin = new Vector2(0.0f, 0.0f);
-            restartIconRectTransform.anchorMax = new Vector2(0.11f, 0.0f);
-            restartIconRectTransform.anchoredPosition = new Vector2(0, -6);
-            restartIconRectTransform.sizeDelta = new Vector2(0, 32);
-
-            restartIconGameObject.transform.SetParent(WarningPanel.transform.Find("ContentSizeFitter"));
-            restartIconGameObject.transform.SetAsLastSibling();
+            restartIconGameObject.transform.SetParent(sizeFitterObject.transform);
+            restartIconGameObject.transform.SetAsFirstSibling();
         }
     }
 }

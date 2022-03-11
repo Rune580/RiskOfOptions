@@ -33,8 +33,8 @@ namespace RiskOfOptions.Components.Options
             
             _valueHolder.SetValue(newValue);
             
-            optionController.OptionChanged();
             UpdateControls();
+            optionController.OptionChanged();
         }
 
         protected T GetCurrentValue()
@@ -86,13 +86,11 @@ namespace RiskOfOptions.Components.Options
                 nameLabel.token = nameToken;
             
             UpdateControls();
-            CheckIfDisabled();
         }
 
         protected void OnEnable()
         {
             UpdateControls();
-            CheckIfDisabled();
         }
 
         public override void CheckIfDisabled()

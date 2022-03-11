@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using RoR2;
 using RoR2.UI;
 using RoR2.UI.SkinControllers;
 using UnityEngine;
@@ -133,6 +134,9 @@ namespace RiskOfOptions.Components.Panel
 
         internal void SetPage(int page)
         {
+            if (page >= _pages)
+                return;
+            
             _currentPage = page;
 
             if (_pageAnimator != null)
@@ -184,6 +188,9 @@ namespace RiskOfOptions.Components.Panel
 
         private IEnumerator SetIndicator(int page)
         {
+            if (page >= _indicators.Length)
+                yield break;
+            
             var image = _indicators[page].GetComponent<Image>();
 
             //var outlineTransform = outline.GetComponent<RectTransform>();

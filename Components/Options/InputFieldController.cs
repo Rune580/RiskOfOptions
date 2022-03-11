@@ -1,49 +1,68 @@
 ﻿using R2API.Utils;
-using RiskOfOptions.Components.Options;
 using RoR2.UI;
 using TMPro;
+using UnityEngine;
 using Language = On.RoR2.Language;
 
-namespace RiskOfOptions.Components.OptionComponents
+namespace RiskOfOptions.Components.Options
 {
-    public class InputFieldController : BaseSettingsControl
+    public class InputFieldController : ModSettingsControl<string>
     {
-        private RooInputField _inputField;
-
+        public GameObject overlay;
+        public RooInputField inputField;
+        
         private LanguageTextMeshController _previewLanguage;
-
         private HGTextMeshProUGUI _previewLabel;
+        private bool _exitQueued;
 
         public TMP_InputValidator validator;
         public TMP_InputField.CharacterValidation characterValidation;
-        public bool validateOnSubmit = false;
+        //public bool validateOnSubmit;
 
         protected new void Awake()
         {
-            settingSource = (SettingSource)2;
-
-            if (settingName == "")
-                return;
-
-            _inputField = GetComponentInChildren<RooInputField>();
-
-            _inputField.onSubmit.AddListener(GetInput);
-            _inputField.onValueChanged.AddListener(OnValueChanged);
-
-            _previewLanguage = transform.Find("Text Preview").Find("Text Area").Find("Text").GetComponent<LanguageTextMeshController>();
-
-            _previewLanguage.token = LanguageTokens.OptionInputField;
-
-            _previewLabel = _previewLanguage.GetComponent<HGTextMeshProUGUI>();
-
-            nameLabel = GetComponent<LanguageTextMeshController>();
-
-            nameLabel.token = nameToken;
-
             base.Awake();
 
-            _inputField.text = GetCurrentValue();
+            _previewLanguage = transform.Find("Text Preview").GetComponentInChildren<LanguageTextMeshController>();
+            _previewLanguage.token = $"{settingToken}.VALUE";
+            
+            _previewLabel = _previewLanguage.GetComponentInChildren<HGTextMeshProUGUI>();
+
+            nameLabel = GetComponent<LanguageTextMeshController>();
+            nameLabel.token = nameToken;
+            
+            if (!inputField)
+                return;
+            
+            var button = transform.Find("Text Preview").GetComponentInChildren<HGButton>();
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(AttemptShow);
+            button.disablePointerClick = false;
+
+            inputField.onSubmit.AddListener(GetInput);
+            inputField.onValueChanged.AddListener(OnValueChanged);
+
+            inputField.text = GetCurrentValue();
             _previewLanguage.InvokeMethod("Start");
+        }
+        
+        public void Update()
+        {
+            bool submitKey = Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter);
+            bool validKey = Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.Mouse1) || Input.GetKeyDown(KeyCode.Escape);
+
+            if (validKey && !inputField.inField)
+            {
+                _exitQueued = true;
+            }
+            else if (submitKey)
+            {
+                _exitQueued = true;
+            }
+
+            if (_exitQueued)
+                AttemptHide();
+            
         }
 
         protected new void OnEnable()
@@ -55,6 +74,21 @@ namespace RiskOfOptions.Components.OptionComponents
             FixTextLabel();
         }
 
+        protected override void Disable()
+        {
+            
+        }
+
+        protected override void Enable()
+        {
+            
+        }
+        
+        protected override void OnUpdateControls()
+        {
+            _previewLanguage.InvokeMethod("Start");
+        }
+
         protected void OnDisable()
         {
             UnHookLanguage();
@@ -63,32 +97,68 @@ namespace RiskOfOptions.Components.OptionComponents
         private void GetInput(string input)
         {
             _previewLanguage.InvokeMethod("Start");
-            SubmitSetting(input);
+            SubmitValue(input);
         }
 
         private void OnValueChanged(string input)
         {
             _previewLanguage.InvokeMethod("Start");
-            if (validateOnSubmit)
-            {
-                SubmitSetting(input);
-            }
+            SubmitValue(input);
+        }
+        
+        private void AttemptShow()
+        {
+            if (!overlay)
+                return;
+
+            if (overlay.activeSelf)
+                return;
+
+            _exitQueued = false;
+
+            ShowInputField();
         }
 
+        private void AttemptHide()
+        {
+            if (!overlay)
+                return;
+
+            if (!overlay.activeSelf)
+                return;
+
+            _exitQueued = false;
+
+            HideInputField();
+        }
+
+        private void ShowInputField()
+        {
+            overlay.SetActive(true);
+
+            var canvas = overlay.GetComponent<Canvas>();
+
+            canvas.overrideSorting = true;
+            canvas.sortingOrder = 30001;
+        }
+
+        private void HideInputField()
+        {
+            overlay.SetActive(false);
+        }
+        
         private void FixTextLabel()
         {
-            _previewLabel.autoSizeTextContainer = false;
-            _previewLabel.fontSize = 24;
-
-            _inputField.textComponent.autoSizeTextContainer = false;
-            _inputField.textComponent.fontSize = 24;
+            // _previewLabel.autoSizeTextContainer = false;
+            // _previewLabel.fontSize = 24;
+            //
+            // _inputField.textComponent.autoSizeTextContainer = false;
+            // _inputField.textComponent.fontSize = 24;
 
             if (validator != null)
-            {
-                _inputField.inputValidator = validator;
-            }
+                inputField.inputValidator = validator;
 
-            _inputField.characterValidation = characterValidation;
+            inputField.characterValidation = characterValidation;
         }
 
         private void HookLanguage()
@@ -103,15 +173,18 @@ namespace RiskOfOptions.Components.OptionComponents
 
         private string LanguageOnGetString_string(Language.orig_GetString_string orig, string token)
         {
-            if (token != LanguageTokens.OptionInputField)
+            if (token != $"{settingToken}.VALUE")
                 return orig(token);
 
-            string text = TrimStringWithinWidth(_inputField.text, 238.7f);
+            if (!inputField)
+                return orig(token);
+
+            string text = TrimStringWithinWidth(inputField.text, 238.7f);
 
             return text;
         }
 
-        public string TrimStringWithinWidth(string input, float width)
+        private string TrimStringWithinWidth(string input, float width)
         {
             string trimmedText = $"{input}";
 

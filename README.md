@@ -7,8 +7,9 @@ An API to provide a user interface in game to interact with BepInEx ConfigEntry'
 - CheckBoxes
 - Sliders and Stepped Sliders
 - KeyBinds
+- String Input Fields
 
-Feature requests welcome on my [repository](https://github.com/Rune580/RiskOfOptions).
+Feature requests are welcome at my [repository](https://github.com/Rune580/RiskOfOptions).
 
 ## Getting Started
 First you need to grab the latest release from the [Thunderstore](https://thunderstore.io/package/Rune580/Risk_Of_Options/).
@@ -106,6 +107,15 @@ ModSettingsManager.SetModIcon(icon);
 [Showcase](https://gfycat.com/GloomyShowyArrowana)
 
 # Changelog
-```
+    2.1.0 - Added StringInputFieldOption. Configuration option `restartRequired` has been fully implemented,
+    set this to true to show a restart warning when the option is modified. Description panels now scroll.
 
-```
+    2.0.0 - Massive Rewrite of the entire mod. Now exclusively uses BepInEx ConfigEntry's.
+    Completely new UI, with a working revert button. Added Stepped Slider, and KeyBind options.
+    Mods dependent on 1.0 will not work with 2.0
+
+    1.0.4 - Quick update for SOTV.
+
+	1.0.3 - Added R2API as a dependency because I forgot about that. Also I'm currently rewriting ROO,
+	so hopefully the next update should be a pretty big one. No ETA on that, but progress is good
+	so far.

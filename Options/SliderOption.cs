@@ -9,10 +9,12 @@ namespace RiskOfOptions.Options
     {
         private readonly float _originalValue;
         private readonly ConfigEntry<float> _configEntry;
-        internal SliderConfig Config { get; }
+        private SliderConfig Config { get; }
         
         public SliderOption(ConfigEntry<float> configEntry) : this(configEntry, new SliderConfig()) { }
-
+        
+        public SliderOption(ConfigEntry<float> configEntry, bool restartRequired) : this(configEntry, new SliderConfig { restartRequired = restartRequired }) { }
+        
         public SliderOption(ConfigEntry<float> configEntry, SliderConfig config)
         {
             _originalValue = configEntry.Value;

@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Reflection;
 using R2API;
 using RiskOfOptions.Components.Panel;
 using RiskOfOptions.Containers;
@@ -22,6 +23,8 @@ namespace RiskOfOptions
         internal static bool DoingKeyBind = false;
         
         internal static ModOptionPanelController InstanceModOptionPanelController;
+        
+        internal static readonly List<string> RestartRequiredOptions = new();
 
         public static void Init()
         {

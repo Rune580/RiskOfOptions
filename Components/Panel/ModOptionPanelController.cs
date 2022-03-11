@@ -25,25 +25,23 @@ namespace RiskOfOptions.Components.Panel
         private GameObject _sliderPrefab;
         private GameObject _stepSliderPrefab;
         private GameObject _keyBindPrefab;
+        private GameObject _inputFieldPrefab;
         // private GameObject _dropDownPrefab;
-        // private GameObject _inputFieldPrefab;
+        
 
         private MPButton _revertButton;
 
         //private GameObject _leftGlyph;
         //private GameObject _rightGlyph;
         
-        public Color warningColor = Color.red;
-
         public float degreesPerSecond = 2f;
 
-        private bool _warningShown = false;
+        private bool _warningShown;
 
         private IEnumerator _animateRoutine;
         
         private ModOptionsPanelPrefab _panel;
         private ModSetting[] _modSettings = Array.Empty<ModSetting>();
-        private readonly List<string> _restartRequiredOptions = new();
 
         public void Start()
         {
@@ -79,6 +77,7 @@ namespace RiskOfOptions.Components.Panel
             _sliderPrefab = RuntimePrefabManager.Get<SliderPrefab>().Slider;
             _stepSliderPrefab = RuntimePrefabManager.Get<StepSliderPrefab>().StepSlider;
             _keyBindPrefab = RuntimePrefabManager.Get<KeyBindPrefab>().KeyBind;
+            _inputFieldPrefab = RuntimePrefabManager.Get<InputFieldPrefab>().InputField;
             
             //_dropDownPrefab = GameObject.Instantiate(subPanelArea.Find("SettingsSubPanel, Video").Find("Scroll View").Find("Viewport").Find("VerticalLayout").Find("Option, Resolution").gameObject);
             //_inputFieldPrefab = GameObject.Instantiate(_checkBoxPrefab);
@@ -349,8 +348,6 @@ namespace RiskOfOptions.Components.Panel
             foreach (var collection in ModSettingsManager.OptionCollection)
             {
                 GameObject newModButton = Instantiate(_panel.ModListButton, modListVerticalLayout);
-
-                //LanguageAPI.Add($"{ModSettingsManager.StartingText}.{collection.ModName}.ModListOption".ToUpper().Replace(" ", "_"), collection.title);
                 
                 ModListButton modListButton = newModButton.GetComponent<ModListButton>();
                 
@@ -497,8 +494,8 @@ namespace RiskOfOptions.Components.Panel
                     SliderOption sliderOption => option.CreateOptionGameObject(_sliderPrefab, verticalLayoutTransform),
                     StepSliderOption stepSliderOption => option.CreateOptionGameObject(_stepSliderPrefab, verticalLayoutTransform),
                     KeyBindOption keyBindOption => option.CreateOptionGameObject(_keyBindPrefab, verticalLayoutTransform),
+                    StringInputFieldOption inputFieldOption => option.CreateOptionGameObject(_inputFieldPrefab, verticalLayoutTransform),
                     // DropDownOption dropDownOption => option.CreateOptionGameObject(option, _dropDownPrefab, verticalLayoutTransform),
-                    // InputFieldOption inputFieldOption => option.CreateOptionGameObject(option, _inputFieldPrefab, verticalLayoutTransform),
                     _ => throw new ArgumentOutOfRangeException(option.Name)
                 };
 
@@ -560,19 +557,23 @@ namespace RiskOfOptions.Components.Panel
 
         internal void AddRestartRequired(string settingToken)
         {
-            if (!_restartRequiredOptions.Contains(settingToken))
-                _restartRequiredOptions.Add(settingToken);
+            if (!ModSettingsManager.RestartRequiredOptions.Contains(settingToken))
+                ModSettingsManager.RestartRequiredOptions.Add(settingToken);
         }
 
         internal void RemoveRestartRequired(string settingToken)
         {
-            if (_restartRequiredOptions.Contains(settingToken))
-                _restartRequiredOptions.Remove(settingToken);
+            if (ModSettingsManager.RestartRequiredOptions.Contains(settingToken))
+                ModSettingsManager.RestartRequiredOptions.Remove(settingToken);
         }
 
         private void CheckIfRestartNeeded()
         {
-            _warningShown = _restartRequiredOptions.Count > 0;
+            bool warningAlreadyShown = _warningShown;
+            _warningShown = ModSettingsManager.RestartRequiredOptions.Count > 0;
+
+            if (warningAlreadyShown && _warningShown)
+                return;
 
             if (_warningShown)
             {
@@ -607,7 +608,7 @@ namespace RiskOfOptions.Components.Panel
 
         private void HideRestartWarning()
         {
-            RectTransform modListScrollViewRT = _panel.WarningPanel.GetComponent<RectTransform>();
+            RectTransform modListScrollViewRT = _panel.ModListPanel.transform.Find("Scroll View").GetComponent<RectTransform>();
             RectTransform warningPanelRT = _panel.WarningPanel.GetComponent<RectTransform>();
 
             if (_animateRoutine != null)
@@ -649,9 +650,7 @@ namespace RiskOfOptions.Components.Panel
                 float angle = Mathf.Clamp(Mathf.Lerp(angleIncrement * Time.deltaTime, max, 1f * Time.deltaTime), 90 * Time.deltaTime, Math.Abs(maxAngleRotation));
 
                 if (angle > 90 * Time.deltaTime)
-                {
                     max -= angle;
-                }
 
                 restartRectTransform.localRotation *= Quaternion.AngleAxis(maxAngleRotation > 0 ? angle : -angle, Vector3.forward);
 
@@ -801,9 +800,13 @@ namespace RiskOfOptions.Components.Panel
         public void OptionChanged()
         {
             CheckIfRestartNeeded();
-            
+
             foreach (var modSetting in _modSettings)
-                modSetting.CheckIfDisabled();
+            {
+                if (modSetting)
+                    modSetting.CheckIfDisabled();
+            }
+                
         }
     }
 }

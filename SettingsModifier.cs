@@ -27,6 +27,7 @@ namespace RiskOfOptions
             RuntimePrefabManager.Register<SliderPrefab>();
             RuntimePrefabManager.Register<StepSliderPrefab>();
             RuntimePrefabManager.Register<KeyBindPrefab>();
+            RuntimePrefabManager.Register<InputFieldPrefab>();
         }
     }
 }

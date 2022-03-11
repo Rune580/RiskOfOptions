@@ -11,9 +11,11 @@ namespace RiskOfOptions.Options
     {
         private readonly float _originalValue;
         private readonly ConfigEntry<float> _configEntry;
-        internal StepSliderConfig Config { get; }
-
+        private StepSliderConfig Config { get; }
+        
         public StepSliderOption(ConfigEntry<float> configEntry) : this(configEntry, new StepSliderConfig()) { }
+
+        public StepSliderOption(ConfigEntry<float> configEntry, bool restartRequired) : this(configEntry, new StepSliderConfig { restartRequired = restartRequired }) { }
 
         public StepSliderOption(ConfigEntry<float> configEntry, StepSliderConfig config)
         {
