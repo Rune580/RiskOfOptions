@@ -1,4 +1,5 @@
 ﻿using System;
+using R2API;
 using RiskOfOptions.OptionConfigs;
 using UnityEngine;
 
@@ -10,9 +11,9 @@ namespace RiskOfOptions.Options
         public string Identifier { get; internal set; }
         public string ModGuid { get; internal set; }
         public string ModName { get; internal set; }
-        public string Category { get; private set; }
-        public string Name { get; private set; }
-        public string Description { get; private set; }
+        public string Category { get; internal set; }
+        public string Name { get; internal set; }
+        public string Description { get; internal set; }
 
         protected void SetCategoryName(string fallback, BaseOptionConfig config)
         {
@@ -45,6 +46,12 @@ namespace RiskOfOptions.Options
             }
 
             Description = fallback;
+        }
+
+        internal virtual void RegisterTokens()
+        {
+            LanguageAPI.Add(GetNameToken(), Name);
+            LanguageAPI.Add(GetDescriptionToken(), Description);
         }
         
         public string GetNameToken()

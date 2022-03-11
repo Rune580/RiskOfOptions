@@ -26,7 +26,7 @@ namespace RiskOfOptions
         
         internal static readonly List<string> RestartRequiredOptions = new();
 
-        public static void Init()
+        internal static void Init()
         {
             Resources.Assets.LoadAssets();
 
@@ -73,8 +73,7 @@ namespace RiskOfOptions
             option.ModName = modInfo.ModName;
             option.Identifier = $"{modInfo.ModGuid}.{option.Category}.{option.Name}.{option.OptionTypeName}".Replace(" ", "_").ToUpper();
             
-            LanguageAPI.Add(option.GetNameToken(), option.Name);
-            LanguageAPI.Add(option.GetDescriptionToken(), option.Description);
+            option.RegisterTokens();
             
             OptionCollection.AddOption(ref option);
         }

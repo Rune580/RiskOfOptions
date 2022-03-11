@@ -23,7 +23,7 @@ namespace RiskOfOptions.Components.Options
         private readonly List<KeyCode> _heldKeys = new();
         private readonly List<KeyCode> _keySequence = new();
 
-        protected new void Awake()
+        protected override void Awake()
         {
             if (settingToken == "")
                 return;
@@ -37,7 +37,7 @@ namespace RiskOfOptions.Components.Options
             _bindingButton = transform.Find("BindingContainer").Find("BindingButton").GetComponent<HGButton>();
         }
 
-        protected new void Start()
+        protected override void Start()
         {
             base.Start();
 

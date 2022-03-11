@@ -1,15 +1,18 @@
 # RiskOfOptions
-![Animated icon made by UnsavedTrash#0001](https://thumbs.gfycat.com/LimitedFlashyCowbird-size_restricted.gif)
+![Animated icon made by UnsavedTrash#0001 on discord](https://thumbs.gfycat.com/LimitedFlashyCowbird-size_restricted.gif)
 
 An API to provide a user interface in game to interact with BepInEx ConfigEntry's.
 
 ## Currently supported options
-- CheckBoxes
-- Sliders and Stepped Sliders
-- KeyBinds
-- String Input Fields
+- CheckBoxes `bool`
+- Sliders and Stepped Sliders `float`
+- KeyBinds `KeyboardShortcut`
+- String Input Fields `string`
 
-Feature requests are welcome at my [repository](https://github.com/Rune580/RiskOfOptions).
+### Additional Components
+- GenericButtons
+
+### For feature requests or issues head over to my [repository](https://github.com/Rune580/RiskOfOptions).
 
 ## Getting Started
 First you need to grab the latest release from the [Thunderstore](https://thunderstore.io/package/Rune580/Risk_Of_Options/).
@@ -91,6 +94,17 @@ toggleThing.SettingChanged += (object, args) => { Debug.Log(toggleThing.Value) }
 Of course when an option changes the value of a passed `ConfigEntry`, the value updates in real time,
 so in some cases where you are checking the value of the entry directly you don't need to do anything.
 
+There may be cases where you just want a convenient button to open your own menu, as such you can do this:
+```C#
+ModSettingsManager.AddOption(new GenericButtonOption("Custom Menu", "Misc", "Configure stuff in here", "Open Custom Menu", OpenMenu));
+
+private void OpenMenu()
+{
+    /// Do stuff
+}
+```
+The GenericButtonOption may be used to provide an entry point for opening your custom GUI's.
+
 ### Setting the description of the mod
 ```C#
 ModSettingsManager.SetModDescription("Describe your mod in incredible detail over the course of the next 2 hours");
@@ -106,7 +120,16 @@ ModSettingsManager.SetModIcon(icon);
 # Quick Showcase
 [Showcase](https://gfycat.com/GloomyShowyArrowana)
 
+# Contact
+
+Discord: Rune#0001
+
+Github: Rune580
+
 # Changelog
+    2.2.0 - Added GenericButtonOption which allows for devs to supply a UnityAction that is invoked when the button is pressed.
+    Cleaned up a few things. Should work for the newest patch, let me know if you find any issues.
+
     2.1.0 - Added StringInputFieldOption. Configuration option `restartRequired` has been fully implemented,
     set this to true to show a restart warning when the option is modified. Description panels now scroll.
 

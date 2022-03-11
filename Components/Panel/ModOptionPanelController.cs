@@ -26,6 +26,7 @@ namespace RiskOfOptions.Components.Panel
         private GameObject _stepSliderPrefab;
         private GameObject _keyBindPrefab;
         private GameObject _inputFieldPrefab;
+        private GameObject _genericButtonPrefab;
         // private GameObject _dropDownPrefab;
         
 
@@ -78,6 +79,7 @@ namespace RiskOfOptions.Components.Panel
             _stepSliderPrefab = RuntimePrefabManager.Get<StepSliderPrefab>().StepSlider;
             _keyBindPrefab = RuntimePrefabManager.Get<KeyBindPrefab>().KeyBind;
             _inputFieldPrefab = RuntimePrefabManager.Get<InputFieldPrefab>().InputField;
+            _genericButtonPrefab = RuntimePrefabManager.Get<GenericButtonPrefab>().GenericButton;
             
             //_dropDownPrefab = GameObject.Instantiate(subPanelArea.Find("SettingsSubPanel, Video").Find("Scroll View").Find("Viewport").Find("VerticalLayout").Find("Option, Resolution").gameObject);
             //_inputFieldPrefab = GameObject.Instantiate(_checkBoxPrefab);
@@ -291,6 +293,8 @@ namespace RiskOfOptions.Components.Panel
             _sliderPrefab.SetActive(false);
             _stepSliderPrefab.SetActive(false);
             _keyBindPrefab.SetActive(false);
+            _inputFieldPrefab.SetActive(false);
+            _genericButtonPrefab.SetActive(false);
         }
 
         private void CreatePanel()
@@ -495,6 +499,7 @@ namespace RiskOfOptions.Components.Panel
                     StepSliderOption stepSliderOption => option.CreateOptionGameObject(_stepSliderPrefab, verticalLayoutTransform),
                     KeyBindOption keyBindOption => option.CreateOptionGameObject(_keyBindPrefab, verticalLayoutTransform),
                     StringInputFieldOption inputFieldOption => option.CreateOptionGameObject(_inputFieldPrefab, verticalLayoutTransform),
+                    GenericButtonOption genericButton => option.CreateOptionGameObject(_genericButtonPrefab, verticalLayoutTransform),
                     // DropDownOption dropDownOption => option.CreateOptionGameObject(option, _dropDownPrefab, verticalLayoutTransform),
                     _ => throw new ArgumentOutOfRangeException(option.Name)
                 };

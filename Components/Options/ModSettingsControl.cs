@@ -8,12 +8,8 @@ namespace RiskOfOptions.Components.Options
 {
     public abstract class ModSettingsControl<T> : ModSetting
     {
-        public string nameToken;
-        public LanguageTextMeshController nameLabel;
-        
         private MPEventSystemLocator _eventSystemLocator;
         private ITypedValueHolder<T> _valueHolder;
-        private BaseOption _option;
         private T _originalValue;
         private bool _valueChanged;
 
@@ -57,33 +53,29 @@ namespace RiskOfOptions.Components.Options
             UpdateControls();
         }
 
-        protected virtual void Awake()
+        protected override void Awake()
         {
-            _eventSystemLocator = GetComponent<MPEventSystemLocator>();
+            base.Awake();
             
-            if (nameLabel && !string.IsNullOrEmpty(nameToken))
-                nameLabel.token = nameToken;
+            _eventSystemLocator = GetComponent<MPEventSystemLocator>();
 
-            if (string.IsNullOrEmpty(settingToken))
+            if (Option == null)
                 return;
 
-            _option = ModSettingsManager.OptionCollection.GetOption(settingToken);
-            
-            _valueHolder ??= (ITypedValueHolder<T>)_option;
+            _valueHolder ??= (ITypedValueHolder<T>)Option;
 
-            _restartRequired = _option.GetConfig().restartRequired;
+            _restartRequired = Option.GetConfig().restartRequired;
             
-            var isDisabled = _option.GetConfig().checkIfDisabled;
+            var isDisabled = Option.GetConfig().checkIfDisabled;
             if (isDisabled == null)
                 return;
 
             _isDisabled = isDisabled;
         }
 
-        protected void Start()
+        protected override void Start()
         {
-            if (nameLabel && !string.IsNullOrEmpty(nameToken))
-                nameLabel.token = nameToken;
+            base.Start();
             
             UpdateControls();
         }
@@ -120,7 +112,7 @@ namespace RiskOfOptions.Components.Options
             if (!_restartRequired)
                 return;
             
-            if (_option.ValueChanged())
+            if (Option.ValueChanged())
             {
                 optionController.AddRestartRequired(settingToken);
             }
@@ -129,10 +121,6 @@ namespace RiskOfOptions.Components.Options
                 optionController.RemoveRestartRequired(settingToken);
             }
         }
-
-        protected abstract void Disable();
-
-        protected abstract void Enable();
 
         protected bool InUpdateControls { get; private set; }
 

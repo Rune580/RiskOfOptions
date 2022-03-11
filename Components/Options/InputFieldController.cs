@@ -19,10 +19,8 @@ namespace RiskOfOptions.Components.Options
         public TMP_InputField.CharacterValidation characterValidation;
         //public bool validateOnSubmit;
 
-        protected new void Awake()
+        protected override void Awake()
         {
-            base.Awake();
-
             _previewLanguage = transform.Find("Text Preview").GetComponentInChildren<LanguageTextMeshController>();
             _previewLanguage.token = $"{settingToken}.VALUE";
             
@@ -30,6 +28,8 @@ namespace RiskOfOptions.Components.Options
 
             nameLabel = GetComponent<LanguageTextMeshController>();
             nameLabel.token = nameToken;
+            
+            base.Awake();
             
             if (!inputField)
                 return;

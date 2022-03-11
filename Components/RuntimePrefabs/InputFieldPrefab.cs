@@ -1,6 +1,5 @@
 ﻿using RiskOfOptions.Components.Options;
 using RoR2.UI;
-using RoR2.UI.SkinControllers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
