@@ -1,21 +1,16 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
+using RiskOfOptions.Options;
 using RoR2.UI;
 
 namespace RiskOfOptions.Components.Options
 {
-    public class DropDownController : BaseSettingsControl
+    public class DropDownController : ModSettingsControl<object>
     {
         public RooDropdown dropdown;
-
-        public string[] choices;
-
+        
         protected new void Awake()
         {
-            settingSource = (SettingSource)2;
-
-            if (settingName == "")
-                return;
-
             dropdown = GetComponentInChildren<RooDropdown>();
 
             base.Awake();
@@ -25,40 +20,41 @@ namespace RiskOfOptions.Components.Options
             nameLabel.token = nameToken;
         }
 
+        protected override void Disable()
+        {
+            // Todo
+        }
+
+        protected override void Enable()
+        {
+            // Todo
+        }
+
         protected new void OnEnable()
         {
             base.OnEnable();
-            GenerateOptions();
+            GenerateChoices();
         }
 
-        private void GenerateOptions()
+        private void GenerateChoices()
         {
-            if (choices == null || choices.Length == 0)
-                return;
+            dropdown.choices = ((ChoiceOption)Option).GetNameTokens();
 
-            //Debug.Log(settingName);
-
-            dropdown.choices = choices;
-
-            ////dropdown.ClearOptions();
-
-            //List<TMP_Dropdown.OptionData> options = new List<TMP_Dropdown.OptionData>();
-
-            //foreach (var choice in choices)
-            //{
-            //    options.Add(new TMP_Dropdown.OptionData(choice));
-            //}
-
-            int currentIndex = int.Parse(GetCurrentValue(), CultureInfo.InvariantCulture);
-
-            dropdown.SetChoice(currentIndex);
-
-            //dropdown.value = currentIndex;
+            UpdateControls();
         }
 
         private void OnChoiceChanged(int newValue)
         {
-            base.SubmitSetting($"{newValue}");
+            SubmitValue((Enum) Enum.Parse(GetCurrentValue().GetType(), $"{newValue}")); // this is cursed
+        }
+
+        protected override void OnUpdateControls()
+        {
+            base.OnUpdateControls();
+            
+            int currentIndex = Convert.ToInt32(GetCurrentValue());
+
+            dropdown.SetChoice(currentIndex);
         }
     }
 }

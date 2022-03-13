@@ -1,4 +1,5 @@
 ﻿using System;
+using BepInEx.Configuration;
 using R2API;
 using RiskOfOptions.OptionConfigs;
 using UnityEngine;
@@ -14,8 +15,10 @@ namespace RiskOfOptions.Options
         public string Category { get; internal set; }
         public string Name { get; internal set; }
         public string Description { get; internal set; }
+        
+        internal abstract ConfigEntryBase ConfigEntry { get; }
 
-        protected void SetCategoryName(string fallback, BaseOptionConfig config)
+        internal void SetCategoryName(string fallback, BaseOptionConfig config)
         {
             if (!string.IsNullOrEmpty(config.category))
             {
@@ -26,7 +29,7 @@ namespace RiskOfOptions.Options
             Category = fallback;
         }
 
-        protected void SetName(string fallback, BaseOptionConfig config)
+        internal void SetName(string fallback, BaseOptionConfig config)
         {
             if (!string.IsNullOrEmpty(config.name))
             {
@@ -37,7 +40,7 @@ namespace RiskOfOptions.Options
             Name = fallback;
         }
 
-        protected void SetDescription(string fallback, BaseOptionConfig config)
+        internal void SetDescription(string fallback, BaseOptionConfig config)
         {
             if (!string.IsNullOrEmpty(config.description))
             {
@@ -54,12 +57,12 @@ namespace RiskOfOptions.Options
             LanguageAPI.Add(GetDescriptionToken(), Description);
         }
         
-        public string GetNameToken()
+        internal string GetNameToken()
         {
             return $"{ModSettingsManager.StartingText}.{ModGuid}.{Category}.{Name}.{OptionTypeName}.name".Replace(" ", "_").ToUpper();
         }
 
-        public string GetDescriptionToken()
+        internal string GetDescriptionToken()
         {
             return $"{ModSettingsManager.StartingText}.{ModGuid}.{Category}.{Name}.{OptionTypeName}.description".Replace(" ", "_").ToUpper();
         }
@@ -67,8 +70,6 @@ namespace RiskOfOptions.Options
         public abstract GameObject CreateOptionGameObject(GameObject prefab, Transform parent);
 
         public abstract BaseOptionConfig GetConfig();
-
-        public abstract bool ValueChanged();
 
         public override bool Equals(object obj)
         {
@@ -87,6 +88,22 @@ namespace RiskOfOptions.Options
         {
             // ReSharper disable twice NonReadonlyMemberInGetHashCode
             return (Identifier != null ? StringComparer.InvariantCulture.GetHashCode(Identifier) : 0);
+        }
+    }
+
+    internal static class OptionExtensions
+    {
+        internal static void SetProperties(this BaseOption option)
+        {
+            var entry = option.ConfigEntry;
+            if (entry == null)
+                return;
+
+            var config = option.GetConfig();
+            
+            option.SetCategoryName(entry.Definition.Section, config);
+            option.SetName(entry.Definition.Key, config);
+            option.SetDescription(entry.Description.Description, config);
         }
     }
 }

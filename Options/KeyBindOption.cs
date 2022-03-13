@@ -10,7 +10,7 @@ namespace RiskOfOptions.Options
     {
         private readonly KeyboardShortcut _originalValue;
         private readonly ConfigEntry<KeyboardShortcut> _configEntry;
-        private KeyBindConfig Config { get; }
+        internal readonly KeyBindConfig Config;
         
         public KeyBindOption(ConfigEntry<KeyboardShortcut> configEntry) : this(configEntry, new KeyBindConfig()) { }
         
@@ -21,14 +21,12 @@ namespace RiskOfOptions.Options
             _originalValue = configEntry.Value;
             _configEntry = configEntry;
             Config = config;
-
-            SetCategoryName(configEntry.Definition.Section, config);
-            SetName(configEntry.Definition.Key, config);
-            SetDescription(configEntry.Description.Description, config);
         }
 
         public override string OptionTypeName { get; protected set; } = "key_bind";
-        
+
+        internal override ConfigEntryBase ConfigEntry => _configEntry;
+
         public override GameObject CreateOptionGameObject(GameObject prefab, Transform parent)
         {
             GameObject keyBind = Object.Instantiate(prefab, parent);
@@ -52,24 +50,20 @@ namespace RiskOfOptions.Options
             return Config;
         }
 
-        public override bool ValueChanged()
+        public bool ValueChanged()
         {
-            return !GetValue().Equals(GetOriginalValue());
-        }
-
-        public void SetValue(KeyboardShortcut value)
-        {
-            _configEntry.Value = value;
-        }
-
-        public KeyboardShortcut GetValue()
-        {
-            return _configEntry.Value;
+            return !Value.Equals(GetOriginalValue());
         }
 
         public KeyboardShortcut GetOriginalValue()
         {
             return _originalValue;
+        }
+
+        public KeyboardShortcut Value
+        {
+            get => _configEntry.Value;
+            set => _configEntry.Value = value;
         }
     }
 }

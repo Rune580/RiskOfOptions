@@ -9,7 +9,7 @@ namespace RiskOfOptions.Options
     {
         private readonly bool _originalValue;
         private readonly ConfigEntry<bool> _configEntry;
-        private CheckBoxConfig Config { get; }
+        internal readonly CheckBoxConfig Config;
 
         public CheckBoxOption(ConfigEntry<bool> configEntry) : this(configEntry, new CheckBoxConfig()) { }
         
@@ -20,13 +20,11 @@ namespace RiskOfOptions.Options
             _originalValue = configEntry.Value;
             _configEntry = configEntry;
             Config = config;
-
-            SetCategoryName(configEntry.Definition.Section, config);
-            SetName(configEntry.Definition.Key, config);
-            SetDescription(configEntry.Description.Description, config);
         }
         
         public override string OptionTypeName { get; protected set; } = "checkbox";
+        
+        internal override ConfigEntryBase ConfigEntry => _configEntry;
 
         public override GameObject CreateOptionGameObject(GameObject prefab, Transform parent)
         {
@@ -47,24 +45,20 @@ namespace RiskOfOptions.Options
             return Config;
         }
 
-        public override bool ValueChanged()
+        public bool ValueChanged()
         {
-            return GetValue() != GetOriginalValue();
-        }
-
-        public void SetValue(bool value)
-        {
-            _configEntry.Value = value;
-        }
-
-        public bool GetValue()
-        {
-            return _configEntry.Value;
+            return Value != GetOriginalValue();
         }
 
         public bool GetOriginalValue()
         {
             return _originalValue;
+        }
+
+        public bool Value
+        {
+            get => _configEntry.Value; 
+            set => _configEntry.Value = value;
         }
     }
 }

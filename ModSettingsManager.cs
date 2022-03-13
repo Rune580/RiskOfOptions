@@ -68,6 +68,8 @@ namespace RiskOfOptions
         public static void AddOption(BaseOption option)
         {
             ModInfo modInfo = Assembly.GetCallingAssembly().GetModInfo();
+            
+            option.SetProperties();
 
             option.ModGuid = modInfo.ModGuid;
             option.ModName = modInfo.ModName;

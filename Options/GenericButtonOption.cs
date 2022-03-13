@@ -1,4 +1,5 @@
-﻿using R2API;
+﻿using BepInEx.Configuration;
+using R2API;
 using RiskOfOptions.Components.Options;
 using RiskOfOptions.OptionConfigs;
 using UnityEngine;
@@ -8,7 +9,7 @@ namespace RiskOfOptions.Options
 {
     public class GenericButtonOption : BaseOption
     {
-        private GenericButtonConfig Config { get; }
+        internal readonly GenericButtonConfig Config;
 
         public GenericButtonOption(string name, string category, UnityAction onButtonPressed) : this(
             name, category, "", "Open", onButtonPressed) { }
@@ -21,6 +22,8 @@ namespace RiskOfOptions.Options
             Name = name;
             Description = description;
         }
+
+        internal override ConfigEntryBase ConfigEntry => null;
 
         internal override void RegisterTokens()
         {
@@ -55,11 +58,6 @@ namespace RiskOfOptions.Options
         public override BaseOptionConfig GetConfig()
         {
             return Config;
-        }
-
-        public override bool ValueChanged()
-        {
-            return false;
         }
     }
 }

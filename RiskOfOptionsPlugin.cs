@@ -13,7 +13,7 @@ namespace RiskOfOptions
             ModName = "Risk Of Options",
             Author = "rune580",
             Guid = "com." + Author + "." + "riskofoptions",
-            Version = "2.2.0";
+            Version = "2.3.0";
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Awake is automatically called by Unity")]
         private void Awake()

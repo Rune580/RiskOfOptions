@@ -13,53 +13,42 @@ namespace RiskOfOptions.Components.Options
     /// After all... why not?
     /// Why shouldn't I change it?
     /// </summary>
-    public class RooDropdown : Selectable, IPointerClickHandler, IEventSystemHandler, ISubmitHandler, ICancelHandler
+    public class RooDropdown : Selectable, IPointerClickHandler, ISubmitHandler, ICancelHandler
     {
-        internal static GameObject CheckBoxPrefab;
-        internal static GameObject PanelPrefab;
-        internal static Sprite CheckMarkSprite;
-        private static GameObject _dropDownChoicePrefab;
-
-        private MPEventSystemLocator _eventSystemLocator;
-        private bool _isPointerInside;
-        private MPEventSystem _eventSystem => _eventSystemLocator.eventSystem;
-        private SelectionState _previousState = SelectionState.Disabled;
-        private HGTextMeshProUGUI _label;
-        private int _currentIndex = 0;
-
-        private GameObject _template;
-        private GameObject _content;
-        private GameObject[] _buttonCache;
-
-        private ColorBlock _defaultColors;
-        private ColorBlock _selectedColors;
-
-        private bool _heldDown = false;
-
-        private bool Showing => _template.activeSelf;
-
+        public GameObject choiceItemPrefab;
+        public GameObject template;
+        public GameObject content;
+        public ColorBlock defaultColors;
         public bool allowAllEventSystems;
         public string[] choices;
 
-        public DropDownEvent OnValueChanged { get; set; } = new DropDownEvent();
+        private MPEventSystemLocator _eventSystemLocator;
+        private bool _isPointerInside;
+        private SelectionState _previousState = SelectionState.Disabled;
+        private LanguageTextMeshController _label;
+        private int _currentIndex;
+        private GameObject[] _buttons = Array.Empty<GameObject>();
+        private ColorBlock _selectedColors;
+        private bool _heldDown;
+
+        private MPEventSystem EventSystem => _eventSystemLocator.eventSystem;
+        private bool Showing => template && template.activeSelf;
+
+        public DropDownEvent OnValueChanged { get; set; } = new();
 
         protected override void Awake()
         {
             base.Awake();
+
+            colors = defaultColors;
             _eventSystemLocator = GetComponent<MPEventSystemLocator>();
 
-            _label = transform.Find("Label").GetComponent<HGTextMeshProUGUI>();
+            if (!_label)
+                _label = transform.GetComponentInChildren<LanguageTextMeshController>();
 
-            _defaultColors = CheckBoxPrefab.GetComponentInChildren<HGButton>().colors;
-
-            _selectedColors = _defaultColors;
+            _selectedColors = defaultColors;
             _selectedColors.normalColor = new Color(0.3f, 0.3f, 0.3f, 1);
             _selectedColors.highlightedColor = new Color(0.3f, 0.3f, 0.3f, 1);
-
-            SetupTemplate();
-
-            if (CheckBoxPrefab && !_dropDownChoicePrefab)
-                CreatePrefab();
         }
 
         protected void Update()
@@ -87,12 +76,6 @@ namespace RiskOfOptions.Components.Options
                 Hide();
 
             _heldDown = true;
-        }
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-            DestroyImmediateChoices();
         }
 
         #region ReImplementations
@@ -136,15 +119,15 @@ namespace RiskOfOptions.Components.Options
             {
                 return true;
             }
-            EventSystem eventSystem = _eventSystem;
+            EventSystem eventSystem = EventSystem;
             return eventSystem && inputModule == eventSystem.currentInputModule;
         }
 
         private void AttemptSelection(PointerEventData eventData)
         {
-            if (_eventSystem && _eventSystem.currentInputModule == eventData.currentInputModule)
+            if (EventSystem && EventSystem.currentInputModule == eventData.currentInputModule)
             {
-                _eventSystem.SetSelectedGameObject(gameObject, eventData);
+                EventSystem.SetSelectedGameObject(gameObject, eventData);
             }
         }
 
@@ -165,7 +148,7 @@ namespace RiskOfOptions.Components.Options
             {
                 return;
             }
-            if (_eventSystem && gameObject == _eventSystem.currentSelectedGameObject)
+            if (EventSystem && gameObject == EventSystem.currentSelectedGameObject)
             {
                 enabled = false;
                 enabled = true;
@@ -211,16 +194,15 @@ namespace RiskOfOptions.Components.Options
             _isPointerInside = false;
         }
 
-        protected override void DoStateTransition(Selectable.SelectionState state, bool instant)
+        protected override void DoStateTransition(SelectionState state, bool instant)
         {
             base.DoStateTransition(state, instant);
             if (_previousState == state)
                 return;
 
-            if (state == Selectable.SelectionState.Highlighted)
-            {
+            if (state == SelectionState.Highlighted)
                 Util.PlaySound("Play_UI_menuHover", RoR2Application.instance.gameObject);
-            }
+            
             _previousState = state;
         }
 
@@ -238,21 +220,23 @@ namespace RiskOfOptions.Components.Options
 
         public void SetChoice(int index)
         {
-            bool cacheIsValid = _buttonCache != null && _buttonCache.Length != 0;
+            bool cacheIsValid = _buttons != null && _buttons.Length != 0;
 
             if (cacheIsValid)
-                _buttonCache[_currentIndex].GetComponentInChildren<HGButton>().colors = _defaultColors;
+                _buttons[_currentIndex].GetComponentInChildren<HGButton>().colors = defaultColors;
 
+            if (index >= choices.Length)
+                return;
 
             _currentIndex = index;
 
             if (!_label)
-                _label = transform.Find("Label").GetComponent<HGTextMeshProUGUI>();
-
-            _label.SetText(choices[_currentIndex]);
+                _label = transform.GetComponentInChildren<LanguageTextMeshController>();
+            
+            _label.token = choices[_currentIndex];
 
             if (cacheIsValid)
-                _buttonCache[_currentIndex].GetComponentInChildren<HGButton>().colors = _selectedColors;
+                _buttons[_currentIndex].GetComponentInChildren<HGButton>().colors = _selectedColors;
         }
 
         private void SubmitChoice(int index)
@@ -264,15 +248,13 @@ namespace RiskOfOptions.Components.Options
 
         private void DestroyImmediateChoices()
         {
-            if (_buttonCache == null)
+            if (_buttons == null)
                 return;
 
-            foreach (var button in _buttonCache)
-            {
-                GameObject.DestroyImmediate(button);
-            }
+            foreach (var button in _buttons)
+                DestroyImmediate(button);
 
-            _buttonCache = Array.Empty<GameObject>();
+            _buttons = Array.Empty<GameObject>();
         }
 
         private void ToggleShow()
@@ -289,32 +271,36 @@ namespace RiskOfOptions.Components.Options
 
         private void Show()
         {
-            if (_buttonCache == null || _buttonCache.Length == 0)
-            {
+            if (_buttons.Length == 0)
                 CreateChoices();
-            }
 
-            _template.SetActive(true);
-            _template.GetComponent<Canvas>().overrideSorting = true;
+            template.SetActive(true);
+            template.GetComponent<Canvas>().overrideSorting = true;
 
-            _buttonCache[_currentIndex].GetComponentInChildren<HGButton>().colors = _selectedColors;
+            _buttons[_currentIndex].GetComponentInChildren<HGButton>().colors = _selectedColors;
 
         }
 
         private void Hide()
         {
-            //Debug.Log($"ball");
-            _template.SetActive(false);
+            template.SetActive(false);
         }
 
         private void CreateChoices()
         {
-            _buttonCache = new GameObject[choices.Length];
+            if (_buttons is { Length: > 0 })
+            {
+                foreach (var button in _buttons)
+                    DestroyImmediate(button);
+            }
+            
+            _buttons = new GameObject[choices.Length];
+            
             for (int i = 0; i < choices.Length; i++)
             {
-                var button = GameObject.Instantiate(_dropDownChoicePrefab, _content.transform);
+                var button = Instantiate(choiceItemPrefab, content.transform);
 
-                button.GetComponentInChildren<HGTextMeshProUGUI>().SetText(choices[i]);
+                button.GetComponentInChildren<LanguageTextMeshController>().token = choices[i];
 
                 button.name = choices[i];
 
@@ -330,66 +316,72 @@ namespace RiskOfOptions.Components.Options
                     SubmitChoice(index);
                 });
 
-                _buttonCache[i] = button;
+                _buttons[i] = button;
             }
         }
-
-        private void SetupTemplate()
+        
+        protected override void OnDestroy()
         {
-            _template = GameObject.Instantiate(PanelPrefab, transform);
-            _template.name = "Drop Down Parent";
-            _template.SetActive(false);
-
-            GameObject.DestroyImmediate(_template.GetComponent<SettingsPanelController>());
-            GameObject.DestroyImmediate(_template.GetComponent<HGButtonHistory>());
-            GameObject.DestroyImmediate(_template.GetComponent<OnEnableEvent>());
-            GameObject.DestroyImmediate(_template.GetComponent<UIJuice>());
-
-            var templateCanvas = _template.GetOrAddComponent<Canvas>();
-
-            templateCanvas.overrideSorting = true;
-            templateCanvas.sortingOrder = 30000;
-
-            _template.GetOrAddComponent<GraphicRaycaster>();
-            _template.GetOrAddComponent<CanvasGroup>();
-
-            var templateRectTransform = _template.GetComponent<RectTransform>();
-
-            templateRectTransform.anchorMin = new Vector2(0, 0);
-            templateRectTransform.anchorMax = new Vector2(1, 0);
-            templateRectTransform.pivot = new Vector2(0.5f, 1);
-            templateRectTransform.sizeDelta = new Vector2(0, 300f);
-            templateRectTransform.anchoredPosition = Vector2.zero;
-
-            var scrollbarRectTransform = _template.transform.Find("Scroll View").Find("Scrollbar Vertical").GetComponent<RectTransform>();
-
-            scrollbarRectTransform.anchorMin = new Vector2(1, 0.02f);
-            scrollbarRectTransform.anchorMax = new Vector2(1, 0.98f);
-            scrollbarRectTransform.sizeDelta = new Vector2(24, 0);
-            scrollbarRectTransform.anchoredPosition = new Vector2(-26, 0);
-
-            _content = _template.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").gameObject;
-
-            _content.GetComponent<VerticalLayoutGroup>().padding = new RectOffset(4, 18, 4, 4);
+            base.OnDestroy();
+            DestroyImmediateChoices();
         }
 
-        private static void CreatePrefab()
-        {
-            _dropDownChoicePrefab = GameObject.Instantiate(CheckBoxPrefab);
-            _dropDownChoicePrefab.SetActive(false);
+        // private void SetupTemplate()
+        // {
+            // _template = GameObject.Instantiate(panelPrefab, transform);
+            // _template.name = "Drop Down Parent";
+            // _template.SetActive(false);
+            //
+            // GameObject.DestroyImmediate(_template.GetComponent<SettingsPanelController>());
+            // GameObject.DestroyImmediate(_template.GetComponent<HGButtonHistory>());
+            // GameObject.DestroyImmediate(_template.GetComponent<OnEnableEvent>());
+            // GameObject.DestroyImmediate(_template.GetComponent<UIJuice>());
+            //
+            // var templateCanvas = _template.GetOrAddComponent<Canvas>();
+            //
+            // templateCanvas.overrideSorting = true;
+            // templateCanvas.sortingOrder = 30000;
+            //
+            // _template.GetOrAddComponent<GraphicRaycaster>();
+            // _template.GetOrAddComponent<CanvasGroup>();
+            //
+            // var templateRectTransform = _template.GetComponent<RectTransform>();
+            //
+            // templateRectTransform.anchorMin = new Vector2(0, 0);
+            // templateRectTransform.anchorMax = new Vector2(1, 0);
+            // templateRectTransform.pivot = new Vector2(0.5f, 1);
+            // templateRectTransform.sizeDelta = new Vector2(0, 300f);
+            // templateRectTransform.anchoredPosition = Vector2.zero;
+            //
+            // var scrollbarRectTransform = _template.transform.Find("Scroll View").Find("Scrollbar Vertical").GetComponent<RectTransform>();
+            //
+            // scrollbarRectTransform.anchorMin = new Vector2(1, 0.02f);
+            // scrollbarRectTransform.anchorMax = new Vector2(1, 0.98f);
+            // scrollbarRectTransform.sizeDelta = new Vector2(24, 0);
+            // scrollbarRectTransform.anchoredPosition = new Vector2(-26, 0);
+            //
+            // _content = _template.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").gameObject;
+            //
+            // _content.GetComponent<VerticalLayoutGroup>().padding = new RectOffset(4, 18, 4, 4);
+        // }
 
-            var hgButton = _dropDownChoicePrefab.GetComponent<HGButton>();
-            hgButton.onClick.RemoveAllListeners();
-            hgButton.disablePointerClick = false;
-
-            GameObject.DestroyImmediate(_dropDownChoicePrefab.GetComponent<CarouselController>());
-            GameObject.DestroyImmediate(_dropDownChoicePrefab.transform.Find("CarouselRect").gameObject);
-
-            var dropDownLayoutElement = _dropDownChoicePrefab.GetComponent<LayoutElement>();
-
-            dropDownLayoutElement.minHeight = 40;
-            dropDownLayoutElement.preferredHeight = 40;
-        }
+        // private static void CreatePrefab()
+        // {
+        //     choiceItemPrefab = GameObject.Instantiate(CheckBoxPrefab);
+        //     choiceItemPrefab.SetActive(false);
+        //
+        //     var hgButton = choiceItemPrefab.GetComponent<HGButton>();
+        //     hgButton.onClick.RemoveAllListeners();
+        //     hgButton.disablePointerClick = false;
+        //
+        //     GameObject.DestroyImmediate(choiceItemPrefab.GetComponent<CarouselController>());
+        //     GameObject.DestroyImmediate(choiceItemPrefab.transform.Find("CarouselRect").gameObject);
+        //
+        //     var dropDownLayoutElement = choiceItemPrefab.GetComponent<LayoutElement>();
+        //
+        //     dropDownLayoutElement.minHeight = 40;
+        //     dropDownLayoutElement.preferredHeight = 40;
+        // }
 
         public class DropDownEvent : UnityEvent<int>
         {

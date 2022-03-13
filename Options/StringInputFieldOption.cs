@@ -12,7 +12,7 @@ namespace RiskOfOptions.Options
     {
         private readonly string _originalValue;
         private readonly ConfigEntry<string> _configEntry;
-        private InputFieldConfig Config { get; }
+        internal readonly InputFieldConfig Config;
         
         public StringInputFieldOption(ConfigEntry<string> configEntry) : this(configEntry, new InputFieldConfig()) { }
 
@@ -23,13 +23,11 @@ namespace RiskOfOptions.Options
             _originalValue = configEntry.Value;
             _configEntry = configEntry;
             Config = config;
-            
-            SetCategoryName(configEntry.Definition.Section, config);
-            SetName(configEntry.Definition.Key, config);
-            SetDescription(configEntry.Description.Description, config);
         }
 
         public override string OptionTypeName { get; protected set; } = "string_input_field";
+        
+        internal override ConfigEntryBase ConfigEntry => _configEntry;
         
         public override GameObject CreateOptionGameObject(GameObject prefab, Transform parent)
         {
@@ -52,24 +50,20 @@ namespace RiskOfOptions.Options
             return Config;
         }
 
-        public override bool ValueChanged()
+        public bool ValueChanged()
         {
-            return !string.Equals(_originalValue, _configEntry.Value, StringComparison.InvariantCulture);
-        }
-
-        public void SetValue(string value)
-        {
-            _configEntry.Value = value;
-        }
-
-        public string GetValue()
-        {
-            return _configEntry.Value;
+            return !string.Equals(_configEntry.Value, _originalValue, StringComparison.InvariantCulture);
         }
 
         public string GetOriginalValue()
         {
             return _originalValue;
+        }
+
+        public string Value
+        {
+            get => _configEntry.Value;
+            set => _configEntry.Value = value;
         }
     }
 }

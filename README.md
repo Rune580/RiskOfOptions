@@ -14,6 +14,8 @@ An API to provide a user interface in game to interact with BepInEx ConfigEntry'
 
 ### For feature requests or issues head over to my [repository](https://github.com/Rune580/RiskOfOptions).
 
+## Developers we have a [wiki](https://github.com/Rune580/RiskOfOptions/wiki)
+
 ## Getting Started
 First you need to grab the latest release from the [Thunderstore](https://thunderstore.io/package/Rune580/Risk_Of_Options/).
 Extract the mod to your plugins folder, and then add a reference to the dll in your project in Visual Studio. [Project->Add Reference...->Browse]

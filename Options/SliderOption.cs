@@ -9,7 +9,7 @@ namespace RiskOfOptions.Options
     {
         private readonly float _originalValue;
         private readonly ConfigEntry<float> _configEntry;
-        private SliderConfig Config { get; }
+        internal readonly SliderConfig Config;
         
         public SliderOption(ConfigEntry<float> configEntry) : this(configEntry, new SliderConfig()) { }
         
@@ -20,13 +20,11 @@ namespace RiskOfOptions.Options
             _originalValue = configEntry.Value;
             _configEntry = configEntry;
             Config = config;
-            
-            SetCategoryName(configEntry.Definition.Section, config);
-            SetName(configEntry.Definition.Key, config);
-            SetDescription(configEntry.Description.Description, config);
         }
 
         public override string OptionTypeName { get; protected set; } = "slider";
+        
+        internal override ConfigEntryBase ConfigEntry => _configEntry;
         
         public override GameObject CreateOptionGameObject(GameObject prefab, Transform parent)
         {
@@ -51,25 +49,21 @@ namespace RiskOfOptions.Options
             return Config;
         }
 
-        public override bool ValueChanged()
+        public bool ValueChanged()
         {
             // ReSharper disable once CompareOfFloatsByEqualityOperator
-            return GetValue() != GetOriginalValue();
-        }
-
-        public void SetValue(float value)
-        {
-            _configEntry.Value = value;
-        }
-
-        public float GetValue()
-        {
-            return _configEntry.Value;
+            return Value != GetOriginalValue();
         }
 
         public float GetOriginalValue()
         {
             return _originalValue;
+        }
+
+        public float Value
+        {
+            get => _configEntry.Value;
+            set => _configEntry.Value = value;
         }
     }
 }

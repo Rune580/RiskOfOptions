@@ -16,10 +16,10 @@ namespace RiskOfOptions.Components.RuntimePrefabs
         [CanBeNull] private GameObject _optionsPanel;
         [CanBeNull] private GameObject _genericDescriptionPanel;
         [CanBeNull] private GameObject _verticalLayout;
+        [CanBeNull] private GameObject _emptyButton;
         
         public GameObject ModListButton { get; private set; }
         public GameObject ModOptionsHeaderButton { get; private set; }
-        public GameObject EmptyButton { get; private set; }
         public GameObject Canvas { get; private set; }
         public GameObject ModListPanel { get; private set;}
         public GameObject ModListHighlight { get; private set; }
@@ -57,6 +57,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             CreateAdditionalCategoryStuff();
             CreateModOptionsPanel();
             
+            Object.DestroyImmediate(_emptyButton);
             Object.DestroyImmediate(_optionsPanel);
             Object.DestroyImmediate(_verticalLayout);
             
@@ -70,7 +71,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
         {
             Object.DestroyImmediate(ModListButton);
             Object.DestroyImmediate(ModOptionsHeaderButton);
-            Object.DestroyImmediate(EmptyButton);
+            Object.DestroyImmediate(_emptyButton);
             Object.DestroyImmediate(Canvas);
             Object.DestroyImmediate(ModListPanel);
             Object.DestroyImmediate(ModListHighlight);
@@ -111,6 +112,9 @@ namespace RiskOfOptions.Components.RuntimePrefabs
         {
             ModOptionsHeaderButton = Object.Instantiate(headerArea.Find("GenericHeaderButton (Audio)").gameObject);
             ModOptionsHeaderButton.name = "GenericHeaderButton (Mod Options)";
+            
+            ModOptionsHeaderButton.GetComponentInChildren<LanguageTextMeshController>().token = LanguageTokens.HeaderToken;
+            ModOptionsHeaderButton.GetComponentInChildren<HGButton>().onClick.RemoveAllListeners();
         }
 
         private void CreateVerticalLayout()
@@ -125,6 +129,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
         private void CreateModListButton()
         {
             ModListButton = Object.Instantiate(_verticalLayout!.transform.Find("SettingsEntryButton, Bool (Audio Focus)").gameObject);
+            ModListButton.name = "Mod Options Prefab, ModList Button";
 
             Object.DestroyImmediate(ModListButton.GetComponentInChildren<CarouselController>());
             Object.DestroyImmediate(ModListButton.GetComponentInChildren<ButtonSkinController>());
@@ -203,11 +208,12 @@ namespace RiskOfOptions.Components.RuntimePrefabs
 
         private void CreateEmptyButton()
         {
-            EmptyButton = Object.Instantiate(_verticalLayout!.transform.Find("SettingsEntryButton, Bool (Audio Focus)").gameObject);
-            
-            Object.DestroyImmediate(EmptyButton.GetComponentInChildren<CarouselController>());
-            Object.DestroyImmediate(EmptyButton.GetComponentInChildren<ButtonSkinController>());
-            Object.DestroyImmediate(EmptyButton.transform.Find("CarouselRect").gameObject);
+            _emptyButton = Object.Instantiate(_verticalLayout!.transform.Find("SettingsEntryButton, Bool (Audio Focus)").gameObject);
+            _emptyButton.name = "Mod Options Prefab, Empty Button";
+
+            Object.DestroyImmediate(_emptyButton.GetComponentInChildren<CarouselController>());
+            Object.DestroyImmediate(_emptyButton.GetComponentInChildren<ButtonSkinController>());
+            Object.DestroyImmediate(_emptyButton.transform.Find("CarouselRect").gameObject);
         }
 
         private void CreateCanvas()
@@ -450,7 +456,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             var outlineRectTransform = CategoryPageIndicatorOutline.GetComponent<RectTransform>();
             outlineRectTransform.pivot = Vector2.zero;
 
-            CategoryLeftButton = Object.Instantiate(EmptyButton, scrollView.transform);
+            CategoryLeftButton = Object.Instantiate(_emptyButton, scrollView.transform);
             Object.DestroyImmediate(CategoryLeftButton.GetComponent<LayoutElement>());
 
             var leftButtonRectTransform = CategoryLeftButton.GetComponent<RectTransform>();

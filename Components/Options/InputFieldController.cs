@@ -72,6 +72,8 @@ namespace RiskOfOptions.Components.Options
             HookLanguage();
 
             FixTextLabel();
+            
+            UpdateControls();
         }
 
         protected override void Disable()
@@ -86,6 +88,8 @@ namespace RiskOfOptions.Components.Options
         
         protected override void OnUpdateControls()
         {
+            base.OnUpdateControls();
+            
             _previewLanguage.InvokeMethod("Start");
         }
 
