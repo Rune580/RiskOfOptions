@@ -22,9 +22,8 @@ namespace RiskOfOptions
 
         internal static bool DoingKeyBind = false;
         
-        internal static ModOptionPanelController InstanceModOptionPanelController;
-        
         internal static readonly List<string> RestartRequiredOptions = new();
+        
 
         internal static void Init()
         {

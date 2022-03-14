@@ -29,7 +29,9 @@ namespace RiskOfOptions.Components.Panel
         private GameObject _choicePrefab;
         private GameObject _genericButtonPrefab;
 
+        private MPEventSystem _mpEventSystem;
         private MPButton _revertButton;
+        private SimpleDialogBox _dialogBox;
 
         //private GameObject _leftGlyph;
         //private GameObject _rightGlyph;
@@ -43,14 +45,17 @@ namespace RiskOfOptions.Components.Panel
         private ModOptionsPanelPrefab _panel;
         private ModSetting[] _modSettings = Array.Empty<ModSetting>();
 
+        private void Awake()
+        {
+            _mpEventSystem = GetComponentInParent<MPEventSystemLocator>().eventSystem;
+        }
+
         public void Start()
         {
             CreatePrefabs();
             CreateModListButtons();
             AddPanelsToSettings();
             CheckIfRestartNeeded();
-
-            ModSettingsManager.InstanceModOptionPanelController = this;
         }
         private void CreatePrefabs()
         {
@@ -80,65 +85,6 @@ namespace RiskOfOptions.Components.Panel
             _inputFieldPrefab = RuntimePrefabManager.Get<InputFieldPrefab>().InputField;
             _choicePrefab = RuntimePrefabManager.Get<ChoicePrefab>().ChoiceButton;
             _genericButtonPrefab = RuntimePrefabManager.Get<GenericButtonPrefab>().GenericButton;
-            
-            //_dropDownPrefab = GameObject.Instantiate(subPanelArea.Find("SettingsSubPanel, Video").Find("Scroll View").Find("Viewport").Find("VerticalLayout").Find("Option, Resolution").gameObject);
-            //_dropDownPrefab.SetActive(false);
-            //
-            // GameObject.DestroyImmediate(_dropDownPrefab.transform.Find("CarouselRect").GetComponent<ResolutionControl>()); // Removing this entirely since it seems to mostly be made for resolution stuff.
-            // GameObject.DestroyImmediate(_dropDownPrefab.transform.Find("CarouselRect").Find("RefreshRateDropdown").gameObject); // I only really need one Drop down element.
-            // GameObject.DestroyImmediate(_dropDownPrefab.transform.Find("CarouselRect").Find("ApplyButton").gameObject); // I think most use cases don't need an apply button. If I think otherwise later I can make this optional
-            // GameObject.DestroyImmediate(_dropDownPrefab.GetComponent<SelectableDescriptionUpdater>());
-            // GameObject.DestroyImmediate(_dropDownPrefab.GetComponent<PanelSkinController>());
-            // GameObject.DestroyImmediate(_dropDownPrefab.GetComponent<Image>());
-            //
-            //
-            // GameObject.Instantiate(_checkBoxPrefab.transform.Find("BaseOutline").gameObject, _dropDownPrefab.transform);
-            // GameObject dropDownHoverOutline = GameObject.Instantiate(_checkBoxPrefab.transform.Find("HoverOutline").gameObject, _dropDownPrefab.transform);
-            //
-            // HGButton dropDownButton = _dropDownPrefab.AddComponent<HGButton>(_checkBoxPrefab.GetComponent<HGButton>());
-            //
-            // dropDownButton.imageOnHover = dropDownHoverOutline.GetComponent<Image>();
-            //
-            // var dropDownImage = _dropDownPrefab.AddComponent(_checkBoxPrefab.GetComponent<Image>());
-            //
-            // _dropDownPrefab.AddComponent<ButtonSkinController>(_checkBoxPrefab.GetComponent<ButtonSkinController>());
-            //
-            // var dropDownTargetGraphic = dropDownImage;
-            //
-            // dropDownButton.targetGraphic = dropDownTargetGraphic;
-            // dropDownButton.navigation = new Navigation();
-            //
-            // dropDownButton.onClick.RemoveAllListeners();
-            //
-            // _dropDownPrefab.AddComponent<DropDownController>().nameLabel = _dropDownPrefab.transform.Find("Text, Name").GetComponent<LanguageTextMeshController>();
-            //
-            // var dropDownGameObject = _dropDownPrefab.transform.Find("CarouselRect").Find("ResolutionDropdown").gameObject;
-            //
-            // dropDownGameObject.name = "Dropdown";
-            //
-            // var dropDownLayoutElement = dropDownGameObject.GetComponent<LayoutElement>();
-            // dropDownLayoutElement.minWidth = 300;
-            // dropDownLayoutElement.preferredWidth = 300;
-            //
-            // if (!RooDropdown.CheckMarkSprite)
-            // {
-            //     RooDropdown.CheckMarkSprite = dropDownGameObject.transform.Find("Template").Find("Viewport").Find("Content").Find("Item").Find("Item Checkmark").GetComponent<Image>().sprite;
-            // }
-            //
-            // GameObject.DestroyImmediate(dropDownGameObject.GetComponent<MPDropdown>());
-            // GameObject.DestroyImmediate(dropDownGameObject.transform.Find("Template").gameObject);
-            //
-            // dropDownGameObject.AddComponent<RooDropdown>().colors = _checkBoxPrefab.GetComponent<HGButton>().colors;
-            //
-            // if (!RooDropdown.CheckBoxPrefab)
-            // {
-            //     RooDropdown.CheckBoxPrefab = _checkBoxPrefab;
-            // }
-            //
-            // if (!RooDropdown.PanelPrefab)
-            // {
-            //     RooDropdown.PanelPrefab = _modOptionsPanelPrefab.OptionsPanel;
-            // }
 
             _checkBoxPrefab.SetActive(false);
             _sliderPrefab.SetActive(false);
@@ -193,6 +139,15 @@ namespace RiskOfOptions.Components.Panel
             Transform modListVerticalLayout = _panel.ModListPanel.transform.Find("Scroll View").Find("Viewport")
                 .Find("VerticalLayout");
 
+            if (ModSettingsManager.OptionCollection.Count == 0)
+            {
+                ShowNoModsDialogBox();
+            }
+            else
+            {
+                ShowModsDialogBox();
+            }
+
             foreach (var collection in ModSettingsManager.OptionCollection)
             {
                 GameObject newModButton = Instantiate(_panel.ModListButton, modListVerticalLayout);
@@ -237,6 +192,67 @@ namespace RiskOfOptions.Components.Panel
             navigationController.currentHeaderIndex = -1;
         }
 
+        private void ShowNoModsDialogBox()
+        {
+            if (_dialogBox)
+                DestroyDialogBox();
+
+            if (RiskOfOptionsPlugin.SeenNoMods.Value)
+                return;
+            RiskOfOptionsPlugin.SeenNoMods.Value = true;
+
+            _dialogBox = SimpleDialogBox.Create(_mpEventSystem);
+
+            _dialogBox.headerToken = new SimpleDialogBox.TokenParamsPair
+            {
+                token =  LanguageTokens.NoModsHeaderToken,
+                formatParams = Array.Empty<object>()
+            };
+
+            _dialogBox.descriptionToken = new SimpleDialogBox.TokenParamsPair
+            {
+                token = LanguageTokens.NoModsDescriptionToken,
+                formatParams = Array.Empty<object>()
+            };
+
+            _dialogBox.AddCancelButton(LanguageTokens.DialogButtonToken);
+        }
+
+        private void ShowModsDialogBox()
+        {
+            if (_dialogBox)
+                DestroyDialogBox();
+            
+            if (RiskOfOptionsPlugin.SeenMods.Value)
+                return;
+            RiskOfOptionsPlugin.SeenMods.Value = true;
+            
+            _dialogBox = SimpleDialogBox.Create(_mpEventSystem);
+
+            _dialogBox.headerToken = new SimpleDialogBox.TokenParamsPair
+            {
+                token =  LanguageTokens.ModsHeaderToken,
+                formatParams = Array.Empty<object>()
+            };
+
+            _dialogBox.descriptionToken = new SimpleDialogBox.TokenParamsPair
+            {
+                token = LanguageTokens.ModsDescriptionToken,
+                formatParams = Array.Empty<object>()
+            };
+
+            _dialogBox.AddCancelButton(LanguageTokens.DialogButtonToken);
+        }
+
+        private void DestroyDialogBox()
+        {
+            if (!_dialogBox.rootObject)
+                return;
+            
+            DestroyImmediate(_dialogBox.rootObject);
+            _dialogBox = null;
+        }
+
         internal void LoadModOptionsFromOptionCollection(string modGuid)
         {
             OptionCollection collection = ModSettingsManager.OptionCollection[modGuid];
@@ -270,7 +286,7 @@ namespace RiskOfOptions.Components.Panel
 
             for (int i = 0; i < collection.CategoryCount; i++)
             {
-                GameObject newCategoryButton = Instantiate(_panel.ModOptionsHeaderButton, categoriesObject.transform);
+                GameObject newCategoryButton = Instantiate(_panel.CategoryHeaderButton, categoriesObject.transform);
 
                 LayoutElement le = newCategoryButton.AddComponent<LayoutElement>();
 
@@ -286,7 +302,7 @@ namespace RiskOfOptions.Components.Panel
                 {
                     navigationController.ChooseHeaderByButton(newCategoryButton.GetComponentInChildren<HGButton>());
 
-                    LoadOptionListFromCategory(modGuid, categoryIndex, headers.Count);
+                    LoadOptionListFromCategory(modGuid, categoryIndex);
                 });
 
                 newCategoryButton.name = $"Category Button, {collection[i].name}";
@@ -304,23 +320,21 @@ namespace RiskOfOptions.Components.Panel
 
                 headers.Add(header);
             }
-            categoryScrollRect.SetPage(0);
             categoryScrollRect.FixExtra();
-                
+            categoryScrollRect.Reload();
+
             navigationController.headers = headers.ToArray();
             navigationController.InvokeMethod("RebuildHeaders");
 
             _panel.CategoryRightButton.SetActive(true);
             _panel.CategoryRightButton.transform.SetAsLastSibling();
 
-            LoadOptionListFromCategory(collection.ModGuid, navigationController.currentHeaderIndex, navigationController.headers.Length);
+            LoadOptionListFromCategory(collection.ModGuid, navigationController.currentHeaderIndex);
         }
 
-        internal void LoadOptionListFromCategory(string modGuid, int categoryIndex, int headerCount)
+        internal void LoadOptionListFromCategory(string modGuid, int categoryIndex)
         {
             UnloadExistingOptionButtons();
-
-            _panel.CategoryHeader.transform.Find("Scroll View").Find("Scrollbar Horizontal").gameObject.GetComponent<CustomScrollbar>().value = (1f / ((float)headerCount) - 1) * ((float)categoryIndex);
 
             _panel.ModOptionsDescriptionPanel.GetComponentInChildren<HGTextMeshProUGUI>().SetText("");
 
@@ -338,13 +352,13 @@ namespace RiskOfOptions.Components.Panel
 
                 GameObject button = option switch
                 {
-                    CheckBoxOption checkBoxOption => option.CreateOptionGameObject(_checkBoxPrefab, verticalLayoutTransform),
-                    SliderOption sliderOption => option.CreateOptionGameObject(_sliderPrefab, verticalLayoutTransform),
-                    StepSliderOption stepSliderOption => option.CreateOptionGameObject(_stepSliderPrefab, verticalLayoutTransform),
-                    KeyBindOption keyBindOption => option.CreateOptionGameObject(_keyBindPrefab, verticalLayoutTransform),
-                    StringInputFieldOption inputFieldOption => option.CreateOptionGameObject(_inputFieldPrefab, verticalLayoutTransform),
-                    GenericButtonOption genericButton => option.CreateOptionGameObject(_genericButtonPrefab, verticalLayoutTransform),
-                    ChoiceOption choiceOption => option.CreateOptionGameObject(_choicePrefab, verticalLayoutTransform),
+                    CheckBoxOption => option.CreateOptionGameObject(_checkBoxPrefab, verticalLayoutTransform),
+                    SliderOption => option.CreateOptionGameObject(_sliderPrefab, verticalLayoutTransform),
+                    StepSliderOption => option.CreateOptionGameObject(_stepSliderPrefab, verticalLayoutTransform),
+                    KeyBindOption => option.CreateOptionGameObject(_keyBindPrefab, verticalLayoutTransform),
+                    StringInputFieldOption => option.CreateOptionGameObject(_inputFieldPrefab, verticalLayoutTransform),
+                    GenericButtonOption => option.CreateOptionGameObject(_genericButtonPrefab, verticalLayoutTransform),
+                    ChoiceOption => option.CreateOptionGameObject(_choicePrefab, verticalLayoutTransform),
                     _ => throw new ArgumentOutOfRangeException(option.Name)
                 };
 

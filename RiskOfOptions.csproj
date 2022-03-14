@@ -28,14 +28,12 @@
   </ItemGroup>
   
   <ItemGroup>
-    <OutputFiles Include="$(TargetPath);$(TargetDir)$(TargetName).pdb" />
+    <OutputFiles Include="$(TargetPath);$(TargetDir)$(TargetName).pdb" InProject="false"/>
     <PackageFiles Include="manifest.json;icon.png;README.md" />
-    <ThunderstoreDirs Include="$(OutputPath)\thunderstore\;$(OutputPath)\thunderstore\package;$(OutputPath)\thunderstore\package\RiskOfOptions\" />
+    <ThunderstoreDirs Include="$(OutputPath)\thunderstore\;$(OutputPath)\thunderstore\package;$(OutputPath)\thunderstore\package\RiskOfOptions\" InProject="false"/>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Message Text="$(MSBuildProgramFiles32)"/>
-    
     <!-- Copies dll and pdb to plugins folder -->
     <Copy SourceFiles="@(OutputFiles)" DestinationFolder="$(RoR2Dir)\BepInEx\plugins" />
     

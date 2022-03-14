@@ -25,6 +25,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
         public GameObject ModListHighlight { get; private set; }
         public GameObject ModDescriptionPanel { get; private set; }
         public GameObject CategoryHeader { get; private set; }
+        public GameObject CategoryHeaderButton { get; private set; }
         public GameObject CategoryHeaderHighlight { get; private set; }
         public GameObject CategoryPageIndicators { get; private set; }
         public GameObject CategoryPageIndicator { get; private set; }
@@ -82,6 +83,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             Object.DestroyImmediate(CategoryLeftButton);
             Object.DestroyImmediate(CategoryRightButton);
             Object.DestroyImmediate(CategoryHeader);
+            Object.DestroyImmediate(CategoryHeaderButton);
             Object.DestroyImmediate(CategoryHeaderHighlight);
             Object.DestroyImmediate(ModOptionsPanel);
             Object.DestroyImmediate(ModOptionsDescriptionPanel);
@@ -209,11 +211,11 @@ namespace RiskOfOptions.Components.RuntimePrefabs
         private void CreateEmptyButton()
         {
             _emptyButton = Object.Instantiate(_verticalLayout!.transform.Find("SettingsEntryButton, Bool (Audio Focus)").gameObject);
-            _emptyButton.name = "Mod Options Prefab, Empty Button";
+            _emptyButton!.name = "Mod Options Prefab, Empty Button";
 
-            Object.DestroyImmediate(_emptyButton.GetComponentInChildren<CarouselController>());
-            Object.DestroyImmediate(_emptyButton.GetComponentInChildren<ButtonSkinController>());
-            Object.DestroyImmediate(_emptyButton.transform.Find("CarouselRect").gameObject);
+            Object.DestroyImmediate(_emptyButton!.GetComponentInChildren<CarouselController>());
+            Object.DestroyImmediate(_emptyButton!.GetComponentInChildren<ButtonSkinController>());
+            Object.DestroyImmediate(_emptyButton!.transform.Find("CarouselRect").gameObject);
         }
 
         private void CreateCanvas()
@@ -396,6 +398,10 @@ namespace RiskOfOptions.Components.RuntimePrefabs
 
         private void CreateAdditionalCategoryStuff()
         {
+            CategoryHeaderButton = Object.Instantiate(ModOptionsHeaderButton, CategoryHeader.transform);
+            CategoryHeaderButton.name = "Category Header Button Prefab";
+            CategoryHeaderButton.SetActive(false);
+            
             GameObject scrollView = CategoryHeader.transform.Find("Scroll View").gameObject;
 
             CategoryPageIndicators = new GameObject("Indicators", typeof(RectTransform));

@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using RoR2;
 using RoR2.UI;
 using RoR2.UI.SkinControllers;
 using UnityEngine;
@@ -18,6 +17,7 @@ namespace RiskOfOptions.Components.Panel
             {
                 _pages = Mathf.CeilToInt(value / 4f);
                 _categories = value;
+                SetPage(0);
             }
         }
 
@@ -71,6 +71,21 @@ namespace RiskOfOptions.Components.Panel
             //UpdateOutline(0);
             SetPage(0);
             _lateInit = true;
+        }
+
+        public void Reload()
+        {
+            if (_pageAnimator != null)
+                StopCoroutine(_pageAnimator);
+            
+            _pageAnimator = AnimMove(0);
+            StartCoroutine(_pageAnimator);
+            
+            if (!_layoutGroup || !indicatorPrefab || _indicators == null)
+                return;
+            
+            AddIndicators();
+            SetPage(0);
         }
 
         private void AddIndicators()
@@ -148,7 +163,7 @@ namespace RiskOfOptions.Components.Panel
             if (_colorAnimator != null)
                 StopCoroutine(_colorAnimator);
 
-            _pageAnimator = AnimMove(_currentPage / ((float)_pages - 1));
+            _pageAnimator = AnimMove(page);
             StartCoroutine(_pageAnimator);
 
             _indicatorAnimator = SetIndicator(page);
@@ -174,8 +189,10 @@ namespace RiskOfOptions.Components.Panel
             outlineTransform.position = indicatorTransform.position;
         }
 
-        private IEnumerator AnimMove(float newPos)
+        private IEnumerator AnimMove(int page)
         {
+            float newPos = _pages == 1 ? page / 1f : page / ((float)_pages - 1);
+            
             while (Mathf.Abs(horizontalNormalizedPosition - newPos) > 0.001f)
             {
                 horizontalNormalizedPosition = Mathf.Lerp(horizontalNormalizedPosition, newPos, 6f * Time.deltaTime);
@@ -217,11 +234,13 @@ namespace RiskOfOptions.Components.Panel
             Color[] colors = new Color[_indicators.Length];
             while (!ExtensionMethods.CloseEnough(colors, InactiveColor))
             {
-                
                 for (int i = 0; i < _indicators.Length; i++)
                 {
                     if (i == ignore)
                         continue;
+
+                    if (i >= colors.Length)
+                        yield break;
                 
                     var image = _indicators[i].GetComponent<Image>();
 

@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using BepInEx.Configuration;
 using R2API.Utils;
 
 namespace RiskOfOptions
@@ -15,9 +16,15 @@ namespace RiskOfOptions
             Guid = "com." + Author + "." + "riskofoptions",
             Version = "2.3.0";
 
+        internal static ConfigEntry<bool> SeenNoMods;
+        internal static ConfigEntry<bool> SeenMods;
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Awake is automatically called by Unity")]
         private void Awake()
         {
+            SeenNoMods = Config.Bind("One Time Stuff", "Has seen the no mods prompt", false);
+            SeenMods = Config.Bind("One Time Stuff", "Has seen the mods prompt", false);
+            
             ModSettingsManager.Init();
         }
     }

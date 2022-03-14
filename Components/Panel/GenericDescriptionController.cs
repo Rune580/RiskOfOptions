@@ -7,7 +7,6 @@ namespace RiskOfOptions.Components.Panel
     {
         private GameObject _genericDescriptionPanel;
         public ModOptionPanelController Mopc { get; internal set; }
-        private Transform _canvas;
 
         private void OnEnable()
         {
