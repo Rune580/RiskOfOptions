@@ -107,8 +107,6 @@ namespace RiskOfOptions.Components.Options
                 Enable();
                 _disabled = false;
             }
-            
-            UpdateControls();
         }
 
         private void RestartRequiredCheck()
