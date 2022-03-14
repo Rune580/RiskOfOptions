@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>9</LangVersion>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\riskofoptions"/>
+  </ItemGroup>
+  
+  <PropertyGroup>
+    <RoR2Dir Condition="Exists('D:\SteamLibrary\steamapps\common\Risk of Rain 2')">D:\SteamLibrary\steamapps\common\Risk of Rain 2</RoR2Dir>
+    <RoR2Dir Condition="Exists('$(MSBuildProgramFiles32)\Steam\steamapps\common\Risk of Rain 2')">$(MSBuildProgramFiles32)\Steam\steamapps\common\Risk of Rain 2</RoR2Dir>
+    <ManagedDir>$(RoR2Dir)\Risk of Rain 2_Data\Managed\</ManagedDir>
+    <BepinexDir>$(RoR2Dir)\BepInEx\</BepinexDir>
+    <CoreDir>$(BepinexDir)core\</CoreDir>
+    <PluginsDir>$(BepinexDir)plugins\</PluginsDir>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Dependencies Include="$(PluginsDir)R2API\R2API.dll" InProject="false"/>
+    <Dependencies Include="$(PluginsDir)MMHOOK\MMHOOK_RoR2.dll" InProject="false"/>
+    <ExcludedAssemblyFiles Include="$(ManagedDir)netstandard.dll;$(ManagedDir)System.*" InProject="false"/>
+    <AssemblyFiles Include="$(ManagedDir)*.dll;$(CoreDir)*.dll;@(Dependencies)" Exclude="@(ExcludedAssemblyFiles)" InProject="false"/>
+
+    <Reference Include="@(AssemblyFiles)" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <OutputFiles Include="$(TargetPath);$(TargetDir)$(TargetName).pdb" />
+    <PackageFiles Include="manifest.json;icon.png;README.md" />
+    <ThunderstoreDirs Include="$(OutputPath)\thunderstore\;$(OutputPath)\thunderstore\package;$(OutputPath)\thunderstore\package\RiskOfOptions\" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Message Text="$(MSBuildProgramFiles32)"/>
+    
+    <!-- Copies dll and pdb to plugins folder -->
+    <Copy SourceFiles="@(OutputFiles)" DestinationFolder="$(RoR2Dir)\BepInEx\plugins" />
+    
+    <!-- Packages build into a zip that's ready to upload -->
+    <MakeDir Directories="@(ThunderstoreDirs)" />
+    <Copy SourceFiles="@(PackageFiles)" DestinationFolder="$(OutputPath)\thunderstore\package\" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(OutputPath)\thunderstore\package\RiskOfOptions\" />
+    <Delete Condition="Exists('$(OutputPath)\thunderstore\RiskOfOptions-Output.zip')" Files="$(OutputPath)\thunderstore\RiskOfOptions-Output.zip" />
+    <ZipDirectory SourceDirectory="$(OutputPath)\thunderstore\package\" DestinationFile="$(OutputPath)\thunderstore\RiskOfOptions-Output.zip" />
+  </Target>
+  
+</Project>
