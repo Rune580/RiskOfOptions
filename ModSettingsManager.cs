@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
-using R2API;
-using RiskOfOptions.Components.Panel;
 using RiskOfOptions.Containers;
+using RiskOfOptions.Lib;
 using RiskOfOptions.Options;
 using UnityEngine;
 
@@ -17,28 +16,30 @@ namespace RiskOfOptions
     public static class ModSettingsManager
     {
         internal static readonly ModIndexedOptionCollection OptionCollection = new();
-        
-        internal static readonly string StartingText = "risk_of_options";
 
-        internal static bool DoingKeyBind = false;
+        internal const string StartingText = "risk_of_options";
+
+        internal static bool doingKeyBind = false;
         
         internal static readonly List<string> RestartRequiredOptions = new();
         
 
         internal static void Init()
         {
+            LanguageApi.Init();
+            
             Resources.Assets.LoadAssets();
 
             LanguageTokens.Register();
             
             SettingsModifier.Init();
 
-            On.RoR2.PauseManager.CCTogglePause += PauseManagerOnCCTogglePause;
+            PauseManager.CCTogglePause += PauseManagerOnCCTogglePause;
         }
 
         private static void PauseManagerOnCCTogglePause(PauseManager.orig_CCTogglePause orig, ConCommandArgs args)
         {
-            if (DoingKeyBind)
+            if (doingKeyBind)
                 return;
 
             orig(args);

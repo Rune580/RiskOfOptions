@@ -6,7 +6,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <EmbeddedResource Include="Resources\riskofoptions"/>
+    <EmbeddedResource Include="Resources\riskofoptions" />
   </ItemGroup>
   
   <PropertyGroup>
@@ -19,18 +19,18 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <Dependencies Include="$(PluginsDir)R2API\R2API.dll" InProject="false"/>
-    <Dependencies Include="$(PluginsDir)MMHOOK\MMHOOK_RoR2.dll" InProject="false"/>
-    <ExcludedAssemblyFiles Include="$(ManagedDir)netstandard.dll;$(ManagedDir)System.*" InProject="false"/>
-    <AssemblyFiles Include="$(ManagedDir)*.dll;$(CoreDir)*.dll;@(Dependencies)" Exclude="@(ExcludedAssemblyFiles)" InProject="false"/>
+<!--    <Dependencies Include="$(PluginsDir)R2API\R2API.dll" InProject="false"/>-->
+    <Dependencies Include="$(PluginsDir)MMHOOK\MMHOOK_RoR2.dll" InProject="false" />
+    <ExcludedAssemblyFiles Include="$(ManagedDir)netstandard.dll;$(ManagedDir)System.*" InProject="false" />
+    <AssemblyFiles Include="$(ManagedDir)*.dll;$(CoreDir)*.dll;@(Dependencies)" Exclude="@(ExcludedAssemblyFiles)" InProject="false" />
 
     <Reference Include="@(AssemblyFiles)" />
   </ItemGroup>
   
   <ItemGroup>
-    <OutputFiles Include="$(TargetPath);$(TargetDir)$(TargetName).pdb" InProject="false"/>
+    <OutputFiles Include="$(TargetPath);$(TargetDir)$(TargetName).pdb" InProject="false" />
     <PackageFiles Include="manifest.json;icon.png;README.md" />
-    <ThunderstoreDirs Include="$(OutputPath)\thunderstore\;$(OutputPath)\thunderstore\package;$(OutputPath)\thunderstore\package\RiskOfOptions\" InProject="false"/>
+    <ThunderstoreDirs Include="$(OutputPath)\thunderstore\;$(OutputPath)\thunderstore\package;$(OutputPath)\thunderstore\package\RiskOfOptions\" InProject="false" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

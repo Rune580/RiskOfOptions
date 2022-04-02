@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using R2API.MiscHelpers;
+using RiskOfOptions.Lib;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace RiskOfOptions.Components.RuntimePrefabs
 {
@@ -24,7 +23,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
 
         internal static void InitializePrefabs(GameObject panel)
         {
-            foreach (var (type, runtimePrefab) in Prefabs)
+            foreach (var (_, runtimePrefab) in Prefabs)
             {
                 runtimePrefab.Instantiate(panel);
             }

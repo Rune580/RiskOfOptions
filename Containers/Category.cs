@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using R2API;
+using RiskOfOptions.Lib;
 using RiskOfOptions.Options;
 
 namespace RiskOfOptions.Containers
@@ -20,7 +20,7 @@ namespace RiskOfOptions.Containers
             this.name = name;
             ModGuid = modGuid;
             
-            LanguageAPI.Add(NameToken, name);
+            LanguageApi.Add(NameToken, name);
         }
 
         internal void AddOption(ref BaseOption option)

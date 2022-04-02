@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using R2API;
+﻿using System.Collections.Generic;
+using RiskOfOptions.Lib;
 using RiskOfOptions.Options;
 using UnityEngine;
 
@@ -26,7 +24,7 @@ namespace RiskOfOptions.Containers
             ModName = modName;
             ModGuid = modGuid;
             
-            LanguageAPI.Add(NameToken, ModName);
+            LanguageApi.Add(NameToken, ModName);
         }
 
         internal void AddOption(ref BaseOption option)

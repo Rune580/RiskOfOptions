@@ -1,8 +1,8 @@
-﻿using R2API;
-using RoR2.UI;
+﻿using RoR2.UI;
 using System;
 using RiskOfOptions.Components.Panel;
 using RiskOfOptions.Components.RuntimePrefabs;
+using RiskOfOptions.Lib;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -20,7 +20,7 @@ namespace RiskOfOptions
             pauseMenuPrefab.GetComponentInChildren<PauseScreenController>().settingsPanelPrefab
                 .AddComponent<ModOptionPanelController>();
             
-            LanguageAPI.Add(LanguageTokens.HeaderToken, "MOD OPTIONS");
+            LanguageApi.Add(LanguageTokens.HeaderToken, "MOD OPTIONS");
             
             RuntimePrefabManager.Register<ModOptionsPanelPrefab>();
             RuntimePrefabManager.Register<CheckBoxPrefab>();

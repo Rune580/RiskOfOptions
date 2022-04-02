@@ -1,5 +1,4 @@
-﻿using R2API.Utils;
-using RoR2.UI;
+﻿using RoR2.UI;
 using TMPro;
 using UnityEngine;
 using Language = On.RoR2.Language;
@@ -43,7 +42,7 @@ namespace RiskOfOptions.Components.Options
             inputField.onValueChanged.AddListener(OnValueChanged);
 
             inputField.text = GetCurrentValue();
-            _previewLanguage.InvokeMethod("Start");
+            RefreshLabel();
         }
         
         public void Update()
@@ -90,7 +89,7 @@ namespace RiskOfOptions.Components.Options
         {
             base.OnUpdateControls();
             
-            _previewLanguage.InvokeMethod("Start");
+            RefreshLabel();
         }
 
         protected void OnDisable()
@@ -100,13 +99,13 @@ namespace RiskOfOptions.Components.Options
 
         private void GetInput(string input)
         {
-            _previewLanguage.InvokeMethod("Start");
+            RefreshLabel();
             SubmitValue(input);
         }
 
         private void OnValueChanged(string input)
         {
-            _previewLanguage.InvokeMethod("Start");
+            RefreshLabel();
             SubmitValue(input);
         }
         
@@ -235,6 +234,11 @@ namespace RiskOfOptions.Components.Options
             }
 
             return width;
+        }
+
+        private void RefreshLabel()
+        {
+            _previewLanguage.formatArgs = _previewLanguage.formatArgs; // Really dumb solution to get it to refresh label.
         }
     }
 }

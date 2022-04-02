@@ -56,7 +56,7 @@ namespace RiskOfOptions.Components.Options
 
         protected void Update()
         {
-            _bindingButton.interactable = !ModSettingsManager.DoingKeyBind;
+            _bindingButton.interactable = !ModSettingsManager.doingKeyBind;
 
             if (!_listening)
                 return;
@@ -142,7 +142,7 @@ namespace RiskOfOptions.Components.Options
 
         public void StartListening()
         {
-            if (_listening || ModSettingsManager.DoingKeyBind)
+            if (_listening || ModSettingsManager.doingKeyBind)
                 return;
             
             _heldKeys.Clear();
@@ -150,7 +150,7 @@ namespace RiskOfOptions.Components.Options
 
             _listening = true;
 
-            ModSettingsManager.DoingKeyBind = _listening;
+            ModSettingsManager.doingKeyBind = _listening;
 
             _timeoutTimer = 5f;
 
@@ -344,7 +344,7 @@ namespace RiskOfOptions.Components.Options
 
         private void FixPauseMenu()
         {
-            ModSettingsManager.DoingKeyBind = _listening;
+            ModSettingsManager.doingKeyBind = _listening;
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using BepInEx.Configuration;
-using R2API;
 using RiskOfOptions.Components.Options;
+using RiskOfOptions.Lib;
 using RiskOfOptions.OptionConfigs;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -47,7 +47,7 @@ namespace RiskOfOptions.Options
 
                 nameTokens[i] = token;
                 
-                LanguageAPI.Add(token, names[i]);
+                LanguageApi.Add(token, names[i]);
             }
         }
 

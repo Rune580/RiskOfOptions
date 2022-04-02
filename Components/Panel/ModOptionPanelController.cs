@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using R2API.Utils;
 using RiskOfOptions.Components.Options;
 using RiskOfOptions.Components.RuntimePrefabs;
 using RiskOfOptions.Containers;
@@ -326,7 +325,7 @@ namespace RiskOfOptions.Components.Panel
             categoryScrollRect.Reload();
 
             navigationController.headers = headers.ToArray();
-            navigationController.InvokeMethod("RebuildHeaders");
+            navigationController.MoveHeaderLeft();
 
             _panel.CategoryRightButton.SetActive(true);
             _panel.CategoryRightButton.transform.SetAsLastSibling();
