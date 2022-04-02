@@ -14,8 +14,8 @@ namespace RiskOfOptions.Components.RuntimePrefabs
     public class ModOptionsPanelPrefab : IRuntimePrefab
     {
         [CanBeNull] private GameObject _optionsPanel;
-        [CanBeNull] private GameObject _genericDescriptionPanel;
-        [CanBeNull] private GameObject _verticalLayout;
+        [CanBeNull] private GameObject _genericDescriptionPanel; 
+        private GameObject _audioVerticalLayout;
         [CanBeNull] private GameObject _emptyButton;
         
         public GameObject ModListButton { get; private set; }
@@ -45,12 +45,9 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             CreateOptionsPanel(subPanelArea);
             CreateGenericDescriptionPanel(subPanelArea);
             CreateModOptionsHeaderButton(headerArea);
-            CreateVerticalLayout();
+            CreateVerticalLayout(subPanelArea);
             CreateModListButton();
             CreateEmptyButton();
-            
-            for (int i = 0; i < _verticalLayout!.transform.childCount; i++)
-                Object.DestroyImmediate(_verticalLayout.transform.GetChild(i));
 
             CreateCanvas();
             CreateModListPanel(settingsPanel);
@@ -61,7 +58,6 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             
             Object.DestroyImmediate(_emptyButton);
             Object.DestroyImmediate(_optionsPanel);
-            Object.DestroyImmediate(_verticalLayout);
             
             CreateModOptionsDescriptionPanel();
             CreateWarningPanel();
@@ -99,6 +95,11 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             _optionsPanel!.name = "Empty Panel";
             
             Object.DestroyImmediate(_optionsPanel!.GetComponent<SettingsPanelController>());
+
+            Transform verticalLayout = _optionsPanel!.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout");
+
+            while (verticalLayout.childCount > 0)
+                Object.DestroyImmediate(verticalLayout.GetChild(0).gameObject);
         }
 
         private void CreateGenericDescriptionPanel(Transform subPanelArea)
@@ -120,18 +121,14 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             ModOptionsHeaderButton.GetComponentInChildren<HGButton>().onClick.RemoveAllListeners();
         }
 
-        private void CreateVerticalLayout()
+        private void CreateVerticalLayout(Transform subPanelArea)
         {
-            _verticalLayout = _optionsPanel!.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").gameObject;
-            
-            Object.DestroyImmediate(_verticalLayout.transform.Find("SettingsEntryButton, Slider (Master Volume)").gameObject);
-            Object.DestroyImmediate(_verticalLayout.transform.Find("SettingsEntryButton, Slider (SFX Volume)").gameObject);
-            Object.DestroyImmediate(_verticalLayout.transform.Find("SettingsEntryButton, Slider (MSX Volume)").gameObject);
+            _audioVerticalLayout = subPanelArea.Find("SettingsSubPanel, Audio").Find("Scroll View").Find("Viewport").Find("VerticalLayout").gameObject;
         }
 
         private void CreateModListButton()
         {
-            ModListButton = Object.Instantiate(_verticalLayout!.transform.Find("SettingsEntryButton, Bool (Audio Focus)").gameObject);
+            ModListButton = Object.Instantiate(_audioVerticalLayout.transform.Find("SettingsEntryButton, Bool (Audio Focus)").gameObject);
             ModListButton.name = "Mod Options Prefab, ModList Button";
 
             Object.DestroyImmediate(ModListButton.GetComponentInChildren<CarouselController>());
@@ -211,7 +208,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
 
         private void CreateEmptyButton()
         {
-            _emptyButton = Object.Instantiate(_verticalLayout!.transform.Find("SettingsEntryButton, Bool (Audio Focus)").gameObject);
+            _emptyButton = Object.Instantiate(_audioVerticalLayout.transform.Find("SettingsEntryButton, Bool (Audio Focus)").gameObject);
             _emptyButton!.name = "Mod Options Prefab, Empty Button";
 
             Object.DestroyImmediate(_emptyButton!.GetComponentInChildren<CarouselController>());
