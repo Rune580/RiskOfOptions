@@ -8,6 +8,7 @@ An API to provide a user interface in game to interact with BepInEx ConfigEntry'
 - Sliders and Stepped Sliders `float`
 - KeyBinds `KeyboardShortcut`
 - String Input Fields `string`
+- Choice DropDowns `Enum`
 
 ### Additional Components
 - GenericButtons

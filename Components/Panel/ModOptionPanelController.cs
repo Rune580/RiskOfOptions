@@ -17,7 +17,7 @@ namespace RiskOfOptions.Components.Panel
 {
     public class ModOptionPanelController : MonoBehaviour
     {
-        public bool initialized = false;
+        public bool initialized;
 
         public GameObject modListHighlight;
 
@@ -125,6 +125,8 @@ namespace RiskOfOptions.Components.Panel
             GetComponent<HGHeaderNavigationController>().headers = headers.ToArray();
 
             transform.Find("SafeArea").Find("HeaderContainer").Find("Header (JUICED)").Find("GenericGlyph (Right)").SetAsLastSibling();
+            
+            _panel.ModOptionsHeaderButton.transform.localScale = Vector3.one;
         }
 
 
@@ -197,9 +199,9 @@ namespace RiskOfOptions.Components.Panel
             if (_dialogBox)
                 DestroyDialogBox();
 
-            if (RiskOfOptionsPlugin.SeenNoMods.Value)
+            if (RiskOfOptionsPlugin.seenNoMods.Value)
                 return;
-            RiskOfOptionsPlugin.SeenNoMods.Value = true;
+            RiskOfOptionsPlugin.seenNoMods.Value = true;
 
             _dialogBox = SimpleDialogBox.Create(_mpEventSystem);
 
@@ -223,9 +225,9 @@ namespace RiskOfOptions.Components.Panel
             if (_dialogBox)
                 DestroyDialogBox();
             
-            if (RiskOfOptionsPlugin.SeenMods.Value)
+            if (RiskOfOptionsPlugin.seenMods.Value)
                 return;
-            RiskOfOptionsPlugin.SeenMods.Value = true;
+            RiskOfOptionsPlugin.seenMods.Value = true;
             
             _dialogBox = SimpleDialogBox.Create(_mpEventSystem);
 
@@ -502,17 +504,17 @@ namespace RiskOfOptions.Components.Panel
 
             while (animating)
             {
-                //modListTransform.anchorMin = Vector2.Lerp(modListTransform.anchorMin, newModListPos, animSpeed * Time.deltaTime);
+                //modListTransform.anchorMin = Vector2.Lerp(modListTransform.anchorMin, newModListPos, animSpeed * Time.unscaledDeltaTime);
 
-                //warningTransform.anchorMax = Vector2.Lerp(warningTransform.anchorMax, newWarningPos, animSpeed * Time.deltaTime);
+                //warningTransform.anchorMax = Vector2.Lerp(warningTransform.anchorMax, newWarningPos, animSpeed * Time.unscaledDeltaTime);
 
-                modListTransform.anchorMin = ExtensionMethods.SmoothStep(modListTransform.anchorMin, newModListPos, (animSpeed * 5.25f) * Time.deltaTime);
+                modListTransform.anchorMin = ExtensionMethods.SmoothStep(modListTransform.anchorMin, newModListPos, (animSpeed * 5.25f) * Time.unscaledDeltaTime);
 
-                warningTransform.anchorMax = ExtensionMethods.SmoothStep(warningTransform.anchorMax, newWarningPos, (animSpeed * 5.25f) * Time.deltaTime);
+                warningTransform.anchorMax = ExtensionMethods.SmoothStep(warningTransform.anchorMax, newWarningPos, (animSpeed * 5.25f) * Time.unscaledDeltaTime);
 
-                float angle = Mathf.Clamp(Mathf.Lerp(angleIncrement * Time.deltaTime, max, 1f * Time.deltaTime), 90 * Time.deltaTime, Math.Abs(maxAngleRotation));
+                float angle = Mathf.Clamp(Mathf.Lerp(angleIncrement * Time.unscaledDeltaTime, max, 1f * Time.unscaledDeltaTime), 90 * Time.unscaledDeltaTime, Math.Abs(maxAngleRotation));
 
-                if (angle > 90 * Time.deltaTime)
+                if (angle > 90 * Time.unscaledDeltaTime)
                     max -= angle;
 
                 restartRectTransform.localRotation *= Quaternion.AngleAxis(maxAngleRotation > 0 ? angle : -angle, Vector3.forward);
@@ -520,12 +522,12 @@ namespace RiskOfOptions.Components.Panel
                 switch (textColor.a)
                 {
                     case 1f:
-                        warningText.color = Color.Lerp(warningText.color, textColor, (animSpeed * 2) * Time.deltaTime);
-                        restartIcon.color = Color.Lerp(restartIcon.color, textColor, (animSpeed * 2) * Time.deltaTime);
+                        warningText.color = Color.Lerp(warningText.color, textColor, (animSpeed * 2) * Time.unscaledDeltaTime);
+                        restartIcon.color = Color.Lerp(restartIcon.color, textColor, (animSpeed * 2) * Time.unscaledDeltaTime);
                         break;
                     case 0f:
-                        warningText.color = Color.Lerp(warningText.color, textColor, (animSpeed * 4) * Time.deltaTime);
-                        restartIcon.color = Color.Lerp(restartIcon.color, textColor, (animSpeed * 4) * Time.deltaTime);
+                        warningText.color = Color.Lerp(warningText.color, textColor, (animSpeed * 4) * Time.unscaledDeltaTime);
+                        restartIcon.color = Color.Lerp(restartIcon.color, textColor, (animSpeed * 4) * Time.unscaledDeltaTime);
                         break;
                 }
 

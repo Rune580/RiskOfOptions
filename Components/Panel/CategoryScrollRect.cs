@@ -195,7 +195,7 @@ namespace RiskOfOptions.Components.Panel
             
             while (Mathf.Abs(horizontalNormalizedPosition - newPos) > 0.001f)
             {
-                horizontalNormalizedPosition = Mathf.Lerp(horizontalNormalizedPosition, newPos, 6f * Time.deltaTime);
+                horizontalNormalizedPosition = Mathf.Lerp(horizontalNormalizedPosition, newPos, 6f * Time.unscaledDeltaTime);
 
                 yield return new WaitForEndOfFrame();
             }
@@ -220,8 +220,8 @@ namespace RiskOfOptions.Components.Panel
 
             while (!ExtensionMethods.CloseEnough(image.color, Color.white) )
             {
-                //outlineTransform.position = Vector2.Lerp(outlineTransform.position, newPos, 10f * Time.deltaTime);
-                image.color = Color.Lerp(image.color, Color.white, 10f * Time.deltaTime);
+                //outlineTransform.position = Vector2.Lerp(outlineTransform.position, newPos, 10f * Time.unscaledDeltaTime);
+                image.color = Color.Lerp(image.color, Color.white, 10f * Time.unscaledDeltaTime);
                 
                 yield return new WaitForEndOfFrame();
             }
@@ -244,7 +244,7 @@ namespace RiskOfOptions.Components.Panel
                 
                     var image = _indicators[i].GetComponent<Image>();
 
-                    colors[i] = Color.Lerp(image.color, InactiveColor, 10f * Time.deltaTime);
+                    colors[i] = Color.Lerp(image.color, InactiveColor, 10f * Time.unscaledDeltaTime);
                     image.color = colors[i];
                 }
 
