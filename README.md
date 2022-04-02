@@ -130,6 +130,15 @@ Discord: Rune#0001
 Github: Rune580
 
 # Changelog
+    2.3.0:
+      Quite a few things in this update, as always let me know if you have any issues.
+        - Added ChoiceOption, takes an CongiEntry<enum>.
+        - Removed dependency on R2API, I didn't really use it anyways, now you don't have to worry about an unnecessary dependency.
+            haha dependencies bad ;))))))))))))))))
+        - Fixed animation issues with the Mod Options menu while playing in singleplayer.
+        - Added workaround for when a mod embeds it's own settings api (the reason why one would do this alludes me...),
+            as they can break the Mod Options panel.
+
     2.2.0 - Added GenericButtonOption which allows for devs to supply a UnityAction that is invoked when the button is pressed.
     Cleaned up a few things. Should work for the newest patch, let me know if you find any issues.
 
