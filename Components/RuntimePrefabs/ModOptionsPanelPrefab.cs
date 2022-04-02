@@ -49,7 +49,8 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             CreateModListButton();
             CreateEmptyButton();
             
-            Object.DestroyImmediate(_verticalLayout!.transform.Find("SettingsEntryButton, Bool (Audio Focus)").gameObject);
+            for (int i = 0; i < _verticalLayout!.transform.childCount; i++)
+                Object.DestroyImmediate(_verticalLayout.transform.GetChild(i));
 
             CreateCanvas();
             CreateModListPanel(settingsPanel);
