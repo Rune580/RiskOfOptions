@@ -12,6 +12,7 @@ namespace RiskOfOptions.Components.Options
     // ReSharper disable once IdentifierTypo
     public class KeyBindController : ModSettingsControl<KeyboardShortcut>
     {
+        private bool _interactable;
         private bool _listening;
         private float _timeoutTimer;
 
@@ -27,6 +28,8 @@ namespace RiskOfOptions.Components.Options
         {
             if (settingToken == "")
                 return;
+
+            _interactable = true;
 
             base.Awake();
 
@@ -46,17 +49,23 @@ namespace RiskOfOptions.Components.Options
 
         protected override void Disable()
         {
+            _interactable = false;
             
+            foreach (var button in GetComponentsInChildren<HGButton>())
+                button.interactable = false;
         }
 
         protected override void Enable()
         {
+            _interactable = true;
             
+            foreach (var button in GetComponentsInChildren<HGButton>())
+                button.interactable = true;
         }
 
         protected void Update()
         {
-            _bindingButton.interactable = !ModSettingsManager.doingKeyBind;
+            _bindingButton.interactable = _interactable && !ModSettingsManager.doingKeyBind;
 
             if (!_listening)
                 return;

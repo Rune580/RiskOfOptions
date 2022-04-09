@@ -77,12 +77,14 @@ namespace RiskOfOptions.Components.Options
 
         protected override void Disable()
         {
-            
+            foreach (var button in GetComponentsInChildren<HGButton>())
+                button.interactable = false;
         }
 
         protected override void Enable()
         {
-            
+            foreach (var button in GetComponentsInChildren<HGButton>())
+                button.interactable = true;
         }
         
         protected override void OnUpdateControls()

@@ -160,9 +160,11 @@ namespace RiskOfOptions.Components.Options
         public void OnPointerClick(PointerEventData eventData)
         {
             if (!InputModuleIsAllowed(eventData.currentInputModule))
-            {
                 return;
-            }
+
+            if (!interactable)
+                return;
+            
             ToggleShow();
         }
 

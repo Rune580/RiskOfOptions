@@ -22,12 +22,18 @@ namespace RiskOfOptions.Components.Options
 
         protected override void Disable()
         {
-            // Todo
+            foreach (var button in GetComponentsInChildren<HGButton>())
+                button.interactable = false;
+            
+            GetComponentInChildren<RooDropdown>().interactable = false;
         }
 
         protected override void Enable()
         {
-            // Todo
+            foreach (var button in GetComponentsInChildren<HGButton>())
+                button.interactable = true;
+            
+            GetComponentInChildren<RooDropdown>().interactable = true;
         }
 
         protected new void OnEnable()
