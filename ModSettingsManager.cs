@@ -29,6 +29,7 @@ namespace RiskOfOptions
             LanguageApi.Init();
             
             Resources.Assets.LoadAssets();
+            Resources.Prefabs.Init();
 
             LanguageTokens.Register();
             
