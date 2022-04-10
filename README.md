@@ -130,6 +130,9 @@ Discord: Rune#0001
 Github: Rune580
 
 # Changelog
+    2.3.1:
+      Disable functionality is now fully implemented on all simple options.
+
     2.3.0:
       Quite a few things in this update, as always let me know if you have any issues.
         - Added ChoiceOption, takes an CongiEntry<enum>.
