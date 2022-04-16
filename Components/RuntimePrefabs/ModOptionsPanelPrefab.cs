@@ -238,7 +238,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
 
             ModListPanel.GetComponent<RectTransform>().anchorMax = new Vector2(0.25f, 1f);
             ModListPanel.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").GetComponent<VerticalLayoutGroup>().spacing = 6;
-            ModListPanel.SetActive(true);
+            ModListPanel.SetActive(false);
             ModListPanel.name = "Mod List Panel";
             ModListPanel.AddComponent<ModListHeaderController>();
             
@@ -248,12 +248,14 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             foreach (var imageComp in ModListHighlight.GetComponentsInChildren<Image>())
                 imageComp.maskable = false;
 
-            ModListHighlight.SetActive(false);
+            ModListHighlight.SetActive(true);
             
             HGHeaderNavigationController modListController = ModListPanel.AddComponent<HGHeaderNavigationController>();
             modListController.headerHighlightObject = ModListHighlight;
             modListController.unselectedTextColor = Color.white;
             modListController.makeSelectedHeaderButtonNoninteractable = true;
+            
+            ModListPanel.SetActive(true);
         }
 
         private void CreateModDescriptionPanel()

@@ -22,7 +22,7 @@ namespace RiskOfOptions.Components.Panel
             navigationController.headerHighlightObject.transform.SetParent(transform);
             navigationController.headerHighlightObject.SetActive(false);
 
-            if (navigationController.currentHeaderIndex >= 0)
+            if (navigationController.currentHeaderIndex >= 0 && navigationController.headers != null)
             {
                 navigationController.headers[navigationController.currentHeaderIndex].headerButton.interactable = true;
             }
