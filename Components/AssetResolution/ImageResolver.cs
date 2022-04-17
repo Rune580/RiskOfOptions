@@ -8,16 +8,11 @@ using UnityEngine.UI;
 
 namespace RiskOfOptions.Components.AssetResolution
 {
-    public class ImageResolver : AssetResolver, ISerializationCallbackReceiver
+    public class ImageResolver : MultiAssetResolver<ImageAssetEntry>
     {
-        [HideInInspector]
-        public List<ImageAssetEntry> entries;
-        
-        
         protected override void Resolve()
         {
-            if (entries == null)
-                throw new NullReferenceException("Attempted to resolve null entries!");
+            base.Resolve();
             
             foreach (var entry in entries)
             {
@@ -31,14 +26,8 @@ namespace RiskOfOptions.Components.AssetResolution
             }
         }
 
-        public void OnBeforeSerialize()
+        protected override void BeforeSerialize()
         {
-            if (entries is null)
-            {
-                serializedData = Array.Empty<byte>();
-                return;
-            }
-            
             var buffer = new UnityByteBufWriter();
             
             buffer.WriteInt(entries.Count);
@@ -63,11 +52,8 @@ namespace RiskOfOptions.Components.AssetResolution
             serializedData = buffer.GetBytes();
         }
 
-        public void OnAfterDeserialize()
-        {
-            if (serializedData is null || serializedData.Length == 0)
-                return;
-            
+        protected override void AfterDeserialize()
+        { 
             var buffer = new UnityByteBufReader(serializedData);
             var length = buffer.ReadInt();
 
