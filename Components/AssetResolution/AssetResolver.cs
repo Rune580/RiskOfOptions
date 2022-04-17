@@ -12,7 +12,7 @@ namespace RiskOfOptions.Components.AssetResolution
         /// I have to serialize structs into bytes and load from there. Thanks Unity...
         /// </summary>
         [HideInInspector, SerializeField]
-        protected byte[] serializedData;
+        public byte[] serializedData;
         
         public void Awake()
         {

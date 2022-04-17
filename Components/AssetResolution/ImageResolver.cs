@@ -12,9 +12,7 @@ namespace RiskOfOptions.Components.AssetResolution
     {
         [HideInInspector]
         public List<ImageAssetEntry> entries;
-
-        [HideInInspector]
-        public byte[] data;
+        
         
         protected override void Resolve()
         {
@@ -56,12 +54,15 @@ namespace RiskOfOptions.Components.AssetResolution
                 buffer.WriteBytes(subBuf.GetBytes());
             }
 
-            data = buffer.GetBytes();
+            serializedData = buffer.GetBytes();
         }
 
         public void OnAfterDeserialize()
         {
-            var buffer = new UnityByteBufReader(data);
+            if (serializedData is null)
+                return;
+            
+            var buffer = new UnityByteBufReader(serializedData);
             var length = buffer.ReadInt();
 
             entries = new List<ImageAssetEntry>();
@@ -85,30 +86,6 @@ namespace RiskOfOptions.Components.AssetResolution
                 
                 entries.Add(entry);
             }
-        }
-
-        private void OnGUI()
-        {
-            if (entries == null)
-                return;
-
-            GUILayout.BeginVertical();
-            
-            GUILayout.Label("Entries: ");
-            
-            foreach (var entry in entries)
-            {
-                GUILayout.Space(10);
-                GUILayout.Label($"{entry.name}: ");
-                
-                GUILayout.BeginVertical();
-
-                entry.addressablePath = GUILayout.TextField(entry.addressablePath, GUILayout.Width(300));
-                
-                GUILayout.EndVertical();
-            }
-            
-            GUILayout.EndVertical();
         }
     }
 }
