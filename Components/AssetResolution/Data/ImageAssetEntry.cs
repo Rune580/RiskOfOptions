@@ -19,6 +19,9 @@ namespace RiskOfOptions.Components.AssetResolution.Data
 
         public Image GetTarget(Transform root)
         {
+            if (string.IsNullOrEmpty(targetPath))
+                return root.GetComponent<Image>();
+            
             return root.transform.Find(targetPath).gameObject.GetComponent<Image>();
         }
     }

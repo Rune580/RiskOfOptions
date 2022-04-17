@@ -89,17 +89,20 @@ namespace RiskOfOptions.Components.RuntimePrefabs
 
         private void CreateOptionsPanel(Transform subPanelArea)
         {
-            // GameObject audioPanel = subPanelArea.Find("SettingsSubPanel, Audio").gameObject;
+            // _optionsPanel = Object.Instantiate(Prefabs.SubPanel, subPanelArea);
+            // _optionsPanel!.name = "Empty Panel";
+            
+            GameObject audioPanel = subPanelArea.Find("SettingsSubPanel, Audio").gameObject;
 
-            _optionsPanel = Object.Instantiate(Prefabs.SubPanel, subPanelArea);
+            _optionsPanel = Object.Instantiate(audioPanel, subPanelArea);
             _optionsPanel!.name = "Empty Panel";
             
-            // Object.DestroyImmediate(_optionsPanel!.GetComponent<SettingsPanelController>());
+            Object.DestroyImmediate(_optionsPanel!.GetComponent<SettingsPanelController>());
 
-            // Transform verticalLayout = _optionsPanel!.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout");
-            //
-            // while (verticalLayout.childCount > 0)
-            //     Object.DestroyImmediate(verticalLayout.GetChild(0).gameObject);
+            Transform verticalLayout = _optionsPanel!.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout");
+
+            while (verticalLayout.childCount > 0)
+                Object.DestroyImmediate(verticalLayout.GetChild(0).gameObject);
         }
 
         private void CreateGenericDescriptionPanel(Transform subPanelArea)

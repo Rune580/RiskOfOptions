@@ -33,6 +33,12 @@ namespace RiskOfOptions.Components.AssetResolution
 
         public void OnBeforeSerialize()
         {
+            if (entries is null)
+            {
+                serializedData = Array.Empty<byte>();
+                return;
+            }
+            
             var buffer = new UnityByteBufWriter();
             
             buffer.WriteInt(entries.Count);
@@ -59,7 +65,7 @@ namespace RiskOfOptions.Components.AssetResolution
 
         public void OnAfterDeserialize()
         {
-            if (serializedData is null)
+            if (serializedData is null || serializedData.Length == 0)
                 return;
             
             var buffer = new UnityByteBufReader(serializedData);
