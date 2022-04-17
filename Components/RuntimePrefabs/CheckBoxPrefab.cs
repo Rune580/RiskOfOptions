@@ -1,4 +1,5 @@
 ﻿using RiskOfOptions.Components.Options;
+using RiskOfOptions.Resources;
 using RoR2.UI;
 using UnityEngine;
 using UnityEngine.Events;
@@ -14,20 +15,21 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             Transform verticalLayout = settingsPanel.transform.Find("SafeArea").Find("SubPanelArea")
                 .Find("SettingsSubPanel, Audio").Find("Scroll View").Find("Viewport").Find("VerticalLayout");
 
-            CheckBoxButton = Object.Instantiate(verticalLayout.Find("SettingsEntryButton, Bool (Audio Focus)").gameObject);
-            CheckBoxButton.name = "Mod Option Prefab, Bool";
+            var temp = Object.Instantiate(verticalLayout.Find("SettingsEntryButton, Bool (Audio Focus)").gameObject);
 
-            var carouselController = CheckBoxButton.GetComponentInChildren<CarouselController>();
+            CheckBoxButton = Object.Instantiate(Prefabs.BoolButton);
+            Object.DestroyImmediate(CheckBoxButton.GetComponentInChildren<CarouselController>());
 
-            var boolController = carouselController.gameObject.AddComponent<ModSettingsBool>();
+            var carouselController = temp.GetComponentInChildren<CarouselController>();
+            var boolController = CheckBoxButton.AddComponent<ModSettingsBool>();
 
             boolController.checkBox = carouselController.optionalImage;
             boolController.checkBoxFalse = carouselController.choices[0].customSprite;
             boolController.checkBoxTrue = carouselController.choices[1].customSprite;
             boolController.nameLabel = carouselController.nameLabel;
-                
-            Object.DestroyImmediate(carouselController);
-
+            
+            Object.DestroyImmediate(temp);
+            
             var boolButton = CheckBoxButton.transform.Find("CarouselRect").Find("BoolButton").GetComponent<HGButton>();
             boolButton.onClick.RemoveAllListeners();
         }
