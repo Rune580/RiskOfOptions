@@ -5,30 +5,15 @@ namespace RiskOfOptions.Components.AssetResolution.Data
 {
     internal abstract class UnityByteBuf
     {
-        protected const byte UnsignedByte = 0x00;
-        protected const byte UnsignedShort = 0x01;
-        protected const byte UnsignedInt = 0x02;
-
-        protected const uint UnsignedByteLength = 255;
-        protected const uint UnsignedShortLength = 65535;
-        
         protected byte[] byteBuffer;
         
+        
+        /// <summary>
+        /// The current length of the byte buffer
+        /// </summary>
         internal int Length => byteBuffer.Length;
-
-        protected byte GetByteTagForLength(uint length)
-        {
-            switch (length)
-            {
-                case < UnsignedByteLength:
-                    return UnsignedByte;
-                case < UnsignedShortLength:
-                    return UnsignedShort;
-            }
-
-            return UnsignedInt;
-        }
-
+        
+        /// <returns>The byte array stored internally by this byte buffer</returns>
         internal byte[] GetBytes()
         {
             return byteBuffer;

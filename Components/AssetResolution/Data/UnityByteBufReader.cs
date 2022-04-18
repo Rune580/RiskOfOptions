@@ -4,16 +4,25 @@ using UnityEngine;
 
 namespace RiskOfOptions.Components.AssetResolution.Data
 {
+    /// <summary>
+    /// Helper class for reading common value types from a byte buffer
+    /// </summary>
     internal class UnityByteBufReader : UnityByteBuf
     {
         private uint _pos;
         
+        /// <param name="bytes">The serialized data as a byte array</param>
         internal UnityByteBufReader(byte[] bytes)
         {
             byteBuffer = bytes;
             _pos = 0;
         }
         
+        /// <summary>
+        /// Reads a byte array with an encoded length.
+        /// The first 4 bytes read is the length of the byte array.
+        /// </summary>
+        /// <returns>A byte array the size of the first 4 bytes read.</returns>
         internal byte[] ReadByteArray()
         {
             var length = ReadUInt();
@@ -91,13 +100,6 @@ namespace RiskOfOptions.Components.AssetResolution.Data
             return (T)Enum.ToObject(typeof(T), value);
         }
 
-        internal T ReadComponentReference<T>(Transform root) where T : Component
-        {
-            var path = ReadString();
-
-            return root.transform.Find(path).gameObject.GetComponent<T>();
-        }
-
         private float[] ReadFloats(int length)
         {
             float[] floats = new float[length];
@@ -108,7 +110,6 @@ namespace RiskOfOptions.Components.AssetResolution.Data
             return floats;
         }
         
-
         private byte ReadByte()
         {
             byte data = byteBuffer[_pos];

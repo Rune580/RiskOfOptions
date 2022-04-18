@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace RiskOfOptions.Components.AssetResolution.Data
 {
+    /// <summary>
+    /// Helper class for writing common value types into a byte buffer
+    /// </summary>
     internal class UnityByteBufWriter : UnityByteBuf
     {
         private readonly List<byte> _buffer;
@@ -15,7 +18,7 @@ namespace RiskOfOptions.Components.AssetResolution.Data
         }
 
         /// <summary>
-        /// Writes an unknown length array of bytes
+        /// Writes a byte array and encodes the length of said array as the first 4 bytes.
         /// </summary>
         internal void WriteBytes(byte[] bytes)
         {
@@ -85,28 +88,6 @@ namespace RiskOfOptions.Components.AssetResolution.Data
         internal void WriteEnum<T>(object value)
         {
             WriteInt((int)Enum.Parse(typeof(T), value.ToString()));
-        }
-
-        internal void WriteComponentReference<T>(Transform root, T comp) where T : Component
-        {
-            if (comp is null)
-            {
-                WriteString("");
-                return;
-            }
-            
-            var transform = comp.gameObject.transform;
-
-            string path = transform.name;
-
-            while (transform.name != root.name)
-            {
-                transform = transform.parent;
-
-                path = $"{transform.name}/{path}";
-            }
-            
-            WriteString(path);
         }
 
         private void WriteFloats(params float[] nums)
