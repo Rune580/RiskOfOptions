@@ -50,35 +50,54 @@ namespace RiskOfOptions
         {
             ModInfo modInfo = Assembly.GetCallingAssembly().GetModInfo();
             
-            if (!OptionCollection.ContainsModGuid(modInfo.ModGuid))
-                OptionCollection[modInfo.ModGuid] = new OptionCollection(modInfo.ModName, modInfo.ModGuid);
+            SetModDescription(description, modInfo.ModGuid, modInfo.ModName);
+        }
 
-            OptionCollection[modInfo.ModGuid].description = description;
+        public static void SetModDescription(string description, string modGuid, string modName)
+        {
+            EnsureContainerExists(modGuid, modName);
+            
+            OptionCollection[modGuid].description = description;
         }
 
         public static void SetModIcon(Sprite iconSprite)
         {
             ModInfo modInfo = Assembly.GetCallingAssembly().GetModInfo();
 
-            if (!OptionCollection.ContainsModGuid(modInfo.ModGuid))
-                OptionCollection[modInfo.ModGuid] = new OptionCollection(modInfo.ModName, modInfo.ModGuid);
+            SetModIcon(iconSprite, modInfo.ModGuid, modInfo.ModName);
+        }
+        
+        public static void SetModIcon(Sprite iconSprite, string modGuid, string modName)
+        {
+            EnsureContainerExists(modGuid, modName);
 
-            OptionCollection[modInfo.ModGuid].icon = iconSprite;
+            OptionCollection[modGuid].icon = iconSprite;
         }
 
         public static void AddOption(BaseOption option)
         {
             ModInfo modInfo = Assembly.GetCallingAssembly().GetModInfo();
             
+            AddOption(option, modInfo.ModGuid, modInfo.ModName);
+        }
+
+        public static void AddOption(BaseOption option, string modGuid, string modName)
+        {
             option.SetProperties();
 
-            option.ModGuid = modInfo.ModGuid;
-            option.ModName = modInfo.ModName;
-            option.Identifier = $"{modInfo.ModGuid}.{option.Category}.{option.Name}.{option.OptionTypeName}".Replace(" ", "_").ToUpper();
+            option.ModGuid = modGuid;
+            option.ModName = modName;
+            option.Identifier = $"{modGuid}.{option.Category}.{option.Name}.{option.OptionTypeName}".Replace(" ", "_").ToUpper();
             
             option.RegisterTokens();
             
             OptionCollection.AddOption(ref option);
+        }
+
+        private static void EnsureContainerExists(string modGuid, string modName)
+        {
+            if (!OptionCollection.ContainsModGuid(modGuid))
+                OptionCollection[modGuid] = new OptionCollection(modName, modGuid);
         }
     }
 }
