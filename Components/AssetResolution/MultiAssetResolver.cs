@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace RiskOfOptions.Components.AssetResolution
 {
-    [Serializable]
     public abstract class MultiAssetResolver<TEntry> : AssetResolver, ISerializationCallbackReceiver
     {
         [HideInInspector]
