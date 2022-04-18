@@ -12,17 +12,6 @@ namespace RiskOfOptions.Components.Options
 
         public bool IsChecked => GetCurrentValue();
 
-        protected override void Awake()
-        {
-            base.Awake();
-
-            foreach (var button in GetComponentsInChildren<HGButton>())
-            {
-                button.onClick.RemoveAllListeners();
-                button.onClick.AddListener(Toggle);
-            }
-        }
-
         protected override void Disable()
         {
             foreach (var button in GetComponentsInChildren<HGButton>())
