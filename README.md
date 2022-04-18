@@ -130,6 +130,12 @@ Discord: Rune#0001
 Github: Rune580
 
 # Changelog
+    2.3.2:
+      Added overrides for modGuid and modName when adding an option.
+      CheckBox is now a prefab instead of being copied from a button in game. What does that mean for the normal user?
+        realistically nothing at all, you shouldn't notice anything different. For the dev however, this puts us a step closer
+        to having RiskOfOptions ui elements be accessible to other mods.
+
     2.3.1:
       Disable functionality is now fully implemented on all simple options.
 
