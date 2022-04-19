@@ -26,6 +26,7 @@ namespace RiskOfOptions
             RuntimePrefabManager.Register<CheckBoxPrefab>();
             RuntimePrefabManager.Register<SliderPrefab>();
             RuntimePrefabManager.Register<StepSliderPrefab>();
+            RuntimePrefabManager.Register<IntSliderPrefab>();
             RuntimePrefabManager.Register<KeyBindPrefab>();
             RuntimePrefabManager.Register<InputFieldPrefab>();
             RuntimePrefabManager.Register<ChoicePrefab>();

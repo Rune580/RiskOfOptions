@@ -23,6 +23,7 @@ namespace RiskOfOptions.Components.Panel
         private GameObject _checkBoxPrefab;
         private GameObject _sliderPrefab;
         private GameObject _stepSliderPrefab;
+        private GameObject _intSliderPrefab;
         private GameObject _keyBindPrefab;
         private GameObject _inputFieldPrefab;
         private GameObject _choicePrefab;
@@ -80,6 +81,7 @@ namespace RiskOfOptions.Components.Panel
             _checkBoxPrefab = RuntimePrefabManager.Get<CheckBoxPrefab>().CheckBoxButton;
             _sliderPrefab = RuntimePrefabManager.Get<SliderPrefab>().Slider;
             _stepSliderPrefab = RuntimePrefabManager.Get<StepSliderPrefab>().StepSlider;
+            _intSliderPrefab = RuntimePrefabManager.Get<IntSliderPrefab>().IntSlider;
             _keyBindPrefab = RuntimePrefabManager.Get<KeyBindPrefab>().KeyBind;
             _inputFieldPrefab = RuntimePrefabManager.Get<InputFieldPrefab>().InputField;
             _choicePrefab = RuntimePrefabManager.Get<ChoicePrefab>().ChoiceButton;
@@ -88,6 +90,7 @@ namespace RiskOfOptions.Components.Panel
             _checkBoxPrefab.SetActive(false);
             _sliderPrefab.SetActive(false);
             _stepSliderPrefab.SetActive(false);
+            _intSliderPrefab.SetActive(false);
             _keyBindPrefab.SetActive(false);
             _inputFieldPrefab.SetActive(false);
             _choicePrefab.SetActive(false);
@@ -356,6 +359,7 @@ namespace RiskOfOptions.Components.Panel
                     CheckBoxOption => option.CreateOptionGameObject(_checkBoxPrefab, verticalLayoutTransform),
                     SliderOption => option.CreateOptionGameObject(_sliderPrefab, verticalLayoutTransform),
                     StepSliderOption => option.CreateOptionGameObject(_stepSliderPrefab, verticalLayoutTransform),
+                    IntSliderOption => option.CreateOptionGameObject(_intSliderPrefab, verticalLayoutTransform),
                     KeyBindOption => option.CreateOptionGameObject(_keyBindPrefab, verticalLayoutTransform),
                     StringInputFieldOption => option.CreateOptionGameObject(_inputFieldPrefab, verticalLayoutTransform),
                     GenericButtonOption => option.CreateOptionGameObject(_genericButtonPrefab, verticalLayoutTransform),
