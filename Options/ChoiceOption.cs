@@ -12,8 +12,8 @@ namespace RiskOfOptions.Options
     {
         private readonly object _originalValue;
         private readonly ConfigEntryBase _configEntry;
-        internal readonly ChoiceConfig Config;
-        private string[] nameTokens;
+        internal readonly ChoiceConfig config;
+        private string[] _nameTokens;
         
         public ChoiceOption(ConfigEntryBase configEntry) : this(configEntry, new ChoiceConfig()) { }
 
@@ -26,7 +26,7 @@ namespace RiskOfOptions.Options
 
             _originalValue = configEntry.BoxedValue;
             _configEntry = configEntry;
-            Config = config;
+            this.config = config;
         }
 
         public override string OptionTypeName { get; protected set; } = "choice";
@@ -39,13 +39,13 @@ namespace RiskOfOptions.Options
 
             string[] names = Enum.GetNames(Value.GetType());
 
-            nameTokens = new string[names.Length];
+            _nameTokens = new string[names.Length];
 
             for (int i = 0; i < names.Length; i++)
             {
                 string token = $"{ModSettingsManager.StartingText}.{ModGuid}.{Category}.{Name}.{OptionTypeName}.item.{names[i]}".Replace(" ", "_").ToUpper();
 
-                nameTokens[i] = token;
+                _nameTokens[i] = token;
                 
                 LanguageApi.Add(token, names[i]);
             }
@@ -67,7 +67,7 @@ namespace RiskOfOptions.Options
 
         public override BaseOptionConfig GetConfig()
         {
-            return Config;
+            return config;
         }
 
         public bool ValueChanged()
@@ -88,7 +88,7 @@ namespace RiskOfOptions.Options
 
         internal string[] GetNameTokens()
         {
-            return nameTokens;
+            return _nameTokens;
         }
     }
 }

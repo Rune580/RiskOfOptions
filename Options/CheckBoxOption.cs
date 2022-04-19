@@ -9,7 +9,7 @@ namespace RiskOfOptions.Options
     {
         private readonly bool _originalValue;
         private readonly ConfigEntry<bool> _configEntry;
-        internal readonly CheckBoxConfig Config;
+        internal readonly CheckBoxConfig config;
 
         public CheckBoxOption(ConfigEntry<bool> configEntry) : this(configEntry, new CheckBoxConfig()) { }
         
@@ -19,7 +19,7 @@ namespace RiskOfOptions.Options
         {
             _originalValue = configEntry.Value;
             _configEntry = configEntry;
-            Config = config;
+            this.config = config;
         }
         
         public override string OptionTypeName { get; protected set; } = "checkbox";
@@ -42,7 +42,7 @@ namespace RiskOfOptions.Options
         
         public override BaseOptionConfig GetConfig()
         {
-            return Config;
+            return config;
         }
 
         public bool ValueChanged()

@@ -9,7 +9,7 @@ namespace RiskOfOptions.Options
     {
         private readonly float _originalValue;
         private readonly ConfigEntry<float> _configEntry;
-        internal readonly SliderConfig Config;
+        internal readonly SliderConfig config;
         
         public SliderOption(ConfigEntry<float> configEntry) : this(configEntry, new SliderConfig()) { }
         
@@ -19,7 +19,7 @@ namespace RiskOfOptions.Options
         {
             _originalValue = configEntry.Value;
             _configEntry = configEntry;
-            Config = config;
+            this.config = config;
         }
 
         public override string OptionTypeName { get; protected set; } = "slider";
@@ -35,9 +35,9 @@ namespace RiskOfOptions.Options
             settingsSlider.nameToken = GetNameToken();
             settingsSlider.settingToken = Identifier;
             
-            settingsSlider.minValue = Config.min;
-            settingsSlider.maxValue = Config.max;
-            settingsSlider.formatString = Config.formatString;
+            settingsSlider.minValue = config.min;
+            settingsSlider.maxValue = config.max;
+            settingsSlider.formatString = config.formatString;
             
             slider.name = $"Mod Option Slider, {Name}";
 
@@ -46,7 +46,7 @@ namespace RiskOfOptions.Options
 
         public override BaseOptionConfig GetConfig()
         {
-            return Config;
+            return config;
         }
 
         public bool ValueChanged()

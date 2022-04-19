@@ -10,7 +10,7 @@ namespace RiskOfOptions.Options
     {
         private readonly KeyboardShortcut _originalValue;
         private readonly ConfigEntry<KeyboardShortcut> _configEntry;
-        internal readonly KeyBindConfig Config;
+        internal readonly KeyBindConfig config;
         
         public KeyBindOption(ConfigEntry<KeyboardShortcut> configEntry) : this(configEntry, new KeyBindConfig()) { }
         
@@ -20,7 +20,7 @@ namespace RiskOfOptions.Options
         {
             _originalValue = configEntry.Value;
             _configEntry = configEntry;
-            Config = config;
+            this.config = config;
         }
 
         public override string OptionTypeName { get; protected set; } = "key_bind";
@@ -47,7 +47,7 @@ namespace RiskOfOptions.Options
 
         public override BaseOptionConfig GetConfig()
         {
-            return Config;
+            return config;
         }
 
         public bool ValueChanged()

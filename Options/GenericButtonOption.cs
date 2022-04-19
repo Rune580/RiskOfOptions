@@ -9,14 +9,14 @@ namespace RiskOfOptions.Options
 {
     public class GenericButtonOption : BaseOption
     {
-        internal readonly GenericButtonConfig Config;
+        internal readonly GenericButtonConfig config;
 
         public GenericButtonOption(string name, string category, UnityAction onButtonPressed) : this(
             name, category, "", "Open", onButtonPressed) { }
 
         public GenericButtonOption(string name, string category, string description, string buttonText, UnityAction onButtonPressed)
         {
-            Config = new GenericButtonConfig(name, category, description, buttonText, onButtonPressed);
+            config = new GenericButtonConfig(name, category, description, buttonText, onButtonPressed);
 
             Category = category;
             Name = name;
@@ -29,7 +29,7 @@ namespace RiskOfOptions.Options
         {
             base.RegisterTokens();
             
-            LanguageApi.Add(GetButtonLabelToken(), Config.ButtonText);
+            LanguageApi.Add(GetButtonLabelToken(), config.ButtonText);
         }
 
         public string GetButtonLabelToken()
@@ -48,7 +48,7 @@ namespace RiskOfOptions.Options
             controller.nameToken = GetNameToken();
             controller.settingToken = Identifier;
             controller.buttonToken = GetButtonLabelToken();
-            controller.OnButtonPressed = Config.OnButtonPressed;
+            controller.OnButtonPressed = config.OnButtonPressed;
 
             button.name = $"Mod Option GenericButton, {Name}";
 
@@ -57,7 +57,7 @@ namespace RiskOfOptions.Options
 
         public override BaseOptionConfig GetConfig()
         {
-            return Config;
+            return config;
         }
     }
 }

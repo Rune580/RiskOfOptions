@@ -12,7 +12,7 @@ namespace RiskOfOptions.Options
     {
         private readonly string _originalValue;
         private readonly ConfigEntry<string> _configEntry;
-        internal readonly InputFieldConfig Config;
+        internal readonly InputFieldConfig config;
         
         public StringInputFieldOption(ConfigEntry<string> configEntry) : this(configEntry, new InputFieldConfig()) { }
 
@@ -22,7 +22,7 @@ namespace RiskOfOptions.Options
         {
             _originalValue = configEntry.Value;
             _configEntry = configEntry;
-            Config = config;
+            this.config = config;
         }
 
         public override string OptionTypeName { get; protected set; } = "string_input_field";
@@ -47,7 +47,7 @@ namespace RiskOfOptions.Options
 
         public override BaseOptionConfig GetConfig()
         {
-            return Config;
+            return config;
         }
 
         public bool ValueChanged()

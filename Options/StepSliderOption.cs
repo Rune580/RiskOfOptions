@@ -11,7 +11,7 @@ namespace RiskOfOptions.Options
     {
         private readonly float _originalValue;
         private readonly ConfigEntry<float> _configEntry;
-        internal readonly StepSliderConfig Config;
+        internal readonly StepSliderConfig config;
         
         public StepSliderOption(ConfigEntry<float> configEntry) : this(configEntry, new StepSliderConfig()) { }
 
@@ -21,7 +21,7 @@ namespace RiskOfOptions.Options
         {
             _originalValue = configEntry.Value;
             _configEntry = configEntry;
-            Config = config;
+            this.config = config;
         }
 
         public override string OptionTypeName { get; protected set; } = "step_slider";
@@ -37,12 +37,12 @@ namespace RiskOfOptions.Options
             settingsSlider.nameToken = GetNameToken();
             settingsSlider.settingToken = Identifier;
             
-            settingsSlider.increment = Config.increment;
-            settingsSlider.minValue = Config.min;
-            settingsSlider.maxValue = Config.max;
-            settingsSlider.formatString = Config.formatString;
+            settingsSlider.increment = config.increment;
+            settingsSlider.minValue = config.min;
+            settingsSlider.maxValue = config.max;
+            settingsSlider.formatString = config.formatString;
             
-            double stepsHighAccuracy = Math.Abs(Config.min - Config.max) / Config.increment;
+            double stepsHighAccuracy = Math.Abs(config.min - config.max) / config.increment;
             
             int steps = (int)Math.Round(stepsHighAccuracy);
             
@@ -57,7 +57,7 @@ namespace RiskOfOptions.Options
         
         public override BaseOptionConfig GetConfig()
         {
-            return Config;
+            return config;
         }
 
         public bool ValueChanged()
