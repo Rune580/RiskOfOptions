@@ -5,7 +5,9 @@ An API to provide a user interface in game to interact with BepInEx ConfigEntry'
 
 ## Currently supported options
 - CheckBoxes `bool`
-- Sliders and Stepped Sliders `float`
+- Sliders `float`
+- StepSliders `float`
+- IntSliders `int`
 - KeyBinds `KeyboardShortcut`
 - String Input Fields `string`
 - Choice DropDowns `Enum`
@@ -15,7 +17,9 @@ An API to provide a user interface in game to interact with BepInEx ConfigEntry'
 
 ### For feature requests or issues head over to my [repository](https://github.com/Rune580/RiskOfOptions).
 
-## Developers we have a [wiki](https://github.com/Rune580/RiskOfOptions/wiki)
+## Developer Resources
+* [RiskOfOptions Wiki](https://github.com/Rune580/RiskOfOptions/wiki)
+* [Usage Example](https://github.com/Rune580/RiskOfOptions-Example)
 
 ## Getting Started
 First you need to grab the latest release from the [Thunderstore](https://thunderstore.io/package/Rune580/Risk_Of_Options/).
@@ -130,6 +134,9 @@ Discord: Rune#0001
 Github: Rune580
 
 # Changelog
+    2.4.0:
+      Added IntSlider option, which is just a normal slider but it accepts an ConfigEntry<int> instead.
+
     2.3.2:
       Added overrides for modGuid and modName when adding an option.
       CheckBox is now a prefab instead of being copied from a button in game. What does that mean for the normal user?
