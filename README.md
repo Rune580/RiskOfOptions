@@ -134,6 +134,9 @@ Discord: Rune#0001
 Github: Rune580
 
 # Changelog
+    2.4.1:
+      Fixed category indicators taking up more vertical space than intended.
+
     2.4.0:
       Added IntSlider option, which is just a normal slider but it accepts an ConfigEntry<int> instead.
 
