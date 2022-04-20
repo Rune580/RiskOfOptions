@@ -425,14 +425,14 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             var layoutRectTransform = layoutGroup.GetComponent<RectTransform>();
 
             layoutRectTransform.anchorMin = new Vector2(0.5f, 0);
-            layoutRectTransform.anchorMax = new Vector2(0.5f, 1);
-            layoutRectTransform.anchoredPosition = new Vector2(0, 51);
+            layoutRectTransform.anchorMax = new Vector2(0.5f, 0);
+            layoutRectTransform.anchoredPosition = new Vector2(0, 8);
             layoutRectTransform.pivot = new Vector2(0.5f, 0.5f);
 
             var fitter = layoutGroup.GetComponent<ContentSizeFitter>();
             
             fitter.horizontalFit = ContentSizeFitter.FitMode.MinSize;
-            fitter.verticalFit = ContentSizeFitter.FitMode.Unconstrained;
+            fitter.verticalFit = ContentSizeFitter.FitMode.MinSize;
 
             var holderRectTransform = CategoryPageIndicators.GetComponent<RectTransform>();
 
@@ -455,6 +455,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
 
             var dotLayoutElement = CategoryPageIndicator.GetComponent<LayoutElement>();
             dotLayoutElement.minWidth = CategoryScrollRect.DotScale;
+            dotLayoutElement.minHeight = CategoryScrollRect.DotScale;
             
             CategoryPageIndicatorOutline = new GameObject("Indicator Outline", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
             CategoryPageIndicatorOutline.transform.SetParent(CategoryPageIndicators.transform);
