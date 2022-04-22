@@ -134,6 +134,10 @@ Discord: Rune#0001
 Github: Rune580
 
 # Changelog
+    2.4.2:
+      Sliders can now have their values be manually set in the text box. No more finagling the slider to get the value you want.
+        The future is now!
+
     2.4.1:
       Fixed category indicators taking up more vertical space than intended.
 
