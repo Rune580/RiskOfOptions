@@ -44,7 +44,7 @@ namespace RiskOfOptions.Components.Options
 
         private void GenerateChoices()
         {
-            dropdown.choices = ((ChoiceOption)Option).GetNameTokens();
+            dropdown.choices = ((ChoiceOption)option).GetNameTokens();
 
             UpdateControls();
         }

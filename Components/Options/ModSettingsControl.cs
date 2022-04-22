@@ -14,7 +14,7 @@ namespace RiskOfOptions.Components.Options
         private bool _disabled;
         private bool _restartRequired;
         
-        protected ITypedValueHolder<T> ValueHolder;
+        protected ITypedValueHolder<T> valueHolder;
 
         public void SubmitValue(T newValue)
         {
@@ -26,7 +26,7 @@ namespace RiskOfOptions.Components.Options
             if (_originalValue.Equals(newValue))
                 _valueChanged = false;
             
-            ValueHolder.Value = newValue;
+            valueHolder.Value = newValue;
             
             UpdateControls();
             optionController.OptionChanged();
@@ -34,7 +34,7 @@ namespace RiskOfOptions.Components.Options
 
         protected T GetCurrentValue()
         {
-            return ValueHolder.Value;
+            return valueHolder.Value;
         }
 
         public override bool HasChanged()
@@ -61,14 +61,14 @@ namespace RiskOfOptions.Components.Options
             
             _eventSystemLocator = GetComponent<MPEventSystemLocator>();
 
-            if (Option == null)
+            if (option == null)
                 return;
 
-            ValueHolder ??= (ITypedValueHolder<T>)Option;
+            valueHolder ??= (ITypedValueHolder<T>)option;
 
-            _restartRequired = Option.GetConfig().restartRequired;
+            _restartRequired = option.GetConfig().restartRequired;
             
-            var isDisabled = Option.GetConfig().checkIfDisabled;
+            var isDisabled = option.GetConfig().checkIfDisabled;
             if (isDisabled == null)
                 return;
 
@@ -114,7 +114,7 @@ namespace RiskOfOptions.Components.Options
             if (!_restartRequired)
                 return;
             
-            if (ValueHolder.ValueChanged())
+            if (valueHolder.ValueChanged())
             {
                 optionController.AddRestartRequired(settingToken);
             }

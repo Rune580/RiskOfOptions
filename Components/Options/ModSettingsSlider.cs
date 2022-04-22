@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using RoR2.UI;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,7 +9,7 @@ namespace RiskOfOptions.Components.Options
     public class ModSettingsSlider : ModSettingsControl<float>
     {
         public Slider slider;
-        public HGTextMeshProUGUI valueText;
+        public TMP_InputField valueText;
         
         public float minValue;
         public float maxValue;
@@ -24,6 +25,8 @@ namespace RiskOfOptions.Components.Options
             slider.minValue = minValue;
             slider.maxValue = maxValue;
             slider.onValueChanged.AddListener(OnSliderValueChanged);
+            valueText.onEndEdit.AddListener(OnTextEdited);
+            valueText.onSubmit.AddListener(OnTextEdited);
         }
 
         protected override void Disable()
@@ -64,9 +67,25 @@ namespace RiskOfOptions.Components.Options
 
             if (slider)
                 slider.value = num;
+            
+            //valueText.text
 
             if (valueText)
                 valueText.text = string.Format(CultureInfo.InvariantCulture, formatString, num);
+        }
+
+        private void OnTextEdited(string newText)
+        {
+            if (float.TryParse(newText, out float num))
+            {
+                num = Mathf.Clamp(num, minValue, maxValue);
+                
+                SubmitValue(num);
+            }
+            else
+            {
+                SubmitValue(GetCurrentValue());
+            }
         }
 
         public void MoveSlider(float delta)

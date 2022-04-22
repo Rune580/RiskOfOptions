@@ -13,7 +13,7 @@ namespace RiskOfOptions.Components.Options
         public LanguageTextMeshController nameLabel;
         public ModOptionPanelController optionController;
 
-        protected BaseOption Option;
+        protected BaseOption option;
 
         protected virtual void Awake()
         {
@@ -23,7 +23,7 @@ namespace RiskOfOptions.Components.Options
             if (string.IsNullOrEmpty(settingToken))
                 return;
 
-            Option = ModSettingsManager.OptionCollection.GetOption(settingToken);
+            option = ModSettingsManager.OptionCollection.GetOption(settingToken);
         }
 
         protected virtual void Start()

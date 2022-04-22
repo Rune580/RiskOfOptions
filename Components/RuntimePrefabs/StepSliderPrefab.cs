@@ -1,4 +1,5 @@
 ﻿using RiskOfOptions.Components.Options;
+using RiskOfOptions.Resources;
 using RoR2.UI;
 using UnityEngine;
 
@@ -10,21 +11,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
         
         public void Instantiate(GameObject settingsPanel)
         {
-            Transform verticalLayout = settingsPanel.transform.Find("SafeArea").Find("SubPanelArea")
-                .Find("SettingsSubPanel, Audio").Find("Scroll View").Find("Viewport").Find("VerticalLayout");
-
-            StepSlider = Object.Instantiate(verticalLayout.Find("SettingsEntryButton, Slider (Master Volume)").gameObject);
-            StepSlider.name = "Mod Option Prefab, Step Slider";
-
-            var settingsSlider = StepSlider.GetComponentInChildren<SettingsSlider>();
-
-            var sliderController = settingsSlider.gameObject.AddComponent<ModSettingsStepSlider>();
-
-            sliderController.slider = settingsSlider.slider;
-            sliderController.valueText = settingsSlider.valueText;
-            sliderController.nameLabel = settingsSlider.nameLabel;
-            
-            Object.DestroyImmediate(settingsSlider);
+            StepSlider = Object.Instantiate(Prefabs.StepSliderButton);
         }
 
         public void Destroy()

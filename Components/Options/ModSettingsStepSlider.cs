@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using RoR2.UI;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,7 +10,7 @@ namespace RiskOfOptions.Components.Options
     public class ModSettingsStepSlider : ModSettingsControl<float>
     {
         public Slider slider;
-        public HGTextMeshProUGUI valueText;
+        public TMP_InputField valueText;
         
         public float minValue;
         public float maxValue;
@@ -24,6 +25,8 @@ namespace RiskOfOptions.Components.Options
                 return;
             
             slider.onValueChanged.AddListener(OnSliderValueChanged);
+            valueText.onEndEdit.AddListener(OnTextEdited);
+            valueText.onSubmit.AddListener(OnTextEdited);
         }
         
         protected override void Disable()
@@ -69,6 +72,22 @@ namespace RiskOfOptions.Components.Options
 
             if (valueText)
                 valueText.text = string.Format(CultureInfo.InvariantCulture, formatString, num);
+        }
+        
+        private void OnTextEdited(string newText)
+        {
+            if (float.TryParse(newText, out float num))
+            {
+                num = Mathf.Clamp(num, minValue, maxValue);
+
+                float step = Mathf.Abs(num - minValue) / increment;
+
+                SubmitValue(Mathf.RoundToInt(step) * increment + minValue);
+            }
+            else
+            {
+                SubmitValue(GetCurrentValue());
+            }
         }
 
         public void MoveSlider(float delta)
