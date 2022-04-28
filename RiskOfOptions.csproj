@@ -20,9 +20,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <Dependencies Include="$(PluginsDir)MMHOOK\MMHOOK_RoR2.dll" InProject="false" />
     <ExcludedAssemblyFiles Include="$(ManagedDir)netstandard.dll;$(ManagedDir)System.*" InProject="false" />
-    <AssemblyFiles Include="$(ManagedDir)*.dll;$(CoreDir)*.dll;@(Dependencies)" Exclude="@(ExcludedAssemblyFiles)" InProject="false" />
 
     <Reference Include="@(AssemblyFiles)" />
   </ItemGroup>
@@ -31,6 +29,13 @@
     <OutputFiles Include="$(TargetPath);$(TargetDir)$(TargetName).pdb" InProject="false" />
     <PackageFiles Include="manifest.json;icon.png;README.md" />
     <ThunderstoreDirs Include="$(OutputPath)\thunderstore\;$(OutputPath)\thunderstore\package;$(OutputPath)\thunderstore\package\RiskOfOptions\" InProject="false" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="BepInEx.Core" Version="5.4.19" />
+    <PackageReference Include="MMHOOK.RoR2" Version="2022.4.19" />
+    <PackageReference Include="RiskOfRain2.GameLibs" Version="1.2.3.1-r.0" />
+    <PackageReference Include="UnityEngine.Modules" Version="2019.4.26" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

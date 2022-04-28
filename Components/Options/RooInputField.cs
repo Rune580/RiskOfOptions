@@ -14,7 +14,7 @@ namespace RiskOfOptions.Components.Options
         private RectTransform _rectTransform;
         private RectTransform _textTransform;
 
-        protected override void Awake()
+        public override void Awake()
         {
             base.Awake();
             

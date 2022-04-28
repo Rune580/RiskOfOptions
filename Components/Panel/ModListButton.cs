@@ -22,7 +22,7 @@ namespace RiskOfOptions.Components.Panel
             SetDescription();
         }
 
-        protected override void Awake()
+        public override void Awake()
         {
             base.Awake();
 
@@ -30,7 +30,7 @@ namespace RiskOfOptions.Components.Panel
                 nameLabel.token = token;
         }
 
-        protected override void Start()
+        public override void Start()
         {
             base.Start();
 
