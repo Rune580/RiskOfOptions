@@ -636,8 +636,6 @@ namespace RiskOfOptions.Components.Panel
             
             DestroyImmediate(_keyBindPrefab);
             DestroyImmediate(modListHighlight);
-            // GameObject.DestroyImmediate(_dropDownPrefab);
-            // GameObject.DestroyImmediate(_inputFieldPrefab);
             
             RuntimePrefabManager.DestroyPrefabs();
         }

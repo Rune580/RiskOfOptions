@@ -1,4 +1,5 @@
-﻿using RoR2.UI;
+﻿using RiskOfOptions.Lib;
+using RoR2.UI;
 using TMPro;
 using UnityEngine;
 using Language = On.RoR2.Language;
@@ -13,15 +14,17 @@ namespace RiskOfOptions.Components.Options
         private LanguageTextMeshController _previewLanguage;
         private HGTextMeshProUGUI _previewLabel;
         private bool _exitQueued;
+        private string _previewToken;
 
         public TMP_InputValidator validator;
         public TMP_InputField.CharacterValidation characterValidation;
-        //public bool validateOnSubmit;
 
         protected override void Awake()
         {
+            _previewToken = $"{ModSettingsManager.StartingText}.{settingToken}.VALUE";
+            
             _previewLanguage = transform.Find("Text Preview").GetComponentInChildren<LanguageTextMeshController>();
-            _previewLanguage.token = $"{settingToken}.VALUE";
+            _previewLanguage.token = _previewToken;
             
             _previewLabel = _previewLanguage.GetComponentInChildren<HGTextMeshProUGUI>();
 
@@ -29,6 +32,9 @@ namespace RiskOfOptions.Components.Options
             nameLabel.token = nameToken;
             
             base.Awake();
+
+            if (option == null)
+                return;
             
             if (!inputField)
                 return;
@@ -91,6 +97,7 @@ namespace RiskOfOptions.Components.Options
         {
             base.OnUpdateControls();
             
+            inputField.text = GetCurrentValue();
             RefreshLabel();
         }
 
@@ -154,12 +161,6 @@ namespace RiskOfOptions.Components.Options
         
         private void FixTextLabel()
         {
-            // _previewLabel.autoSizeTextContainer = false;
-            // _previewLabel.fontSize = 24;
-            //
-            // _inputField.textComponent.autoSizeTextContainer = false;
-            // _inputField.textComponent.fontSize = 24;
-
             if (validator != null)
                 inputField.inputValidator = validator;
 
@@ -168,25 +169,17 @@ namespace RiskOfOptions.Components.Options
 
         private void HookLanguage()
         {
-            On.RoR2.Language.GetString_string += LanguageOnGetString_string;
+            LanguageApi.AddDelegate(_previewToken, GetString);
         }
 
         private void UnHookLanguage()
         {
-            On.RoR2.Language.GetString_string -= LanguageOnGetString_string;
+            LanguageApi.RemoveDelegate(_previewToken);
         }
 
-        private string LanguageOnGetString_string(Language.orig_GetString_string orig, string token)
+        private string GetString()
         {
-            if (token != $"{settingToken}.VALUE")
-                return orig(token);
-
-            if (!inputField)
-                return orig(token);
-
-            string text = TrimStringWithinWidth(inputField.text, 238.7f);
-
-            return text;
+            return TrimStringWithinWidth(GetCurrentValue(), 238.7f);
         }
 
         private string TrimStringWithinWidth(string input, float width)

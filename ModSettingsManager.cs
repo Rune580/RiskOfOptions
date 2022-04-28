@@ -17,7 +17,8 @@ namespace RiskOfOptions
     {
         internal static readonly ModIndexedOptionCollection OptionCollection = new();
 
-        internal const string StartingText = "risk_of_options";
+        internal const string StartingText = "RISK_OF_OPTIONS";
+        internal const int StartingTextLength = 15;
 
         internal static bool doingKeyBind = false;
         

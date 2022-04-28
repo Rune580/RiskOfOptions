@@ -13,6 +13,7 @@ namespace RiskOfOptions.Resources
         public static GameObject SliderButton => _uiBundle.LoadAsset<GameObject>("Assets/RiskOfOptions/prefabs/ModSettingsButton, Slider.prefab");
         public static GameObject StepSliderButton => _uiBundle.LoadAsset<GameObject>("Assets/RiskOfOptions/prefabs/ModSettingsButton, Step Slider.prefab");
         public static GameObject IntSliderButton => _uiBundle.LoadAsset<GameObject>("Assets/RiskOfOptions/prefabs/ModSettingsButton, Int Slider.prefab");
+        public static GameObject InputFieldButton => _uiBundle.LoadAsset<GameObject>("Assets/RiskOfOptions/prefabs/ModSettingsButton, InputField.prefab");
 
         internal static void Init()
         {
