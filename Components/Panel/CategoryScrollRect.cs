@@ -48,7 +48,7 @@ namespace RiskOfOptions.Components.Panel
 
         private static readonly Color InactiveColor = new Color(0.3f, 0.3f, 0.3f, 1);
 
-        protected override void Start()
+        public override void Start()
         {
             if (!_layoutGroup)
                 _layoutGroup = transform.Find("Indicators").Find("LayoutGroup").gameObject;
@@ -61,7 +61,7 @@ namespace RiskOfOptions.Components.Panel
             SetPage(0);
         }
 
-        protected override void LateUpdate()
+        public override void LateUpdate()
         {
             base.LateUpdate();
             
@@ -277,7 +277,7 @@ namespace RiskOfOptions.Components.Panel
             }
         }
 
-        protected override void OnEnable()
+        public override void OnEnable()
         {
             base.OnEnable();
             
@@ -289,7 +289,7 @@ namespace RiskOfOptions.Components.Panel
             SetPage(0);
         }
 
-        protected override void OnDisable()
+        public override void OnDisable()
         {
             base.OnDisable();
 

@@ -36,7 +36,7 @@ namespace RiskOfOptions.Components.Options
 
         public DropDownEvent OnValueChanged { get; set; } = new();
 
-        protected override void Awake()
+        public override void Awake()
         {
             base.Awake();
 
@@ -190,13 +190,13 @@ namespace RiskOfOptions.Components.Options
             base.OnPointerDown(eventData);
         }
 
-        protected override void OnDisable()
+        public override void OnDisable()
         {
             base.OnDisable();
             _isPointerInside = false;
         }
 
-        protected override void DoStateTransition(SelectionState state, bool instant)
+        public override void DoStateTransition(SelectionState state, bool instant)
         {
             base.DoStateTransition(state, instant);
             if (_previousState == state)
@@ -321,8 +321,8 @@ namespace RiskOfOptions.Components.Options
                 _buttons[i] = button;
             }
         }
-        
-        protected override void OnDestroy()
+
+        public override void OnDestroy()
         {
             base.OnDestroy();
             DestroyImmediateChoices();
