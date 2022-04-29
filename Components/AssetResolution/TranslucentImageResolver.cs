@@ -12,6 +12,9 @@ namespace RiskOfOptions.Components.AssetResolution
         
         protected override void Resolve()
         {
+            if (!image)
+                image = GetComponent<TranslucentImage>();
+            
             image.material = Addressables.LoadAssetAsync<Material>(Path).WaitForCompletion();
 
             image.enabled = true;
