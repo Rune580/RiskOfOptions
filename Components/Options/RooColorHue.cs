@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
 namespace RiskOfOptions.Components.Options
@@ -6,6 +7,9 @@ namespace RiskOfOptions.Components.Options
     public class RooColorHue : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
         public RectTransform handle;
+        public float radius = 170f;
+        
+        public UnityEvent<float> onHueChanged;
 
         public void OnPointerClick(PointerEventData eventData)
         {
@@ -32,8 +36,13 @@ namespace RiskOfOptions.Components.Options
             Vector2 pos = GetLocalPos(eventData);
             
             var hue = GetHueFromMousePos(pos);
+
+            float x = Mathf.Cos(hue) * radius;
+            float y = Mathf.Sin(hue) * radius;
+
+            handle.localPosition = new Vector3(x, y, 0);
             
-            Debug.Log($"Hue: {hue}");
+            onHueChanged?.Invoke(hue);
         }
         
         private Vector2 GetLocalPos(PointerEventData eventData)
