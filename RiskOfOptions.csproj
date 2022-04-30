@@ -13,6 +13,9 @@
   <PropertyGroup>
     <RoR2Dir Condition="Exists('D:\SteamLibrary\steamapps\common\Risk of Rain 2')">D:\SteamLibrary\steamapps\common\Risk of Rain 2</RoR2Dir>
     <RoR2Dir Condition="Exists('$(MSBuildProgramFiles32)\Steam\steamapps\common\Risk of Rain 2')">$(MSBuildProgramFiles32)\Steam\steamapps\common\Risk of Rain 2</RoR2Dir>
+    
+    <UnityPackageDir Condition="'$(Configuration)' == 'Debug' And Exists('C:\Users\runem\Documents\UnityPackages\RiskOfOptions')">C:\Users\runem\Documents\UnityPackages\RiskOfOptions</UnityPackageDir>
+    
     <ManagedDir>$(RoR2Dir)\Risk of Rain 2_Data\Managed\</ManagedDir>
     <BepinexDir>$(RoR2Dir)\BepInEx\</BepinexDir>
     <CoreDir>$(BepinexDir)core\</CoreDir>
@@ -41,7 +44,9 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <!-- Copies dll and pdb to plugins folder -->
     <Copy SourceFiles="@(OutputFiles)" DestinationFolder="$(RoR2Dir)\BepInEx\plugins" />
-    
+  </Target>
+  
+  <Target Name="Thunderstore" Condition="'$(Configuration)' == 'Release'" AfterTargets="PostBuild">
     <!-- Packages build into a zip that's ready to upload -->
     <MakeDir Directories="@(ThunderstoreDirs)" />
     <Copy SourceFiles="@(PackageFiles)" DestinationFolder="$(OutputPath)\thunderstore\package\" />
@@ -49,5 +54,10 @@
     <Delete Condition="Exists('$(OutputPath)\thunderstore\RiskOfOptions-Output.zip')" Files="$(OutputPath)\thunderstore\RiskOfOptions-Output.zip" />
     <ZipDirectory SourceDirectory="$(OutputPath)\thunderstore\package\" DestinationFile="$(OutputPath)\thunderstore\RiskOfOptions-Output.zip" />
   </Target>
+  
+<!--  <Target Name="Unity Imports" Condition="'$(Configuration)' == 'Debug' And Exists($(UnityPackageDir))" AfterTargets="PostBuild">-->
+<!--    &lt;!&ndash; Copies files to a folder for use with a Unity project &ndash;&gt;-->
+<!--    <Copy SourceFiles="@(OutputFiles)" DestinationFolder="$(UnityPackageDir)" />-->
+<!--  </Target>-->
   
 </Project>
