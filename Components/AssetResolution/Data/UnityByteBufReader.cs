@@ -7,7 +7,7 @@ namespace RiskOfOptions.Components.AssetResolution.Data
     /// <summary>
     /// Helper class for reading common value types from a byte buffer
     /// </summary>
-    internal class UnityByteBufReader : UnityByteBuf
+    public class UnityByteBufReader : UnityByteBuf
     {
         private uint _pos;
         

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
@@ -9,7 +10,7 @@ namespace RiskOfOptions.Components.Options
         public RectTransform handle;
         public float radius = 170f;
         
-        public UnityEvent<float> onHueChanged;
+        public HueEvent onHueChanged = new();
 
         public void OnPointerClick(PointerEventData eventData)
         {
@@ -59,6 +60,12 @@ namespace RiskOfOptions.Components.Options
         
         private static float GetMouseAngle(Vector2 mousePos, Vector2 center) {
             return (Mathf.Atan2(mousePos.y - center.y, mousePos.x - center.x) + Mathf.PI * 2) % (Mathf.PI * 2);
+        }
+
+        [Serializable]
+        public class HueEvent : UnityEvent<float>
+        {
+            
         }
     }
 }

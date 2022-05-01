@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using RiskOfOptions.Components.AssetResolution.Data;
 using UnityEngine;
 
 namespace RiskOfOptions.Components.AssetResolution
 {
-    public abstract class MultiAssetResolver<TEntry> : AssetResolver, ISerializationCallbackReceiver
+    public abstract class MultiAssetResolver<TEntry> : AssetResolver, ISerializationCallbackReceiver 
+        where TEntry : ISerializableEntry, new()
     {
         [HideInInspector]
         public List<TEntry> entries;
@@ -22,19 +24,37 @@ namespace RiskOfOptions.Components.AssetResolution
                 serializedData = Array.Empty<byte>();
                 return;
             }
+
+            var buffer = new UnityByteBufWriter();
             
-            BeforeSerialize();
+            buffer.WriteInt(entries.Count);
+
+            foreach (var entry in entries)
+            {
+                buffer.WriteBytes(entry.Serialize());
+            }
+
+            serializedData = buffer.GetBytes();
         }
 
         public void OnAfterDeserialize()
         {
             if (serializedData is null || serializedData.Length == 0)
                 return;
-            
-            AfterDeserialize();
+
+            var buffer = new UnityByteBufReader(serializedData);
+            int length = buffer.ReadInt();
+
+            entries = new List<TEntry>();
+
+            for (int i = 0; i < length; i++)
+            {
+                var entry = new TEntry();
+                
+                entry.Deserialize(buffer.ReadByteArray());
+                
+                entries.Add(entry);
+            }
         }
-        
-        protected abstract void BeforeSerialize();
-        protected abstract void AfterDeserialize();
     }
 }

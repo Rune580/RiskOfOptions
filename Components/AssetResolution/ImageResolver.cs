@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using RiskOfOptions.Components.AssetResolution.Data;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -12,6 +13,49 @@ namespace RiskOfOptions.Components.AssetResolution
     {
         protected override void Resolve()
         {
+            if (serializedData is null || serializedData.Length == 0)
+                return;
+
+            var reader = new UnityByteBufReader(serializedData);
+            int length = reader.ReadInt();
+
+            var writer = new UnityByteBufWriter();
+            writer.WriteInt(length);
+
+            entries = new List<ImageAssetEntry>();
+
+            for (int i = 0; i < length; i++)
+            {
+                var subRead = new UnityByteBufReader(reader.ReadByteArray());
+                
+                var entry = new ImageAssetEntry
+                {
+                    addressablePath = subRead.ReadString(),
+                    name = subRead.ReadString(),
+                    targetPath = subRead.ReadString(),
+                    rect = subRead.ReadRect(),
+                    pivot = subRead.ReadVector2(),
+                    pixelsPerUnit = subRead.ReadFloat(),
+                    extrude = subRead.ReadUInt(),
+                    meshType = subRead.ReadEnum<SpriteMeshType>(),
+                    border = subRead.ReadVector4()
+                };
+
+                var data = entry.Serialize();
+
+                writer.WriteBytes(data);
+            }
+            
+            var bytes = writer.GetBytes();
+            StringBuilder builder = new StringBuilder();
+            foreach (var b in bytes)
+            {
+                builder.Append($"{b}");
+            }
+
+            Debug.Log($"Prefab: {gameObject.name}\n" +
+                      $"Data: '{builder}'");
+
             base.Resolve();
             
             foreach (var entry in entries)
@@ -23,60 +67,6 @@ namespace RiskOfOptions.Components.AssetResolution
                 asset.name = string.IsNullOrEmpty(entry.name) ? texture.name : entry.name;
 
                 entry.GetTarget(transform).sprite = asset;
-            }
-        }
-
-        protected override void BeforeSerialize()
-        {
-            var buffer = new UnityByteBufWriter();
-            
-            buffer.WriteInt(entries.Count);
-
-            foreach (var entry in entries)
-            {
-                var subBuf = new UnityByteBufWriter();
-
-                subBuf.WriteString(entry.addressablePath);
-                subBuf.WriteString(entry.name);
-                subBuf.WriteString(entry.targetPath);
-                subBuf.WriteRect(entry.rect);
-                subBuf.WriteVector2(entry.pivot);
-                subBuf.WriteFloat(entry.pixelsPerUnit);
-                subBuf.WriteUInt(entry.extrude);
-                subBuf.WriteEnum<SpriteMeshType>(entry.meshType);
-                subBuf.WriteVector4(entry.border);
-                
-                buffer.WriteBytes(subBuf.GetBytes());
-            }
-
-            serializedData = buffer.GetBytes();
-        }
-
-        protected override void AfterDeserialize()
-        { 
-            var buffer = new UnityByteBufReader(serializedData);
-            var length = buffer.ReadInt();
-
-            entries = new List<ImageAssetEntry>();
-
-            for (int i = 0; i < length; i++)
-            {
-                var subBuf = new UnityByteBufReader(buffer.ReadByteArray());
-
-                var entry = new ImageAssetEntry
-                {
-                    addressablePath = subBuf.ReadString(),
-                    name = subBuf.ReadString(),
-                    targetPath = subBuf.ReadString(),
-                    rect = subBuf.ReadRect(),
-                    pivot = subBuf.ReadVector2(),
-                    pixelsPerUnit = subBuf.ReadFloat(),
-                    extrude = subBuf.ReadUInt(),
-                    meshType = subBuf.ReadEnum<SpriteMeshType>(),
-                    border = subBuf.ReadVector4()
-                };
-                
-                entries.Add(entry);
             }
         }
     }

@@ -14,7 +14,7 @@
     <RoR2Dir Condition="Exists('D:\SteamLibrary\steamapps\common\Risk of Rain 2')">D:\SteamLibrary\steamapps\common\Risk of Rain 2</RoR2Dir>
     <RoR2Dir Condition="Exists('$(MSBuildProgramFiles32)\Steam\steamapps\common\Risk of Rain 2')">$(MSBuildProgramFiles32)\Steam\steamapps\common\Risk of Rain 2</RoR2Dir>
     
-    <UnityPackageDir Condition="'$(Configuration)' == 'Debug' And Exists('C:\Users\runem\Documents\UnityPackages\RiskOfOptions')">C:\Users\runem\Documents\UnityPackages\RiskOfOptions</UnityPackageDir>
+    <UnityProjDir Condition="'$(Configuration)' == 'Debug' And Exists('D:\UnityProjects\RiskOfOptions-UI\Assets\RiskOfOptions')">D:\UnityProjects\RiskOfOptions-UI\Assets\RiskOfOptions</UnityProjDir>
     
     <ManagedDir>$(RoR2Dir)\Risk of Rain 2_Data\Managed\</ManagedDir>
     <BepinexDir>$(RoR2Dir)\BepInEx\</BepinexDir>
@@ -55,9 +55,9 @@
     <ZipDirectory SourceDirectory="$(OutputPath)\thunderstore\package\" DestinationFile="$(OutputPath)\thunderstore\RiskOfOptions-Output.zip" />
   </Target>
   
-<!--  <Target Name="Unity Imports" Condition="'$(Configuration)' == 'Debug' And Exists($(UnityPackageDir))" AfterTargets="PostBuild">-->
-<!--    &lt;!&ndash; Copies files to a folder for use with a Unity project &ndash;&gt;-->
-<!--    <Copy SourceFiles="@(OutputFiles)" DestinationFolder="$(UnityPackageDir)" />-->
-<!--  </Target>-->
+  <Target Name="Unity Imports" Condition="'$(Configuration)' == 'Debug' And Exists($(UnityProjDir))" AfterTargets="PostBuild">
+    <!-- Copies files to a folder for use with a Unity project -->
+    <Copy SourceFiles="@(OutputFiles)" DestinationFolder="$(UnityProjDir)" />
+  </Target>
   
 </Project>

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace RiskOfOptions.Components.AssetResolution.Data
 {
-    internal abstract class UnityByteBuf
+    public abstract class UnityByteBuf
     {
         protected byte[] byteBuffer;
         

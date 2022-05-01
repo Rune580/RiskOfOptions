@@ -8,7 +8,7 @@ namespace RiskOfOptions.Components.AssetResolution.Data
     /// <summary>
     /// Helper class for writing common value types into a byte buffer
     /// </summary>
-    internal class UnityByteBufWriter : UnityByteBuf
+    public class UnityByteBufWriter : UnityByteBuf
     {
         private readonly List<byte> _buffer;
 

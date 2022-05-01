@@ -1,14 +1,28 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace RiskOfOptions.Components.Options
 {
     public class RooColorPicker : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
         public RectTransform handle;
+        public Image background;
+        public ColorPickerEvent onValueChanged = new();
 
-        public UnityEvent<float, float> onValueChanged;
+        private RectTransform _rectTransform;
+
+        private void Awake()
+        {
+            _rectTransform = GetComponent<RectTransform>();
+        }
+
+        public void SetHue(float hue)
+        {
+            background.material.SetFloat("_Hue", hue);
+        }
 
         public void OnPointerClick(PointerEventData eventData)
         {
@@ -32,21 +46,31 @@ namespace RiskOfOptions.Components.Options
 
         private void UpdateValues(PointerEventData eventData)
         {
-            Vector2 localPos = transform.InverseTransformPoint(eventData.position);
-            var values = GetPos(eventData);
+            Vector2 pos = ClampHandle(transform.InverseTransformPoint(eventData.position)); ;
 
-            handle.localPosition = new Vector3(localPos.x, localPos.y, 0);
+            var values = pos - _rectTransform.rect.center;
 
             onValueChanged?.Invoke(values.x, values.y);
         }
 
-        private Vector2 GetPos(PointerEventData eventData)
+        private Vector2 ClampHandle(Vector2 pos)
         {
-            Vector2 localPos = transform.InverseTransformPoint(eventData.position);
+            var rect = _rectTransform.rect;
 
-            RectTransform rectTransform = GetComponent<RectTransform>();
+            var x = Mathf.Clamp(pos.x, -(rect.width / 2), rect.width / 2);
+            var y = Mathf.Clamp(pos.y, -(rect.height / 2), rect.height / 2);
 
-            return localPos - rectTransform.rect.center;
+            Vector2 clampedPos = new Vector2(x, y);
+
+            handle.transform.localPosition = clampedPos;
+
+            return clampedPos;
+        }
+
+        [Serializable]
+        public class ColorPickerEvent : UnityEvent<float, float>
+        {
+            
         }
     }
 }

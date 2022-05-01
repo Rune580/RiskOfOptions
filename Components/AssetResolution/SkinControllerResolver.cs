@@ -22,46 +22,5 @@ namespace RiskOfOptions.Components.AssetResolution
                 entry.GetTarget(transform).skinData = Addressables.LoadAssetAsync<UISkinData>(entry.addressablePath).WaitForCompletion();
             }
         }
-
-
-        protected override void BeforeSerialize()
-        {
-            var buffer = new UnityByteBufWriter();
-            
-            buffer.WriteInt(entries.Count);
-
-            foreach (var entry in entries)
-            {
-                var subBuf = new UnityByteBufWriter();
-                
-                subBuf.WriteString(entry.addressablePath);
-                subBuf.WriteString(entry.targetPath);
-                
-                buffer.WriteBytes(subBuf.GetBytes());
-            }
-
-            serializedData = buffer.GetBytes();
-        }
-
-        protected override void AfterDeserialize()
-        {
-            var buffer = new UnityByteBufReader(serializedData);
-            var length = buffer.ReadInt();
-
-            entries = new List<SkinControllerAssetEntry>();
-
-            for (int i = 0; i < length; i++)
-            {
-                var subBuf = new UnityByteBufReader(buffer.ReadByteArray());
-
-                var entry = new SkinControllerAssetEntry
-                {
-                    addressablePath = subBuf.ReadString(),
-                    targetPath = subBuf.ReadString()
-                };
-                
-                entries.Add(entry);
-            }
-        }
     }
 }
