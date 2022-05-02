@@ -17,9 +17,11 @@ namespace RiskOfOptions.Components.AssetResolution.Data
 
         protected override UnityByteBufWriter SerializeInternal()
         {
-            var writer = base.SerializeInternal();
+            var writer = new UnityByteBufWriter();
             
+            writer.WriteString(addressablePath);
             writer.WriteString(name);
+            writer.WriteString(targetPath);
             writer.WriteRect(rect);
             writer.WriteVector2(pivot);
             writer.WriteFloat(pixelsPerUnit);
@@ -32,9 +34,9 @@ namespace RiskOfOptions.Components.AssetResolution.Data
 
         protected override void DeserializeInternal(UnityByteBufReader reader)
         {
-            base.DeserializeInternal(reader);
-
+            addressablePath = reader.ReadString();
             name = reader.ReadString();
+            targetPath = reader.ReadString();
             rect = reader.ReadRect();
             pivot = reader.ReadVector2();
             pixelsPerUnit = reader.ReadFloat();

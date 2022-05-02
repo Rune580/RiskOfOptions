@@ -13,6 +13,22 @@ namespace RiskOfOptions.Components.AssetResolution
     {
         protected override void Resolve()
         {
+            base.Resolve();
+            
+            foreach (var entry in entries)
+            {
+                Texture2D texture = Addressables.LoadAssetAsync<Texture2D>(entry.addressablePath).WaitForCompletion();
+                
+                Sprite asset = Sprite.Create(texture, entry.rect, entry.pivot, entry.pixelsPerUnit, entry.extrude, entry.meshType, entry.border);
+
+                asset.name = string.IsNullOrEmpty(entry.name) ? texture.name : entry.name;
+
+                entry.GetTarget(transform).sprite = asset;
+            }
+        }
+
+        private void PrintData()
+        {
             if (serializedData is null || serializedData.Length == 0)
                 return;
 
@@ -55,19 +71,6 @@ namespace RiskOfOptions.Components.AssetResolution
 
             Debug.Log($"Prefab: {gameObject.name}\n" +
                       $"Data: '{builder}'");
-
-            base.Resolve();
-            
-            foreach (var entry in entries)
-            {
-                Texture2D texture = Addressables.LoadAssetAsync<Texture2D>(entry.addressablePath).WaitForCompletion();
-                
-                Sprite asset = Sprite.Create(texture, entry.rect, entry.pivot, entry.pixelsPerUnit, entry.extrude, entry.meshType, entry.border);
-
-                asset.name = string.IsNullOrEmpty(entry.name) ? texture.name : entry.name;
-
-                entry.GetTarget(transform).sprite = asset;
-            }
         }
     }
 }

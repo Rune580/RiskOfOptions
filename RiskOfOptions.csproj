@@ -15,6 +15,7 @@
     <RoR2Dir Condition="Exists('$(MSBuildProgramFiles32)\Steam\steamapps\common\Risk of Rain 2')">$(MSBuildProgramFiles32)\Steam\steamapps\common\Risk of Rain 2</RoR2Dir>
     
     <UnityProjDir Condition="'$(Configuration)' == 'Debug' And Exists('D:\UnityProjects\RiskOfOptions-UI\Assets\RiskOfOptions')">D:\UnityProjects\RiskOfOptions-UI\Assets\RiskOfOptions</UnityProjDir>
+    <UnityProjDir Condition="'$(Configuration)' == 'Debug' And Exists('C:\Users\runem\Documents\UnityProjects\RiskOfOptions-UI\Assets\RiskOfOptions')">C:\Users\runem\Documents\UnityProjects\RiskOfOptions-UI\Assets\RiskOfOptions</UnityProjDir>
     
     <ManagedDir>$(RoR2Dir)\Risk of Rain 2_Data\Managed\</ManagedDir>
     <BepinexDir>$(RoR2Dir)\BepInEx\</BepinexDir>
