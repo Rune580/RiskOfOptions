@@ -22,13 +22,13 @@ namespace RiskOfOptions.Utils
 
         public void StartListening()
         {
-            if (ModSettingsManager.doingKeyBind || _finished)
+            if (ModSettingsManager.disablePause || _finished)
             {
                 DestroyImmediate(gameObject);
                 return;
             }
 
-            ModSettingsManager.doingKeyBind = true;
+            ModSettingsManager.disablePause = true;
             
             _dialogBox = SimpleDialogBox.Create(_mpEventSystem);
             Language.GetString_string += ControlRebindingHook;
@@ -241,7 +241,7 @@ namespace RiskOfOptions.Utils
 
         private void Finish()
         {
-            ModSettingsManager.doingKeyBind = false;
+            ModSettingsManager.disablePause = false;
         }
 
         public static void StartBinding(Action<KeyboardShortcut> onBind, string keyBindName, float timeoutTimer = 5f, MPEventSystem mpEventSystem = null)

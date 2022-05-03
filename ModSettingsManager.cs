@@ -20,7 +20,7 @@ namespace RiskOfOptions
         internal const string StartingText = "RISK_OF_OPTIONS";
         internal const int StartingTextLength = 15;
 
-        internal static bool doingKeyBind = false;
+        internal static bool disablePause = false;
         
         internal static readonly List<string> RestartRequiredOptions = new();
         
@@ -41,7 +41,7 @@ namespace RiskOfOptions
 
         private static void PauseManagerOnCCTogglePause(PauseManager.orig_CCTogglePause orig, ConCommandArgs args)
         {
-            if (doingKeyBind)
+            if (disablePause)
                 return;
 
             orig(args);

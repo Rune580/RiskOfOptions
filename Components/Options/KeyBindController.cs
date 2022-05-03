@@ -65,7 +65,7 @@ namespace RiskOfOptions.Components.Options
 
         protected void Update()
         {
-            _bindingButton.interactable = _interactable && !ModSettingsManager.doingKeyBind;
+            _bindingButton.interactable = _interactable && !ModSettingsManager.disablePause;
         }
 
         protected override void OnUpdateControls()
