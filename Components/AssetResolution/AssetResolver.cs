@@ -29,7 +29,7 @@ namespace RiskOfOptions.Components.AssetResolution
             AttemptResolve();
         }
 
-        private void AttemptResolve()
+        internal void AttemptResolve()
         {
             Resolve();
             
