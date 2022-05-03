@@ -27,7 +27,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             //
             // Object.DestroyImmediate(settingsSlider);
 
-            Slider = Object.Instantiate(Prefabs.SliderButton);
+            Slider = Object.Instantiate(Prefabs.sliderButton);
         }
 
         public void Destroy()

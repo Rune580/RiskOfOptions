@@ -11,7 +11,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
         
         public void Instantiate(GameObject settingsPanel)
         {
-            StepSlider = Object.Instantiate(Prefabs.StepSliderButton);
+            StepSlider = Object.Instantiate(Prefabs.stepSliderButton);
         }
 
         public void Destroy()

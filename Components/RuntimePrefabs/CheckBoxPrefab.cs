@@ -12,7 +12,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
         
         public void Instantiate(GameObject settingsPanel)
         {
-            CheckBoxButton = Object.Instantiate(Prefabs.BoolButton);
+            CheckBoxButton = Object.Instantiate(Prefabs.boolButton);
             
             Transform verticalLayout = settingsPanel.transform.Find("SafeArea").Find("SubPanelArea")
                 .Find("SettingsSubPanel, Audio").Find("Scroll View").Find("Viewport").Find("VerticalLayout");

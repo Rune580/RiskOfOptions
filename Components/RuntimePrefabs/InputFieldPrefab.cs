@@ -13,7 +13,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
 
         public void Instantiate(GameObject settingsPanel)
         {
-            InputField = Object.Instantiate(Prefabs.InputFieldButton);
+            InputField = Object.Instantiate(Prefabs.inputFieldButton);
             InputField.SetActive(false);
         }
         

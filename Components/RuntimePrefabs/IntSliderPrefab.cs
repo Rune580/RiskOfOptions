@@ -12,7 +12,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
         
         public void Instantiate(GameObject settingsPanel)
         {
-            IntSlider = Object.Instantiate(Prefabs.IntSliderButton);
+            IntSlider = Object.Instantiate(Prefabs.intSliderButton);
         }
 
         public void Destroy()
