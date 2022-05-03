@@ -38,6 +38,7 @@ namespace RiskOfOptions.Options
             controller.nameToken = GetNameToken();
             controller.settingToken = Identifier;
 
+            controller.submitOn = config.submitOn;
             controller.characterValidation = TMP_InputField.CharacterValidation.None;
             
             button.name = $"Mod Option Input Field, {Name}";

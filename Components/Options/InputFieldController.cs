@@ -1,7 +1,10 @@
-﻿using RiskOfOptions.Lib;
+﻿using System;
+using RiskOfOptions.Lib;
+using RiskOfOptions.OptionConfigs;
 using RoR2.UI;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Language = On.RoR2.Language;
 
 namespace RiskOfOptions.Components.Options
@@ -10,14 +13,14 @@ namespace RiskOfOptions.Components.Options
     {
         public GameObject overlay;
         public RooInputField inputField;
+        public InputFieldConfig.SubmitEnum submitOn;
+        public TMP_InputValidator validator;
+        public TMP_InputField.CharacterValidation characterValidation;
         
         private LanguageTextMeshController _previewLanguage;
         private HGTextMeshProUGUI _previewLabel;
         private bool _exitQueued;
         private string _previewToken;
-
-        public TMP_InputValidator validator;
-        public TMP_InputField.CharacterValidation characterValidation;
 
         protected override void Awake()
         {
@@ -44,8 +47,24 @@ namespace RiskOfOptions.Components.Options
             button.onClick.AddListener(AttemptShow);
             button.disablePointerClick = false;
 
-            inputField.onSubmit.AddListener(GetInput);
-            inputField.onValueChanged.AddListener(OnValueChanged);
+            switch (submitOn)
+            {
+                case InputFieldConfig.SubmitEnum.OnChar:
+                    inputField.onSubmit.AddListener(SubmitText);
+                    inputField.onValueChanged.AddListener(SubmitText);
+                    break;
+                case InputFieldConfig.SubmitEnum.OnExitOrSubmit:
+                    inputField.onExit.AddListener(SubmitText);
+                    inputField.onSubmit.AddListener(SubmitText);
+                    break;
+                case InputFieldConfig.SubmitEnum.OnSubmit:
+                    inputField.onSubmit.AddListener(SubmitText);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            
 
             inputField.text = GetCurrentValue();
             RefreshLabel();
@@ -106,18 +125,12 @@ namespace RiskOfOptions.Components.Options
             UnHookLanguage();
         }
 
-        private void GetInput(string input)
+        private void SubmitText(string input)
         {
             RefreshLabel();
             SubmitValue(input);
         }
 
-        private void OnValueChanged(string input)
-        {
-            RefreshLabel();
-            SubmitValue(input);
-        }
-        
         private void AttemptShow()
         {
             if (!overlay)

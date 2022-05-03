@@ -10,6 +10,7 @@ namespace RiskOfOptions.Components.Options
     public class RooInputField : TMP_InputField
     {
         public bool inField;
+        public SubmitEvent onExit = new();
         
         private RectTransform _rectTransform;
         private RectTransform _textTransform;
@@ -30,7 +31,10 @@ namespace RiskOfOptions.Components.Options
             bool validKey = Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.Mouse1) || Input.GetKeyDown(KeyCode.Escape);
 
             if ((validKey && !inField) || submitKey)
+            {
                 gameObject.SetActive(false);
+                onExit.Invoke(text);
+            }
         }
 
         public override void OnPointerEnter(PointerEventData pointerEventData)
