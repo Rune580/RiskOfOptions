@@ -6,6 +6,7 @@ using RiskOfOptions.Components.Options;
 using RiskOfOptions.Components.RuntimePrefabs;
 using RiskOfOptions.Containers;
 using RiskOfOptions.Options;
+using RiskOfOptions.Resources;
 using RoR2.UI;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,6 +29,7 @@ namespace RiskOfOptions.Components.Panel
         private GameObject _inputFieldPrefab;
         private GameObject _choicePrefab;
         private GameObject _genericButtonPrefab;
+        private GameObject _colorButtonPrefab;
 
         private MPEventSystem _mpEventSystem;
         private MPButton _revertButton;
@@ -86,6 +88,7 @@ namespace RiskOfOptions.Components.Panel
             _inputFieldPrefab = RuntimePrefabManager.Get<InputFieldPrefab>().InputField;
             _choicePrefab = RuntimePrefabManager.Get<ChoicePrefab>().ChoiceButton;
             _genericButtonPrefab = RuntimePrefabManager.Get<GenericButtonPrefab>().GenericButton;
+            _colorButtonPrefab = Prefabs.colorPickerButton;
 
             _checkBoxPrefab.SetActive(false);
             _sliderPrefab.SetActive(false);
@@ -95,6 +98,7 @@ namespace RiskOfOptions.Components.Panel
             _inputFieldPrefab.SetActive(false);
             _choicePrefab.SetActive(false);
             _genericButtonPrefab.SetActive(false);
+            _colorButtonPrefab.SetActive(false);
         }
 
         private void AddPanelsToSettings()
@@ -364,6 +368,7 @@ namespace RiskOfOptions.Components.Panel
                     StringInputFieldOption => option.CreateOptionGameObject(_inputFieldPrefab, verticalLayoutTransform),
                     GenericButtonOption => option.CreateOptionGameObject(_genericButtonPrefab, verticalLayoutTransform),
                     ChoiceOption => option.CreateOptionGameObject(_choicePrefab, verticalLayoutTransform),
+                    ColorOption => option.CreateOptionGameObject(_colorButtonPrefab, verticalLayoutTransform), // We like to do a little trolling
                     _ => throw new ArgumentOutOfRangeException(option.Name)
                 };
 

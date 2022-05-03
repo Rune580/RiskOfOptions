@@ -32,18 +32,28 @@ namespace RiskOfOptions.Components.Options
             UpdateHue(eventData);
         }
 
+        public void SetHue(float hue)
+        {
+            SetHandleByHue(hue);
+        }
+
         private void UpdateHue(PointerEventData eventData)
         {
             Vector2 pos = GetLocalPos(eventData);
             
             var hue = GetHueFromMousePos(pos);
+            
+            SetHandleByHue(hue);
 
+            onHueChanged?.Invoke(hue);
+        }
+
+        private void SetHandleByHue(float hue)
+        {
             float x = Mathf.Cos(hue) * radius;
             float y = Mathf.Sin(hue) * radius;
 
             handle.localPosition = new Vector3(x, y, 0);
-            
-            onHueChanged?.Invoke(hue);
         }
         
         private Vector2 GetLocalPos(PointerEventData eventData)

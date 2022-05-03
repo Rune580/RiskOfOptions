@@ -1,46 +1,55 @@
-﻿using UnityEngine;
+﻿using RiskOfOptions.Components.ColorPicker;
+using RiskOfOptions.Utils;
+using RoR2.UI;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace RiskOfOptions.Components.Options
 {
     public class ModSettingsColor : ModSettingsControl<Color>
     {
-        public RooColorHue hueWheel;
-        public RooColorPicker colorPicker;
+        public HGButton button;
 
-        private float _hue;
-        private float _saturation;
-        private float _value;
-
+        private ColorBlock _colorBlock;
+            
         protected override void Awake()
         {
             base.Awake();
 
             if (option == null)
                 return;
-            
-            hueWheel.onHueChanged.AddListener(UpdateHue);
-            colorPicker.onValueChanged.AddListener(UpdateSatAndVal);
+
+            _colorBlock = button.colors;
+            _colorBlock.normalColor = GetCurrentValue();
+            button.colors = _colorBlock;
         }
 
         protected override void Disable()
         {
-            // Todo
+            foreach (var button in GetComponentsInChildren<HGButton>())
+                button.interactable = false;
         }
 
         protected override void Enable()
         {
-            // Todo
+            foreach (var button in GetComponentsInChildren<HGButton>())
+                button.interactable = true;
         }
 
-        private void UpdateHue(float hue)
+        protected override void OnUpdateControls()
         {
-            _hue = hue;
+            base.OnUpdateControls();
+            
+            if (option == null)
+                return;
+
+            _colorBlock.normalColor = GetCurrentValue();
+            button.colors = _colorBlock;
         }
 
-        private void UpdateSatAndVal(float saturation, float value)
+        public void OpenColorPicker()
         {
-            _saturation = saturation;
-            _value = value;
+            ColorPickerUtil.OpenColorPicker(SubmitValue, GetCurrentValue());
         }
     }
 }

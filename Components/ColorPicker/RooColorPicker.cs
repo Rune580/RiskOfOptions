@@ -4,7 +4,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace RiskOfOptions.Components.Options
+namespace RiskOfOptions.Components.ColorPicker
 {
     public class RooColorPicker : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
@@ -22,6 +22,16 @@ namespace RiskOfOptions.Components.Options
         public void SetHue(float hue)
         {
             background.material.SetFloat("_Hue", hue);
+        }
+
+        public void SetValues(float saturation, float value)
+        {
+            var rect = _rectTransform.rect;
+
+            var x = saturation.Remap(0, 1, -(rect.width / 2), rect.width / 2);
+            var y = value.Remap(0, 1, -(rect.height / 2), rect.height / 2);
+            
+            ClampHandle(new Vector2(x, y));
         }
 
         public void OnPointerClick(PointerEventData eventData)
@@ -48,9 +58,13 @@ namespace RiskOfOptions.Components.Options
         {
             Vector2 pos = ClampHandle(transform.InverseTransformPoint(eventData.position)); ;
 
-            var values = pos - _rectTransform.rect.center;
+            var rect = _rectTransform.rect;
+            var values = pos - rect.center;
 
-            onValueChanged?.Invoke(values.x, values.y);
+            var saturation = values.x.Remap(-(rect.width / 2), rect.width / 2, 0, 1);
+            var value = values.y.Remap(-(rect.height / 2), rect.height / 2, 0, 1);
+
+            onValueChanged?.Invoke(saturation, value);
         }
 
         private Vector2 ClampHandle(Vector2 pos)
