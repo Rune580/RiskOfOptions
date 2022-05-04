@@ -11,6 +11,7 @@ An API to provide a user interface in game to interact with BepInEx ConfigEntry'
 - KeyBinds `KeyboardShortcut`
 - String Input Fields `string`
 - Choice DropDowns `Enum`
+- Color Picker `UnityEngine.Color`
 
 ### Additional Components
 - GenericButtons
@@ -134,6 +135,16 @@ Discord: Rune#0001
 Github: Rune580
 
 # Changelog
+    2.5.0:
+      Added ColorOption.
+      Added ColorPickerUtil for manually opening a color picker.
+      Added 2 new submit modes for input fields:
+        - OnExitOrSubmit
+        - OnSubmit
+        These can be used with the `submitOn` Field in the InputFieldConfig.
+      Fixed an issue where having multiple input fields causes hitching.
+      Fixed an issue where input fields wouldn't visually revert.
+
     2.4.2:
       Sliders can now have their values be manually set in the text box. No more finagling the slider to get the value you want.
         The future is now!
