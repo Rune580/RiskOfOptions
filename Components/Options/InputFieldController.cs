@@ -64,8 +64,6 @@ namespace RiskOfOptions.Components.Options
                     throw new ArgumentOutOfRangeException();
             }
 
-            
-
             inputField.text = GetCurrentValue();
             RefreshLabel();
         }
@@ -75,18 +73,21 @@ namespace RiskOfOptions.Components.Options
             bool submitKey = Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter);
             bool validKey = Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.Mouse1) || Input.GetKeyDown(KeyCode.Escape);
 
-            if (validKey && !inputField.inField)
+            if ((validKey && !inputField.inField) || submitKey)
             {
                 _exitQueued = true;
-            }
-            else if (submitKey)
-            {
-                _exitQueued = true;
+
+                if (submitKey && submitOn is InputFieldConfig.SubmitEnum.OnExitOrSubmit or InputFieldConfig.SubmitEnum.OnSubmit)
+                    SubmitText(inputField.text);
             }
 
             if (_exitQueued)
+            {
+                if (submitOn == InputFieldConfig.SubmitEnum.OnExitOrSubmit)
+                    SubmitText(inputField.text);
+                
                 AttemptHide();
-            
+            }
         }
 
         protected new void OnEnable()

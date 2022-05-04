@@ -26,15 +26,6 @@ namespace RiskOfOptions.Components.Options
         private void Update()
         {
             _rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, LayoutUtility.GetPreferredHeight(_textTransform));
-            
-            bool submitKey = Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter);
-            bool validKey = Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.Mouse1) || Input.GetKeyDown(KeyCode.Escape);
-
-            if ((validKey && !inField) || submitKey)
-            {
-                gameObject.SetActive(false);
-                onExit.Invoke(text);
-            }
         }
 
         public override void OnPointerEnter(PointerEventData pointerEventData)
