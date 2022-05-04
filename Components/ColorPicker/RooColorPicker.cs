@@ -21,7 +21,7 @@ namespace RiskOfOptions.Components.ColorPicker
 
         public void SetHue(float hue)
         {
-            background.material.SetFloat("_Hue", hue);
+            background.color = Color.HSVToRGB(hue.Remap(0, 6.28f, 0, 1), 1, 1);
         }
 
         public void SetValues(float saturation, float value)
