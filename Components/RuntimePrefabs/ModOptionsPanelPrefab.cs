@@ -89,9 +89,6 @@ namespace RiskOfOptions.Components.RuntimePrefabs
 
         private void CreateOptionsPanel(Transform subPanelArea)
         {
-            // _optionsPanel = Object.Instantiate(Prefabs.SubPanel, subPanelArea);
-            // _optionsPanel!.name = "Empty Panel";
-            
             GameObject audioPanel = subPanelArea.Find("SettingsSubPanel, Audio").gameObject;
 
             _optionsPanel = Object.Instantiate(audioPanel, subPanelArea);
@@ -514,13 +511,15 @@ namespace RiskOfOptions.Components.RuntimePrefabs
 
         private void CreateModOptionsPanel()
         {
-            ModOptionsPanel = Object.Instantiate(_optionsPanel, Canvas.transform);
+            // ModOptionsPanel = Object.Instantiate(_optionsPanel, Canvas.transform);
+            //
+            // ModOptionsPanel.GetComponent<RectTransform>().anchorMin = new Vector2(0.275f, 0);
+            // ModOptionsPanel.GetComponent<RectTransform>().anchorMax = new Vector2(0.625f, 0.82f);
+            // ModOptionsPanel.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").GetComponent<VerticalLayoutGroup>().childForceExpandHeight = false;
+            // ModOptionsPanel.SetActive(false);
+            // ModOptionsPanel.name = "Options Panel";
 
-            ModOptionsPanel.GetComponent<RectTransform>().anchorMin = new Vector2(0.275f, 0);
-            ModOptionsPanel.GetComponent<RectTransform>().anchorMax = new Vector2(0.625f, 0.82f);
-            ModOptionsPanel.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").GetComponent<VerticalLayoutGroup>().childForceExpandHeight = false;
-            ModOptionsPanel.SetActive(false);
-            ModOptionsPanel.name = "Options Panel";
+            ModOptionsPanel = Object.Instantiate(Prefabs.modOptionsPanel, Canvas.transform);
         }
 
         private void CreateModOptionsDescriptionPanel()
