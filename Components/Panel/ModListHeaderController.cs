@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace RiskOfOptions.Components.Panel
 {
-    public class ModListHeaderController : MonoBehaviour
+    public class ModListHeaderController : MonoBehaviour // Looking back at this, why is this implemented the way it is? it makes no sense...
     {
         private ModOptionPanelController _mopc;
         private void OnEnable()

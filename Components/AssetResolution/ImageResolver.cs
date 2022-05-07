@@ -26,51 +26,5 @@ namespace RiskOfOptions.Components.AssetResolution
                 entry.GetTarget(transform).sprite = asset;
             }
         }
-
-        private void PrintData()
-        {
-            if (serializedData is null || serializedData.Length == 0)
-                return;
-
-            var reader = new UnityByteBufReader(serializedData);
-            int length = reader.ReadInt();
-
-            var writer = new UnityByteBufWriter();
-            writer.WriteInt(length);
-
-            entries = new List<ImageAssetEntry>();
-
-            for (int i = 0; i < length; i++)
-            {
-                var subRead = new UnityByteBufReader(reader.ReadByteArray());
-                
-                var entry = new ImageAssetEntry
-                {
-                    addressablePath = subRead.ReadString(),
-                    name = subRead.ReadString(),
-                    targetPath = subRead.ReadString(),
-                    rect = subRead.ReadRect(),
-                    pivot = subRead.ReadVector2(),
-                    pixelsPerUnit = subRead.ReadFloat(),
-                    extrude = subRead.ReadUInt(),
-                    meshType = subRead.ReadEnum<SpriteMeshType>(),
-                    border = subRead.ReadVector4()
-                };
-
-                var data = entry.Serialize();
-
-                writer.WriteBytes(data);
-            }
-            
-            var bytes = writer.GetBytes();
-            StringBuilder builder = new StringBuilder();
-            foreach (var b in bytes)
-            {
-                builder.Append($"{b}");
-            }
-
-            Debug.Log($"Prefab: {gameObject.name}\n" +
-                      $"Data: '{builder}'");
-        }
     }
 }
