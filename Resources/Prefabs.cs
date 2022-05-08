@@ -9,6 +9,8 @@ namespace RiskOfOptions.Resources
         private static AssetBundle _uiBundle;
 
         public static GameObject modOptionsPanel;
+        public static GameObject modListPanel;
+        public static GameObject modDescriptionPanel;
 
         public static GameObject boolButton;
         public static GameObject sliderButton;
@@ -24,6 +26,8 @@ namespace RiskOfOptions.Resources
             _uiBundle = LoadBundle("uielements");
 
             modOptionsPanel = LoadPrefab("Options Panel.prefab");
+            modListPanel = LoadPrefab("Mod List Panel.prefab");
+            modDescriptionPanel = LoadPrefab("Mod Description Panel.prefab");
             
             boolButton = LoadPrefab("ModSettingsButton, Bool.prefab");
             sliderButton = LoadPrefab("ModSettingsButton, Slider.prefab");

@@ -234,65 +234,46 @@ namespace RiskOfOptions.Components.RuntimePrefabs
 
         private void CreateModListPanel(GameObject parent)
         {
-            ModListPanel = Object.Instantiate(_optionsPanel, Canvas.transform);
-
-            ModListPanel.GetComponent<RectTransform>().anchorMax = new Vector2(0.25f, 1f);
-            ModListPanel.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").GetComponent<VerticalLayoutGroup>().spacing = 6;
-            ModListPanel.SetActive(false);
-            ModListPanel.name = "Mod List Panel";
-            ModListPanel.AddComponent<ModListHeaderController>();
-            
-            ModListHighlight = Object.Instantiate(parent.GetComponent<HGHeaderNavigationController>().headerHighlightObject,
-                parent.GetComponent<HGHeaderNavigationController>().headerHighlightObject.transform.parent);
-            
-            foreach (var imageComp in ModListHighlight.GetComponentsInChildren<Image>())
-                imageComp.maskable = false;
-
-            ModListHighlight.SetActive(true);
-            
-            HGHeaderNavigationController modListController = ModListPanel.AddComponent<HGHeaderNavigationController>();
-            modListController.headerHighlightObject = ModListHighlight;
-            modListController.unselectedTextColor = Color.white;
-            modListController.makeSelectedHeaderButtonNoninteractable = true;
-            
-            ModListPanel.SetActive(true);
+            ModListPanel = Object.Instantiate(Prefabs.modListPanel, Canvas.transform);
         }
 
         private void CreateModDescriptionPanel()
         {
-            ModDescriptionPanel = Object.Instantiate(_optionsPanel, Canvas.transform);
+            // ModDescriptionPanel = Object.Instantiate(_optionsPanel, Canvas.transform);
+            //
+            // ModDescriptionPanel.GetComponent<RectTransform>().anchorMin = new Vector2(0.275f, 0f);
+            // ModDescriptionPanel.GetComponent<RectTransform>().anchorMax = new Vector2(1f, 1f);
+            //
+            // Transform mdpVerticalLayout = ModDescriptionPanel.transform.Find("Scroll View").Find("Viewport");
+            // GameObject descriptionPanel = Object.Instantiate(_genericDescriptionPanel, mdpVerticalLayout);
+            //
+            // ModDescriptionPanel.SetActive(true);
+            // ModDescriptionPanel.name = "Mod Description Panel";
+            //
+            // descriptionPanel.transform.Find("ContentSizeFitter").Find("DescriptionText").SetParent(descriptionPanel.transform);
+            //
+            // Object.DestroyImmediate(descriptionPanel.transform.Find("ContentSizeFitter").gameObject);
+            //
+            // descriptionPanel.GetComponent<RectTransform>().anchorMin = Vector2.zero;
+            //
+            // var descriptionText = descriptionPanel.transform.Find("DescriptionText").gameObject;
+            //
+            // var sizeFitter = descriptionText.AddComponent<ContentSizeFitter>();
+            // sizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            // sizeFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            //
+            // var descriptionTransform = descriptionText.GetComponent<RectTransform>();
+            // descriptionTransform.pivot = new Vector2(0, 1);
+            // descriptionTransform.anchorMin = Vector2.zero;
+            // descriptionTransform.anchorMax = Vector2.one;
+            // descriptionTransform.anchoredPosition = Vector2.zero;
+            //
+            // descriptionText.GetComponent<HGTextMeshProUGUI>().margin = new Vector4(8, 8, 8, 8);
+            //
+            // var scrollRect = ModDescriptionPanel.GetComponentInChildren<ScrollRect>();
+            // scrollRect.content = descriptionText.GetComponent<RectTransform>();
 
-            ModDescriptionPanel.GetComponent<RectTransform>().anchorMin = new Vector2(0.275f, 0f);
-            ModDescriptionPanel.GetComponent<RectTransform>().anchorMax = new Vector2(1f, 1f);
-
-            Transform mdpVerticalLayout = ModDescriptionPanel.transform.Find("Scroll View").Find("Viewport");
-            GameObject descriptionPanel = Object.Instantiate(_genericDescriptionPanel, mdpVerticalLayout);
-
-            ModDescriptionPanel.SetActive(true);
-            ModDescriptionPanel.name = "Mod Description Panel";
-            
-            descriptionPanel.transform.Find("ContentSizeFitter").Find("DescriptionText").SetParent(descriptionPanel.transform);
-
-            Object.DestroyImmediate(descriptionPanel.transform.Find("ContentSizeFitter").gameObject);
-            
-            descriptionPanel.GetComponent<RectTransform>().anchorMin = Vector2.zero;
-
-            var descriptionText = descriptionPanel.transform.Find("DescriptionText").gameObject;
-
-            var sizeFitter = descriptionText.AddComponent<ContentSizeFitter>();
-            sizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-            sizeFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
-            
-            var descriptionTransform = descriptionText.GetComponent<RectTransform>();
-            descriptionTransform.pivot = new Vector2(0, 1);
-            descriptionTransform.anchorMin = Vector2.zero;
-            descriptionTransform.anchorMax = Vector2.one;
-            descriptionTransform.anchoredPosition = Vector2.zero;
-
-            descriptionText.GetComponent<HGTextMeshProUGUI>().margin = new Vector4(8, 8, 8, 8);
-            
-            var scrollRect = ModDescriptionPanel.GetComponentInChildren<ScrollRect>();
-            scrollRect.content = descriptionText.GetComponent<RectTransform>();;
+            ModDescriptionPanel = Object.Instantiate(Prefabs.modDescriptionPanel, Canvas.transform);
         }
 
         private void CreateCategoryHeader(GameObject parent, GameObject headerArea)

@@ -8,6 +8,7 @@ namespace RiskOfOptions.Components.AssetResolution.Data
     public class ImageAssetEntry : BaseAssetEntry<Image>
     {
         public string name;
+        public ImageAssetType assetType;
         public Rect rect;
         public Vector2 pivot;
         public float pixelsPerUnit;
@@ -22,12 +23,17 @@ namespace RiskOfOptions.Components.AssetResolution.Data
             writer.WriteString(addressablePath);
             writer.WriteString(name);
             writer.WriteString(targetPath);
-            writer.WriteRect(rect);
-            writer.WriteVector2(pivot);
-            writer.WriteFloat(pixelsPerUnit);
-            writer.WriteUInt(extrude);
-            writer.WriteEnum<SpriteMeshType>(meshType);
-            writer.WriteVector4(border);
+            writer.WriteEnum<ImageAssetType>(assetType);
+
+            if (assetType == ImageAssetType.Sprite)
+            {
+                writer.WriteRect(rect);
+                writer.WriteVector2(pivot);
+                writer.WriteFloat(pixelsPerUnit);
+                writer.WriteUInt(extrude);
+                writer.WriteEnum<SpriteMeshType>(meshType);
+                writer.WriteVector4(border);
+            }
             
             return writer;
         }
@@ -37,12 +43,23 @@ namespace RiskOfOptions.Components.AssetResolution.Data
             addressablePath = reader.ReadString();
             name = reader.ReadString();
             targetPath = reader.ReadString();
-            rect = reader.ReadRect();
-            pivot = reader.ReadVector2();
-            pixelsPerUnit = reader.ReadFloat();
-            extrude = reader.ReadUInt();
-            meshType = reader.ReadEnum<SpriteMeshType>();
-            border = reader.ReadVector4();
+            assetType = reader.ReadEnum<ImageAssetType>();
+
+            if (assetType == ImageAssetType.Sprite)
+            {
+                rect = reader.ReadRect();
+                pivot = reader.ReadVector2();
+                pixelsPerUnit = reader.ReadFloat();
+                extrude = reader.ReadUInt();
+                meshType = reader.ReadEnum<SpriteMeshType>();
+                border = reader.ReadVector4();
+            }
+        }
+        
+        public enum ImageAssetType
+        {
+            Sprite,
+            Material
         }
     }
 }
