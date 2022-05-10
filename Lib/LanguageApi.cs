@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using On.RoR2;
+using System.Reflection;
+using MonoMod.RuntimeDetour;
+using RoR2;
 
 namespace RiskOfOptions.Lib
 {
@@ -10,9 +12,12 @@ namespace RiskOfOptions.Lib
         private static readonly Dictionary<string, string> LanguageEntries = new();
         private static readonly Dictionary<string, LanguageStringDelegate> DynamicLanguageEntries = new();
 
+        private static Hook _languageHook;
+
         internal static void Init()
         {
-            Language.GetLocalizedStringByToken += GetLocalizedStringByToken;
+            var destMethod = typeof(LanguageApi).GetMethod(nameof(GetLocalizedStringByToken), BindingFlags.NonPublic | BindingFlags.Static);
+            _languageHook = HookHelper.NewHook<Language>("GetLocalizedStringByToken", destMethod);
         }
 
         internal static void Add(string token, string entry)
@@ -30,7 +35,7 @@ namespace RiskOfOptions.Lib
             DynamicLanguageEntries.Remove(token);
         }
         
-        private static string GetLocalizedStringByToken(Language.orig_GetLocalizedStringByToken orig, RoR2.Language self, string token)
+        private static string GetLocalizedStringByToken(Func<Language, string, string> orig, Language self, string token)
         {
             if (token.Length > ModSettingsManager.StartingTextLength)
             {

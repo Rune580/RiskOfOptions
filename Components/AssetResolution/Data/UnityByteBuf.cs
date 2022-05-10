@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace RiskOfOptions.Components.AssetResolution.Data
+﻿namespace RiskOfOptions.Components.AssetResolution.Data
 {
     public abstract class UnityByteBuf
     {

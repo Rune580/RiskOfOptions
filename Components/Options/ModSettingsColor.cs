@@ -1,5 +1,4 @@
-﻿using RiskOfOptions.Components.ColorPicker;
-using RiskOfOptions.Utils;
+﻿using RiskOfOptions.Utils;
 using RoR2.UI;
 using UnityEngine;
 using UnityEngine.UI;

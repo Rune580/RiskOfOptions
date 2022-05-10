@@ -1,5 +1,4 @@
-﻿using System;
-using RoR2.UI;
+﻿using RoR2.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;

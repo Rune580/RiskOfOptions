@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using RiskOfOptions.Options;
 using RoR2.UI;
 

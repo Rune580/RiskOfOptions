@@ -1,5 +1,4 @@
-﻿using RiskOfOptions.Components.Options;
-using RoR2.UI;
+﻿using RoR2.UI;
 using UnityEngine;
 
 namespace RiskOfOptions.Components.Panel

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using BepInEx.Configuration;
-using On.RoR2;
+﻿using BepInEx.Configuration;
 using RiskOfOptions.Utils;
 using RoR2.UI;
 using TMPro;
-using UnityEngine;
-using RoR2Application = RoR2.RoR2Application;
 
 namespace RiskOfOptions.Components.Options
 {

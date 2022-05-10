@@ -1,9 +1,5 @@
-﻿using RiskOfOptions.Components.Options;
-using RiskOfOptions.Resources;
-using RoR2.UI;
-using TMPro;
+﻿using RiskOfOptions.Resources;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace RiskOfOptions.Components.RuntimePrefabs
 {

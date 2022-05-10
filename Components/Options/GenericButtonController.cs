@@ -1,8 +1,5 @@
-﻿using System;
-using RiskOfOptions.OptionConfigs;
-using RoR2.UI;
+﻿using RoR2.UI;
 using TMPro;
-using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 

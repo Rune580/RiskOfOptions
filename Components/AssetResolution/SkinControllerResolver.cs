@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using RiskOfOptions.Components.AssetResolution.Data;
+﻿using RiskOfOptions.Components.AssetResolution.Data;
 using RoR2.UI;
-using RoR2.UI.SkinControllers;
-using UnityEngine;
 using UnityEngine.AddressableAssets;
 
 namespace RiskOfOptions.Components.AssetResolution

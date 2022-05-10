@@ -2,7 +2,6 @@
 using RiskOfOptions.Resources;
 using RoR2.UI;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace RiskOfOptions.Components.RuntimePrefabs
 {

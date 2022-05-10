@@ -1,25 +1,28 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
+using MonoMod.RuntimeDetour;
 using RiskOfOptions.Containers;
 using RiskOfOptions.Lib;
 using RiskOfOptions.Options;
+using RoR2;
 using UnityEngine;
 
 using static RiskOfOptions.ExtensionMethods;
 using ConCommandArgs = RoR2.ConCommandArgs;
-using PauseManager = On.RoR2.PauseManager;
-
 #pragma warning disable 618
 
 namespace RiskOfOptions
 {
     public static class ModSettingsManager
     {
+        private static Hook _pauseHook;
+        
         internal static readonly ModIndexedOptionCollection OptionCollection = new();
 
         internal const string StartingText = "RISK_OF_OPTIONS";
         internal const int StartingTextLength = 15;
-
+        
         internal static bool disablePause = false;
         
         internal static readonly List<string> RestartRequiredOptions = new();
@@ -36,10 +39,12 @@ namespace RiskOfOptions
             
             SettingsModifier.Init();
 
-            PauseManager.CCTogglePause += PauseManagerOnCCTogglePause;
+            var targetMethod = typeof(PauseManager).GetMethod("CCTogglePause", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+            var destMethod = typeof(ModSettingsManager).GetMethod(nameof(PauseManagerOnCCTogglePause), BindingFlags.NonPublic | BindingFlags.Static);
+            _pauseHook = new Hook(targetMethod, destMethod);
         }
 
-        private static void PauseManagerOnCCTogglePause(PauseManager.orig_CCTogglePause orig, ConCommandArgs args)
+        private static void PauseManagerOnCCTogglePause(Action<ConCommandArgs> orig, ConCommandArgs args)
         {
             if (disablePause)
                 return;

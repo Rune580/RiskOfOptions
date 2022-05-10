@@ -4,8 +4,6 @@ using RiskOfOptions.OptionConfigs;
 using RoR2.UI;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
-using Language = On.RoR2.Language;
 
 namespace RiskOfOptions.Components.Options
 {

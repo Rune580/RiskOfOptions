@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using BepInEx.Configuration;
-using On.RoR2;
+using RiskOfOptions.Lib;
 using RoR2.UI;
 using UnityEngine;
 using RoR2Application = RoR2.RoR2Application;
@@ -31,7 +31,7 @@ namespace RiskOfOptions.Utils
             ModSettingsManager.disablePause = true;
             
             _dialogBox = SimpleDialogBox.Create(_mpEventSystem);
-            Language.GetString_string += ControlRebindingHook;
+            LanguageApi.AddDelegate(LanguageTokens.OptionRebindDialogDescription, ControlRebindingHook);
         }
 
         public void StopListening()
@@ -42,7 +42,7 @@ namespace RiskOfOptions.Utils
                 DestroyImmediate(_dialogBox.rootObject);
                 _dialogBox = null;
             }
-            Language.GetString_string -= ControlRebindingHook;
+            LanguageApi.RemoveDelegate(LanguageTokens.OptionRebindDialogDescription);
 
             RoR2Application.unscaledTimeTimers.CreateTimer(0.3f, Finish);
             Destroy(gameObject, 0.5f);
@@ -229,11 +229,8 @@ namespace RiskOfOptions.Utils
             StopListening();
         }
 
-        private string ControlRebindingHook(Language.orig_GetString_string orig, string token)
+        private string ControlRebindingHook()
         {
-            if (token != LanguageTokens.OptionRebindDialogDescription)
-                return orig(token);
-            
             int roundedTime = Mathf.RoundToInt(_timeoutTimer);
 
             return $"Press the button(s) you wish to assign for {_keyBindName}.\n{roundedTime} second(s) remaining.";
