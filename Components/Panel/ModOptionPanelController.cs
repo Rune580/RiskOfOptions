@@ -169,12 +169,12 @@ namespace RiskOfOptions.Components.Panel
                 modListButton.navigationController = navigationController;
                 modListButton.descriptionText = _panel.ModDescriptionPanel.GetComponentInChildren<HGTextMeshProUGUI>();
 
-                RectTransform modIconRectTransform = newModButton.transform.Find("ModIcon").gameObject.GetComponent<RectTransform>();
-
-                modIconRectTransform.localPosition = new Vector3(-147f, -0.32f, 0f);
-                modIconRectTransform.sizeDelta = Vector2.zero;
-                modIconRectTransform.anchoredPosition = Vector2.zero;
-                modIconRectTransform.gameObject.AddComponent<FetchIconWhenReady>().modGuid = collection.ModGuid;
+                // RectTransform modIconRectTransform = newModButton.transform.Find("ModIcon").gameObject.GetComponent<RectTransform>();
+                //
+                // modIconRectTransform.localPosition = new Vector3(-147f, -0.32f, 0f);
+                // modIconRectTransform.sizeDelta = Vector2.zero;
+                // modIconRectTransform.anchoredPosition = Vector2.zero;
+                // modIconRectTransform.gameObject.AddComponent<FetchIconWhenReady>().modGuid = collection.ModGuid;
 
                 newModButton.name = $"ModListButton ({collection.ModName})";
                 newModButton.SetActive(true);

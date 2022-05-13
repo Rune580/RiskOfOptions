@@ -67,7 +67,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
 
         public void Destroy()
         {
-            Object.DestroyImmediate(ModListButton);
+            // Object.DestroyImmediate(ModListButton);
             Object.DestroyImmediate(ModOptionsHeaderButton);
             Object.DestroyImmediate(_emptyButton);
             Object.DestroyImmediate(Canvas);
@@ -128,82 +128,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
 
         private void CreateModListButton()
         {
-            ModListButton = Object.Instantiate(_audioVerticalLayout.transform.Find("SettingsEntryButton, Bool (Audio Focus)").gameObject);
-            ModListButton.name = "Mod Options Prefab, ModList Button";
-
-            Object.DestroyImmediate(ModListButton.GetComponentInChildren<CarouselController>());
-            Object.DestroyImmediate(ModListButton.GetComponentInChildren<ButtonSkinController>());
-            Object.DestroyImmediate(ModListButton.transform.Find("CarouselRect").gameObject);
-
-
-            HGButton oldButton = ModListButton.GetComponent<HGButton>();
-            bool allowAllEventSystems = oldButton.allowAllEventSystems;
-            bool submitOnPointerUp = oldButton.submitOnPointerUp;
-            UILayerKey requiredTopLayer = oldButton.requiredTopLayer;
-            UnityEngine.Events.UnityEvent onFindSelectableLeft = oldButton.onFindSelectableLeft;
-            UnityEngine.Events.UnityEvent onFindSelectableRight = oldButton.onFindSelectableRight;
-            UnityEngine.Events.UnityEvent onSelect = oldButton.onSelect;
-            UnityEngine.Events.UnityEvent onDeselect = oldButton.onDeselect;
-            bool defaultFallbackButton = oldButton.defaultFallbackButton;
-            Button.ButtonClickedEvent buttonClickedEvent = oldButton.onClick;
-            ColorBlock colors = oldButton.colors;
-            bool showImageOnHover = oldButton.showImageOnHover;
-            Image imageOnHover = oldButton.imageOnHover;
-            Image imageOnInteractable = oldButton.imageOnInteractable;
-            bool updateTextOnHover = oldButton.updateTextOnHover;
-            LanguageTextMeshController hoverLanguageTextMeshController = oldButton.hoverLanguageTextMeshController;
-            string hoverToken = oldButton.hoverToken;
-            string uiClickSoundOverride = oldButton.uiClickSoundOverride;
-            Object.DestroyImmediate(oldButton);
-            
-            colors.disabledColor = ModOptionsHeaderButton.GetComponent<HGButton>().colors.disabledColor;
-            
-            ModListButton newButton = ModListButton.AddComponent<ModListButton>();
-            newButton.allowAllEventSystems = allowAllEventSystems;
-            newButton.submitOnPointerUp = submitOnPointerUp;
-            newButton.requiredTopLayer = requiredTopLayer;
-            newButton.onFindSelectableLeft = onFindSelectableLeft;
-            newButton.onFindSelectableRight = onFindSelectableRight;
-            newButton.onSelect = onSelect;
-            newButton.onDeselect = onDeselect;
-            newButton.defaultFallbackButton = defaultFallbackButton;
-            newButton.onClick = buttonClickedEvent;
-            newButton.colors = colors;
-            newButton.showImageOnHover = showImageOnHover;
-            newButton.imageOnHover = imageOnHover;
-            newButton.imageOnInteractable = imageOnInteractable;
-            newButton.updateTextOnHover = updateTextOnHover;
-            newButton.hoverLanguageTextMeshController = hoverLanguageTextMeshController;
-            newButton.hoverToken = hoverToken;
-            newButton.uiClickSoundOverride = uiClickSoundOverride;
-            newButton.interactable = true;
-            newButton.enabled = true;
-            newButton.disablePointerClick = false;
-            newButton.onClick.RemoveAllListeners();
-            
-            RectTransform buttonTextRectTransform = ModListButton.transform.Find("ButtonText").GetComponent<RectTransform>();
-
-            buttonTextRectTransform.anchorMin = new Vector2(0.19f, 0);
-            buttonTextRectTransform.anchorMax = new Vector2(1, 1);
-
-            GameObject modIconGameObject = new GameObject("ModIcon");
-
-            RectTransform modIconRectTransform = modIconGameObject.AddComponent<RectTransform>();
-            modIconGameObject.AddComponent<CanvasRenderer>();
-            modIconGameObject.AddComponent<Image>().preserveAspect = true;
-            modIconRectTransform.anchorMin = new Vector2(0.04f, 0.13f);
-            modIconRectTransform.anchorMax = new Vector2(0.19f, 0.86f);
-            modIconRectTransform.pivot = new Vector2(0.5f, 0.5f);
-            modIconGameObject.transform.SetParent(ModListButton.transform);
-            
-            
-            GameObject iconOutline = Object.Instantiate(ModListButton.transform.Find("BaseOutline").gameObject, modIconRectTransform);
-            RectTransform iconOutlineRectTransform = iconOutline.GetComponent<RectTransform>();
-            iconOutlineRectTransform.sizeDelta = Vector2.zero;
-            iconOutlineRectTransform.anchoredPosition = Vector2.zero;
-            iconOutlineRectTransform.localScale = new Vector3(0.94f, 1.16f, 1);
-
-            ModListButton.SetActive(false);
+            ModListButton = Prefabs.modListButton;
         }
 
         private void CreateEmptyButton()
@@ -239,40 +164,6 @@ namespace RiskOfOptions.Components.RuntimePrefabs
 
         private void CreateModDescriptionPanel()
         {
-            // ModDescriptionPanel = Object.Instantiate(_optionsPanel, Canvas.transform);
-            //
-            // ModDescriptionPanel.GetComponent<RectTransform>().anchorMin = new Vector2(0.275f, 0f);
-            // ModDescriptionPanel.GetComponent<RectTransform>().anchorMax = new Vector2(1f, 1f);
-            //
-            // Transform mdpVerticalLayout = ModDescriptionPanel.transform.Find("Scroll View").Find("Viewport");
-            // GameObject descriptionPanel = Object.Instantiate(_genericDescriptionPanel, mdpVerticalLayout);
-            //
-            // ModDescriptionPanel.SetActive(true);
-            // ModDescriptionPanel.name = "Mod Description Panel";
-            //
-            // descriptionPanel.transform.Find("ContentSizeFitter").Find("DescriptionText").SetParent(descriptionPanel.transform);
-            //
-            // Object.DestroyImmediate(descriptionPanel.transform.Find("ContentSizeFitter").gameObject);
-            //
-            // descriptionPanel.GetComponent<RectTransform>().anchorMin = Vector2.zero;
-            //
-            // var descriptionText = descriptionPanel.transform.Find("DescriptionText").gameObject;
-            //
-            // var sizeFitter = descriptionText.AddComponent<ContentSizeFitter>();
-            // sizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-            // sizeFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
-            //
-            // var descriptionTransform = descriptionText.GetComponent<RectTransform>();
-            // descriptionTransform.pivot = new Vector2(0, 1);
-            // descriptionTransform.anchorMin = Vector2.zero;
-            // descriptionTransform.anchorMax = Vector2.one;
-            // descriptionTransform.anchoredPosition = Vector2.zero;
-            //
-            // descriptionText.GetComponent<HGTextMeshProUGUI>().margin = new Vector4(8, 8, 8, 8);
-            //
-            // var scrollRect = ModDescriptionPanel.GetComponentInChildren<ScrollRect>();
-            // scrollRect.content = descriptionText.GetComponent<RectTransform>();
-
             ModDescriptionPanel = Object.Instantiate(Prefabs.modDescriptionPanel, Canvas.transform);
         }
 
@@ -492,26 +383,12 @@ namespace RiskOfOptions.Components.RuntimePrefabs
 
         private void CreateModOptionsPanel()
         {
-            // ModOptionsPanel = Object.Instantiate(_optionsPanel, Canvas.transform);
-            //
-            // ModOptionsPanel.GetComponent<RectTransform>().anchorMin = new Vector2(0.275f, 0);
-            // ModOptionsPanel.GetComponent<RectTransform>().anchorMax = new Vector2(0.625f, 0.82f);
-            // ModOptionsPanel.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").GetComponent<VerticalLayoutGroup>().childForceExpandHeight = false;
-            // ModOptionsPanel.SetActive(false);
-            // ModOptionsPanel.name = "Options Panel";
-
             ModOptionsPanel = Object.Instantiate(Prefabs.modOptionsPanel, Canvas.transform);
         }
 
         private void CreateModOptionsDescriptionPanel()
         {
-            ModOptionsDescriptionPanel = Object.Instantiate(ModDescriptionPanel, Canvas.transform);
-            ModOptionsDescriptionPanel.SetActive(false);
-            ModOptionsDescriptionPanel.name = "Option Description Panel";
-
-            var panelTransform = ModOptionsDescriptionPanel.GetComponent<RectTransform>();
-            panelTransform.anchorMin = new Vector2(0.65f, 0);
-            panelTransform.anchorMax = new Vector2(1f, 0.82f);
+            ModOptionsDescriptionPanel = Object.Instantiate(Prefabs.modOptionDescriptionPanel, Canvas.transform);
         }
 
         private void CreateWarningPanel()

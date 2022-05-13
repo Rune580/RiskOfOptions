@@ -1,5 +1,7 @@
 ﻿using RoR2.UI;
+using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace RiskOfOptions.Components.Panel
 {
@@ -12,22 +14,29 @@ namespace RiskOfOptions.Components.Panel
         public ModOptionPanelController Mopc { get; internal set; }
         public string modGuid;
         public HGHeaderNavigationController navigationController;
-
-        //private UnityEngine.UI.Image _icon;
+        public Image modIcon;
 
         public override void OnSelect(BaseEventData eventData)
         {
             base.OnSelect(eventData);
-            //_icon.color = new Color(0.984f, 1, 0.69f, 0.73f);
             SetDescription();
         }
-
         public override void Awake()
         {
             base.Awake();
 
             if (nameLabel)
                 nameLabel.token = token;
+
+            if (!modIcon)
+                return;
+
+            Sprite icon = ModSettingsManager.OptionCollection[modGuid].icon;
+
+            if (!icon)
+                return;
+            
+            modIcon.sprite = icon;
         }
 
         public override void Start()
@@ -39,9 +48,7 @@ namespace RiskOfOptions.Components.Panel
 
             if (!Mopc)
                 Mopc = GetComponentInParent<ModOptionPanelController>();
-
-            //_icon = GetComponentInChildren<UnityEngine.UI.Image>();
-
+            
             onClick.AddListener(delegate
             {
                 navigationController.ChooseHeaderByButton(this);
