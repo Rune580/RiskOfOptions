@@ -13,7 +13,7 @@ namespace RiskOfOptions.Components.Layout
     public class FlexLayoutGroup : UIBehaviour, ILayoutGroup
     {
         public float spacing;
-        
+
         private RectTransform _rectTransform;
         private FlexLayoutElement[] _childElements;
 
@@ -26,7 +26,7 @@ namespace RiskOfOptions.Components.Layout
             if (!_rectTransform)
                 _rectTransform = GetComponent<RectTransform>();
             
-            FetchChildren();
+            FetchChildren(true);
             SetDirty();
         }
 
@@ -42,43 +42,67 @@ namespace RiskOfOptions.Components.Layout
         private void OnTransformChildrenChanged()
         {
             FetchChildren();
+            RecalculateElements();
+            SetLayoutHorizontal();
+            SetLayoutVertical();
             SetDirty();
         }
 
         public void SetLayoutHorizontal()
         {
-            var spacingPercentage = spacing / _rectTransform.rect.size.x / 2f;
-            
             float offset = 0;
-
-            for (var i = 0; i < _childElements.Length; i++)
+            foreach (var child in _childElements)
             {
-                var element = _childElements[i];
+                if (child is not HorizontalFlexLayoutElement element)
+                    continue;
                 
                 var rectTransform = element.GetComponent<RectTransform>();
 
                 rectTransform.drivenByObject = this;
-                var min = rectTransform.anchorMin;
-                var max = rectTransform.anchorMax;
+                rectTransform.drivenProperties = DrivenTransformProperties.Anchors | DrivenTransformProperties.AnchoredPosition;
+                
+                var min = new Vector2(0, 0);
+                var max = new Vector2(1, 1);
 
-                min.x = offset;
-                max.x = offset + element.widthPercentage;
+                min.x = offset + element.PaddingPercentage.x;
+                max.x = element.fill ? 1 : offset + element.WidthPercentage + element.PaddingPercentage.x;
 
                 rectTransform.anchorMin = min;
                 rectTransform.anchorMax = max;
 
-                offset = max.x;
+                offset = max.x + element.PaddingPercentage.y;
             }
         }
 
         public void SetLayoutVertical()
         {
-            // Todo
+            float offset = 0;
+            foreach (var child in _childElements)
+            {
+                if (child is not VerticalFlexLayoutElement element)
+                    continue;
+                
+                var rectTransform = element.GetComponent<RectTransform>();
+
+                rectTransform.drivenByObject = this;
+                rectTransform.drivenProperties = DrivenTransformProperties.Anchors | DrivenTransformProperties.AnchoredPosition;
+                
+                var min = new Vector2(0, 0);
+                var max = new Vector2(1, 1);
+
+                min.y = offset + element.PaddingPercentage.x;
+                max.y = element.fill ? 1 : offset + element.HeightPercentage + element.PaddingPercentage.x;
+
+                rectTransform.anchorMin = min;
+                rectTransform.anchorMax = max;
+
+                offset = max.y + element.PaddingPercentage.y;
+            }
         }
 
-        private void FetchChildren()
+        private void FetchChildren(bool force = false)
         {
-            if (_childElements != null && _childElements.Length == transform.childCount)
+            if (_childElements != null && _childElements.Length == transform.childCount && !force)
                 return;
             
             var elements = new List<FlexLayoutElement>();
@@ -92,6 +116,15 @@ namespace RiskOfOptions.Components.Layout
             }
 
             _childElements = elements.ToArray();
+        }
+
+        public void RecalculateElements()
+        {
+            foreach (var element in _childElements)
+            {
+                element.CalculateLayoutInputHorizontal();
+                element.CalculateLayoutInputVertical();
+            }
         }
 
         public void SetDirty()
