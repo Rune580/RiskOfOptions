@@ -67,18 +67,6 @@ namespace RiskOfOptions.Components.Panel
             
             _revertButton = transform.Find("SafeArea").Find("FooterContainer").Find("FooterPanel, M&KB").Find("RevertAndBack (JUICED)").Find("NakedButton (Revert)").GetComponent<HGButton>();
             _revertButton.onClick.AddListener(RevertChanges);
-            
-            //Transform subPanelArea = transform.Find("SafeArea").Find("SubPanelArea");
-            //Transform headerArea = transform.Find("SafeArea").Find("HeaderContainer").Find("Header (JUICED)");
-
-            //_leftGlyph = GameObject.Instantiate(headerArea.Find("GenericGlyph (Left)").gameObject);
-            //_rightGlyph = GameObject.Instantiate(headerArea.Find("GenericGlyph (Right)").gameObject);
-
-            //_leftGlyph.SetActive(false);
-            //_rightGlyph.SetActive(false);
-
-            //_leftGlyph.GetComponentInChildren<HGTextMeshProUGUI>().SetText("<sprite=\"tmpsprXboxOneGlyphs\" name=\"texXBoxOneGlyphs_5\">");
-            //_rightGlyph.GetComponentInChildren<HGTextMeshProUGUI>().SetText("<sprite=\"tmpsprXboxOneGlyphs\" name=\"texXBoxOneGlyphs_9\">");
 
             _checkBoxPrefab = RuntimePrefabManager.Get<CheckBoxPrefab>().CheckBoxButton;
             _sliderPrefab = RuntimePrefabManager.Get<SliderPrefab>().Slider;
