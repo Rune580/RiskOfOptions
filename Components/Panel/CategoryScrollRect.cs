@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using RoR2;
 using RoR2.UI;
 using RoR2.UI.SkinControllers;
 using UnityEngine;
@@ -17,7 +18,8 @@ namespace RiskOfOptions.Components.Panel
             {
                 _pages = Mathf.CeilToInt(value / 4f);
                 _categories = value;
-                SetPage(0);
+                SetPage(0, true);
+                RoR2Application.onNextUpdate += LateFix;
             }
         }
 
@@ -46,7 +48,7 @@ namespace RiskOfOptions.Components.Panel
         public const int Spacing = -8;
         public const int DotScale = 25;
 
-        private static readonly Color InactiveColor = new Color(0.3f, 0.3f, 0.3f, 1);
+        private static readonly Color InactiveColor = new(0.3f, 0.3f, 0.3f, 1);
 
         public override void Start()
         {
@@ -57,8 +59,8 @@ namespace RiskOfOptions.Components.Panel
             RefreshButtons();
             StartIndicators();
             
-            //UpdateOutline(0);
-            SetPage(0);
+            SetPage(0, true);
+            SetHorizontalNormalizedPosition(0);
         }
 
         public override void LateUpdate()
@@ -68,24 +70,25 @@ namespace RiskOfOptions.Components.Panel
             if (_lateInit)
                 return;
             
-            //UpdateOutline(0);
-            SetPage(0);
+            SetPage(0, true);
+            StartCoroutine(FixStartPage());
             _lateInit = true;
         }
 
         public void Reload()
         {
-            if (_pageAnimator != null)
-                StopCoroutine(_pageAnimator);
-            
-            _pageAnimator = AnimMove(0);
-            StartCoroutine(_pageAnimator);
+            // if (_pageAnimator != null)
+            //     StopCoroutine(_pageAnimator);
+            //
+            // _pageAnimator = AnimMove(0);
+            // StartCoroutine(_pageAnimator);
             
             if (!_layoutGroup || !indicatorPrefab || _indicators == null)
                 return;
             
             AddIndicators();
-            SetPage(0);
+            SetPage(0, true);
+            RoR2Application.onNextUpdate += LateFix;
         }
 
         private void AddIndicators()
@@ -147,7 +150,7 @@ namespace RiskOfOptions.Components.Panel
             //UpdateOutline(0);
         }
 
-        internal void SetPage(int page)
+        internal void SetPage(int page, bool instant = false)
         {
             if (page >= _pages)
                 return;
@@ -162,6 +165,25 @@ namespace RiskOfOptions.Components.Panel
 
             if (_colorAnimator != null)
                 StopCoroutine(_colorAnimator);
+
+            if (instant)
+            {
+                normalizedPosition = new Vector2(_pages == 1 ? page / 1f : page / ((float)_pages - 1), 0);
+                if (page < _indicators.Length)
+                {
+                    _indicators[page].GetComponent<Image>().color = Color.white;
+
+                    for (int i = 0; i < _indicators.Length; i++)
+                    {
+                        if (i == page)
+                            continue;
+
+                        _indicators[i].GetComponent<Image>().color = InactiveColor;
+                    }
+                }
+                RefreshButtons();
+                return;
+            }
 
             _pageAnimator = AnimMove(page);
             StartCoroutine(_pageAnimator);
@@ -252,6 +274,23 @@ namespace RiskOfOptions.Components.Panel
             }
         }
 
+        private void LateFix()
+        {
+            StartCoroutine(FixStartPage());
+
+            RoR2Application.onNextUpdate -= LateFix;
+        }
+
+        private IEnumerator FixStartPage()
+        {
+            while (horizontalNormalizedPosition > 0.00001f)
+            {
+                horizontalNormalizedPosition = 0;
+
+                yield return new WaitForEndOfFrame();
+            }
+        }
+
         internal void FixExtra()
         {
             int extraButtons = _pages * 4 - _categories;
@@ -263,11 +302,11 @@ namespace RiskOfOptions.Components.Panel
                 blank.transform.SetAsLastSibling();
                 blank.AddComponent<LayoutElement>().preferredWidth = 200;
                 
+                DestroyImmediate(blank.GetComponent<ButtonSkinController>());
                 DestroyImmediate(blank.GetComponent<HGButton>());
                 DestroyImmediate(blank.GetComponent<LanguageTextMeshController>());
                 DestroyImmediate(blank.GetComponent<Image>());
-                DestroyImmediate(blank.GetComponent<ButtonSkinController>());
-                
+
                 for (int i = 0; i < blank.transform.childCount; i++)
                     blank.transform.GetChild(i).gameObject.SetActive(false);
                 
@@ -286,7 +325,7 @@ namespace RiskOfOptions.Components.Panel
             StartIndicators();
             
             //UpdateOutline(0);
-            SetPage(0);
+            SetPage(0, true);
         }
 
         public override void OnDisable()

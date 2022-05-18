@@ -13,6 +13,7 @@ namespace RiskOfOptions.Resources
         public static GameObject modListButton;
         public static GameObject modDescriptionPanel;
         public static GameObject modOptionDescriptionPanel;
+        public static GameObject modOptionCategories;
 
         public static GameObject boolButton;
         public static GameObject sliderButton;
@@ -32,6 +33,7 @@ namespace RiskOfOptions.Resources
             modListButton = LoadPrefab("Mod List Button.prefab");
             modDescriptionPanel = LoadPrefab("Mod Description Panel.prefab");
             modOptionDescriptionPanel = LoadPrefab("Option Description Panel.prefab");
+            modOptionCategories = LoadPrefab("Category Headers.prefab");
             
             boolButton = LoadPrefab("ModSettingsButton, Bool.prefab");
             sliderButton = LoadPrefab("ModSettingsButton, Slider.prefab");

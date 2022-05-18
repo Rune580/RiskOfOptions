@@ -356,7 +356,7 @@ namespace RiskOfOptions.Components.Panel
                     StringInputFieldOption => option.CreateOptionGameObject(_inputFieldPrefab, verticalLayoutTransform),
                     GenericButtonOption => option.CreateOptionGameObject(_genericButtonPrefab, verticalLayoutTransform),
                     ChoiceOption => option.CreateOptionGameObject(_choicePrefab, verticalLayoutTransform),
-                    ColorOption => option.CreateOptionGameObject(_colorButtonPrefab, verticalLayoutTransform), // We like to do a little trolling
+                    ColorOption => option.CreateOptionGameObject(_colorButtonPrefab, verticalLayoutTransform),
                     _ => throw new ArgumentOutOfRangeException(option.Name)
                 };
 

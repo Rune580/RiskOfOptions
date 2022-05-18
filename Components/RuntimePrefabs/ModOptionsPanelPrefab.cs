@@ -52,7 +52,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             CreateCanvas();
             CreateModListPanel(settingsPanel);
             CreateModDescriptionPanel();
-            CreateCategoryHeader(settingsPanel, headerArea.gameObject);
+            CreateCategoryHeader();
             CreateAdditionalCategoryStuff();
             CreateModOptionsPanel();
             
@@ -167,105 +167,108 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             ModDescriptionPanel = Object.Instantiate(Prefabs.modDescriptionPanel, Canvas.transform);
         }
 
-        private void CreateCategoryHeader(GameObject parent, GameObject headerArea)
+        private void CreateCategoryHeader()
         {
-            CategoryHeader = Object.Instantiate(_optionsPanel, Canvas.transform);
+            // CategoryHeader = Object.Instantiate(_optionsPanel, Canvas.transform);
+            //
+            // CategoryHeader.GetComponent<RectTransform>().anchorMin = new Vector2(0.275f, 0.86f);
+            // CategoryHeader.GetComponent<RectTransform>().anchorMax = new Vector2(1f, 1f);
+            //
+            // CategoryHeader.SetActive(false);
+            // CategoryHeader.name = "Category Headers";
+            //
+            // Object.DestroyImmediate(CategoryHeader.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").gameObject);
+            // Object.DestroyImmediate(CategoryHeader.transform.Find("Scroll View").Find("Scrollbar Vertical").gameObject);
+            //
+            // GameObject headers = Object.Instantiate(headerArea, CategoryHeader.transform.Find("Scroll View").Find("Viewport"));
+            // headers.name = "Categories (JUICED)";
+            //
+            // Object.DestroyImmediate(headers.GetComponent<OnEnableEvent>());
+            // Object.DestroyImmediate(headers.GetComponent<AwakeEvent>());
+            //
+            // RectTransform rt = headers.GetComponent<RectTransform>();
+            //
+            // rt.pivot = new Vector2(0.5f, 0.5f);
+            //
+            // rt.anchorMin = new Vector2(0f, 0.2f);
+            // rt.anchorMax = new Vector2(0f, 0.8f);
+            //
+            // rt.anchoredPosition = new Vector2(0, 0);
+            //
+            // var localPosition = headers.transform.localPosition;
+            //
+            // localPosition = new Vector3(localPosition.x, -47f, localPosition.z);
+            // headers.transform.localPosition = localPosition;
+            //
+            // headers.GetComponent<CanvasGroup>().alpha = 1;
+            //
+            // RectTransform[] oldButtons = headers.GetComponentsInChildren<RectTransform>();
+            //
+            // foreach (var oldButton in oldButtons)
+            // {
+            //     if (oldButton == null)
+            //         continue;
+            //     
+            //     if (oldButton != headers.GetComponent<RectTransform>())
+            //         Object.DestroyImmediate(oldButton.gameObject);
+            // }
+            //
+            // CategoryHeaderHighlight = Object.Instantiate(parent.GetComponent<HGHeaderNavigationController>().headerHighlightObject,
+            //     parent.GetComponent<HGHeaderNavigationController>().headerHighlightObject.transform.parent);
+            //
+            // CategoryHeaderHighlight.SetActive(false);
+            //
+            // HGHeaderNavigationController categoryController = headers.AddComponent<HGHeaderNavigationController>();
+            //
+            // categoryController.headerHighlightObject = CategoryHeaderHighlight;
+            // categoryController.unselectedTextColor = Color.white;
+            //
+            // categoryController.makeSelectedHeaderButtonNoninteractable = true;
+            //
+            // var categoryViewPortHeaderRectTransform = CategoryHeader.transform.Find("Scroll View").Find("Viewport").gameObject.GetComponent<RectTransform>();
+            //
+            // categoryViewPortHeaderRectTransform.anchorMin = new Vector2(0.11f, 0);
+            // categoryViewPortHeaderRectTransform.anchorMax = new Vector2(0.89f, 1);
+            //
+            // UISkinData skinData = CategoryHeader.transform.Find("Scroll View").GetComponent<ScrollRectSkinController>().skinData;
+            // UILayerKey layerKey = CategoryHeader.transform.Find("Scroll View").GetComponent<HGScrollRectHelper>().requiredTopLayer;
+            //
+            // Object.DestroyImmediate(CategoryHeader.transform.Find("Scroll View").GetComponent<ScrollRectSkinController>());
+            // Object.DestroyImmediate(CategoryHeader.transform.Find("Scroll View").GetComponent<HGScrollRectHelper>());
+            // Object.DestroyImmediate(CategoryHeader.transform.Find("Scroll View").GetComponent<ScrollRect>());
+            //
+            // CategoryScrollRect categoryScrollRect = CategoryHeader.transform.Find("Scroll View").gameObject.AddComponent<CategoryScrollRect>();
+            //
+            // categoryScrollRect.inertia = false;
+            // categoryScrollRect.content = headers.GetComponent<RectTransform>();
+            // categoryScrollRect.content.pivot = new Vector2(0, 0.5f);
+            // categoryScrollRect.horizontal = true;
+            // categoryScrollRect.vertical = false;
+            // categoryScrollRect.movementType = ScrollRect.MovementType.Unrestricted;
+            // categoryScrollRect.viewport = categoryViewPortHeaderRectTransform;
+            // categoryScrollRect.horizontalScrollbar = null;
+            //
+            // CategoryHeader.transform.Find("Scroll View").gameObject.AddComponent<HGScrollRectHelper>().requiredTopLayer = layerKey;
+            // CategoryHeader.transform.Find("Scroll View").gameObject.AddComponent<ScrollRectSkinController>().skinData = skinData;
+            //
+            // ContentSizeFitter sizeFitter = headers.AddComponent<ContentSizeFitter>();
+            //
+            // sizeFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            // sizeFitter.verticalFit = ContentSizeFitter.FitMode.Unconstrained;
+            //
+            // HorizontalLayoutGroup hlg = headers.GetComponent<HorizontalLayoutGroup>();
+            //
+            // hlg.enabled = true;
+            // hlg.padding = new RectOffset(8, 8, 4, 4);
+            // hlg.spacing = 16;
+            // hlg.childAlignment = TextAnchor.MiddleCenter;
+            // hlg.childControlWidth = true;
+            // hlg.childControlHeight = true;
+            // hlg.childForceExpandWidth = true;
+            // hlg.childForceExpandHeight = true;
 
-            CategoryHeader.GetComponent<RectTransform>().anchorMin = new Vector2(0.275f, 0.86f);
-            CategoryHeader.GetComponent<RectTransform>().anchorMax = new Vector2(1f, 1f);
-
-            CategoryHeader.SetActive(false);
-            CategoryHeader.name = "Category Headers";
-            
-            Object.DestroyImmediate(CategoryHeader.transform.Find("Scroll View").Find("Viewport").Find("VerticalLayout").gameObject);
-            Object.DestroyImmediate(CategoryHeader.transform.Find("Scroll View").Find("Scrollbar Vertical").gameObject);
-
-            GameObject headers = Object.Instantiate(headerArea, CategoryHeader.transform.Find("Scroll View").Find("Viewport"));
-            headers.name = "Categories (JUICED)";
-
-            Object.DestroyImmediate(headers.GetComponent<OnEnableEvent>());
-            Object.DestroyImmediate(headers.GetComponent<AwakeEvent>());
-
-            RectTransform rt = headers.GetComponent<RectTransform>();
-
-            rt.pivot = new Vector2(0.5f, 0.5f);
-
-            rt.anchorMin = new Vector2(0f, 0.2f);
-            rt.anchorMax = new Vector2(0f, 0.8f);
-
-            rt.anchoredPosition = new Vector2(0, 0);
-
-            var localPosition = headers.transform.localPosition;
-
-            localPosition = new Vector3(localPosition.x, -47f, localPosition.z);
-            headers.transform.localPosition = localPosition;
-
-            headers.GetComponent<CanvasGroup>().alpha = 1;
-
-            RectTransform[] oldButtons = headers.GetComponentsInChildren<RectTransform>();
-
-            foreach (var oldButton in oldButtons)
-            {
-                if (oldButton == null)
-                    continue;
-                
-                if (oldButton != headers.GetComponent<RectTransform>())
-                    Object.DestroyImmediate(oldButton.gameObject);
-            }
-
-            CategoryHeaderHighlight = Object.Instantiate(parent.GetComponent<HGHeaderNavigationController>().headerHighlightObject,
-                parent.GetComponent<HGHeaderNavigationController>().headerHighlightObject.transform.parent);
-
-            CategoryHeaderHighlight.SetActive(false);
-
-            HGHeaderNavigationController categoryController = headers.AddComponent<HGHeaderNavigationController>();
-
-            categoryController.headerHighlightObject = CategoryHeaderHighlight;
-            categoryController.unselectedTextColor = Color.white;
-
-            categoryController.makeSelectedHeaderButtonNoninteractable = true;
-
-            var categoryViewPortHeaderRectTransform = CategoryHeader.transform.Find("Scroll View").Find("Viewport").gameObject.GetComponent<RectTransform>();
-
-            categoryViewPortHeaderRectTransform.anchorMin = new Vector2(0.11f, 0);
-            categoryViewPortHeaderRectTransform.anchorMax = new Vector2(0.89f, 1);
-
-            UISkinData skinData = CategoryHeader.transform.Find("Scroll View").GetComponent<ScrollRectSkinController>().skinData;
-            UILayerKey layerKey = CategoryHeader.transform.Find("Scroll View").GetComponent<HGScrollRectHelper>().requiredTopLayer;
-
-            Object.DestroyImmediate(CategoryHeader.transform.Find("Scroll View").GetComponent<ScrollRectSkinController>());
-            Object.DestroyImmediate(CategoryHeader.transform.Find("Scroll View").GetComponent<HGScrollRectHelper>());
-            Object.DestroyImmediate(CategoryHeader.transform.Find("Scroll View").GetComponent<ScrollRect>());
-
-            CategoryScrollRect categoryScrollRect = CategoryHeader.transform.Find("Scroll View").gameObject.AddComponent<CategoryScrollRect>();
-
-            categoryScrollRect.inertia = false;
-            categoryScrollRect.content = headers.GetComponent<RectTransform>();
-            categoryScrollRect.content.pivot = new Vector2(0, 0.5f);
-            categoryScrollRect.horizontal = true;
-            categoryScrollRect.vertical = false;
-            categoryScrollRect.movementType = ScrollRect.MovementType.Unrestricted;
-            categoryScrollRect.viewport = categoryViewPortHeaderRectTransform;
-            categoryScrollRect.horizontalScrollbar = null;
-
-            CategoryHeader.transform.Find("Scroll View").gameObject.AddComponent<HGScrollRectHelper>().requiredTopLayer = layerKey;
-            CategoryHeader.transform.Find("Scroll View").gameObject.AddComponent<ScrollRectSkinController>().skinData = skinData;
-
-            ContentSizeFitter sizeFitter = headers.AddComponent<ContentSizeFitter>();
-
-            sizeFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
-            sizeFitter.verticalFit = ContentSizeFitter.FitMode.Unconstrained;
-            
-            HorizontalLayoutGroup hlg = headers.GetComponent<HorizontalLayoutGroup>();
-
-            hlg.enabled = true;
-            hlg.padding = new RectOffset(8, 8, 4, 4);
-            hlg.spacing = 16;
-            hlg.childAlignment = TextAnchor.MiddleCenter;
-            hlg.childControlWidth = true;
-            hlg.childControlHeight = true;
-            hlg.childForceExpandWidth = true;
-            hlg.childForceExpandHeight = true;
+            CategoryHeader = Object.Instantiate(Prefabs.modOptionCategories, Canvas.transform);
+            CategoryHeaderHighlight = CategoryHeader.GetComponentInChildren<HGHeaderNavigationController>().headerHighlightObject;
         }
 
         private void CreateAdditionalCategoryStuff()
