@@ -135,6 +135,9 @@ Discord: Rune#0001
 Github: Rune580
 
 # Changelog
+    2.5.2:
+      Fixed descriptions not wrapping.
+
     2.5.1:
       Minor improvements to the layout of the mod options menu.
       Fixed some minor stutters when opening the settings menu for the first time.
