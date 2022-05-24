@@ -17,7 +17,7 @@ namespace RiskOfOptions
             ModName = "Risk Of Options",
             Author = "rune580",
             Guid = "com." + Author + "." + "riskofoptions",
-            Version = "2.5.1";
+            Version = "2.5.2";
 
         internal static ConfigEntry<bool> seenNoMods;
         internal static ConfigEntry<bool> seenMods;
