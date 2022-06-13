@@ -9,18 +9,22 @@ namespace RiskOfOptions.Options
 {
     public class StepSliderOption : BaseOption, ITypedValueHolder<float>
     {
-        private readonly float _originalValue;
+        protected readonly float originalValue;
         private readonly ConfigEntry<float> _configEntry;
-        internal readonly StepSliderConfig config;
+        protected readonly StepSliderConfig config;
         
         public StepSliderOption(ConfigEntry<float> configEntry) : this(configEntry, new StepSliderConfig()) { }
 
         public StepSliderOption(ConfigEntry<float> configEntry, bool restartRequired) : this(configEntry, new StepSliderConfig { restartRequired = restartRequired }) { }
 
-        public StepSliderOption(ConfigEntry<float> configEntry, StepSliderConfig config)
+        public StepSliderOption(ConfigEntry<float> configEntry, StepSliderConfig config) : this(config, configEntry.Value)
         {
-            _originalValue = configEntry.Value;
             _configEntry = configEntry;
+        }
+
+        protected StepSliderOption(StepSliderConfig config, float originalValue)
+        {
+            this.originalValue = originalValue;
             this.config = config;
         }
 
@@ -68,10 +72,10 @@ namespace RiskOfOptions.Options
 
         public float GetOriginalValue()
         {
-            return _originalValue;
+            return originalValue;
         }
 
-        public float Value
+        public virtual float Value
         {
             get => _configEntry.Value;
             set => _configEntry.Value = value;

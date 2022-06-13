@@ -7,18 +7,21 @@ namespace RiskOfOptions.Options
 {
     public class SliderOption : BaseOption, ITypedValueHolder<float>
     {
-        private readonly float _originalValue;
+        protected readonly float originalValue;
         private readonly ConfigEntry<float> _configEntry;
-        internal readonly SliderConfig config;
+        protected readonly SliderConfig config;
         
         public SliderOption(ConfigEntry<float> configEntry) : this(configEntry, new SliderConfig()) { }
         
         public SliderOption(ConfigEntry<float> configEntry, bool restartRequired) : this(configEntry, new SliderConfig { restartRequired = restartRequired }) { }
-        
-        public SliderOption(ConfigEntry<float> configEntry, SliderConfig config)
+
+        public SliderOption(ConfigEntry<float> configEntry, SliderConfig config) : this(config, configEntry.Value)
         {
-            _originalValue = configEntry.Value;
             _configEntry = configEntry;
+        }
+        protected SliderOption(SliderConfig config, float originalValue)
+        {
+            this.originalValue = originalValue;
             this.config = config;
         }
 
@@ -57,10 +60,10 @@ namespace RiskOfOptions.Options
 
         public float GetOriginalValue()
         {
-            return _originalValue;
+            return originalValue;
         }
 
-        public float Value
+        public virtual float Value
         {
             get => _configEntry.Value;
             set => _configEntry.Value = value;

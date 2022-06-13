@@ -10,22 +10,24 @@ namespace RiskOfOptions.Options
 {
     public class ChoiceOption : BaseOption, ITypedValueHolder<object>
     {
-        private readonly object _originalValue;
+        protected readonly object originalValue;
         private readonly ConfigEntryBase _configEntry;
-        internal readonly ChoiceConfig config;
+        protected readonly ChoiceConfig config;
         private string[] _nameTokens;
         
         public ChoiceOption(ConfigEntryBase configEntry) : this(configEntry, new ChoiceConfig()) { }
 
         public ChoiceOption(ConfigEntryBase configEntry, bool restartRequired) : this(configEntry, new ChoiceConfig { restartRequired = restartRequired }) { }
 
-        public ChoiceOption(ConfigEntryBase configEntry, ChoiceConfig config)
+        public ChoiceOption(ConfigEntryBase configEntry, ChoiceConfig config) : this(config, configEntry.BoxedValue)
         {
             if (!configEntry.SettingType.IsEnum)
                 throw new InvalidCastException($"T in configEntry<T> must be of type Enum, Type found: {configEntry.SettingType.Name}");
-
-            _originalValue = configEntry.BoxedValue;
             _configEntry = configEntry;
+        }
+        protected ChoiceOption(ChoiceConfig config, object originalValue)
+        {
+            this.originalValue = originalValue;
             this.config = config;
         }
 
@@ -72,15 +74,15 @@ namespace RiskOfOptions.Options
 
         public bool ValueChanged()
         {
-            return !Value.Equals(_originalValue);
+            return !Value.Equals(originalValue);
         }
 
         public object GetOriginalValue()
         {
-            return _originalValue;
+            return originalValue;
         }
 
-        public object Value
+        public virtual object Value
         {
             get => _configEntry.BoxedValue;
             set => _configEntry.BoxedValue = Enum.Parse(_configEntry.SettingType, value.ToString());

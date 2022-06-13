@@ -8,18 +8,22 @@ namespace RiskOfOptions.Options
 {
     public class KeyBindOption : BaseOption, ITypedValueHolder<KeyboardShortcut>
     {
-        private readonly KeyboardShortcut _originalValue;
+        protected readonly KeyboardShortcut originalValue;
         private readonly ConfigEntry<KeyboardShortcut> _configEntry;
-        internal readonly KeyBindConfig config;
+        protected readonly KeyBindConfig config;
         
         public KeyBindOption(ConfigEntry<KeyboardShortcut> configEntry) : this(configEntry, new KeyBindConfig()) { }
         
         public KeyBindOption(ConfigEntry<KeyboardShortcut> configEntry, bool restartRequired) : this(configEntry, new KeyBindConfig { restartRequired = restartRequired }) { }
 
-        public KeyBindOption(ConfigEntry<KeyboardShortcut> configEntry, KeyBindConfig config)
+        public KeyBindOption(ConfigEntry<KeyboardShortcut> configEntry, KeyBindConfig config) : this(config, configEntry.Value)
         {
-            _originalValue = configEntry.Value;
             _configEntry = configEntry;
+        }
+
+        protected KeyBindOption(KeyBindConfig config, KeyboardShortcut originalValue)
+        {
+            this.originalValue = originalValue;
             this.config = config;
         }
 
@@ -57,10 +61,10 @@ namespace RiskOfOptions.Options
 
         public KeyboardShortcut GetOriginalValue()
         {
-            return _originalValue;
+            return originalValue;
         }
 
-        public KeyboardShortcut Value
+        public virtual KeyboardShortcut Value
         {
             get => _configEntry.Value;
             set => _configEntry.Value = value;
