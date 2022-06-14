@@ -7,18 +7,21 @@ namespace RiskOfOptions.Options
 {
     public class IntSliderOption : BaseOption, ITypedValueHolder<int>
     {
-        private readonly int _originalValue;
+        protected readonly int originalValue;
         private readonly ConfigEntry<int> _configEntry;
-        internal readonly IntSliderConfig config;
+        protected readonly IntSliderConfig config;
         
         public IntSliderOption(ConfigEntry<int> configEntry) : this(configEntry, new IntSliderConfig()) { }
         
         public IntSliderOption(ConfigEntry<int> configEntry, bool restartRequired) : this(configEntry, new IntSliderConfig { restartRequired = restartRequired }) { }
 
-        public IntSliderOption(ConfigEntry<int> configEntry, IntSliderConfig config)
+        public IntSliderOption(ConfigEntry<int> configEntry, IntSliderConfig config) : this(config, configEntry.Value)
         {
-            _originalValue = configEntry.Value;
             _configEntry = configEntry;
+        }
+        protected IntSliderOption(IntSliderConfig config, int originalValue)
+        {
+            this.originalValue = originalValue;
             this.config = config;
         }
 
@@ -56,10 +59,10 @@ namespace RiskOfOptions.Options
 
         public int GetOriginalValue()
         {
-            return _originalValue;
+            return originalValue;
         }
 
-        public int Value
+        public virtual int Value
         {
             get => _configEntry.Value;
             set => _configEntry.Value = value;

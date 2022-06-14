@@ -18,7 +18,7 @@ namespace RiskOfOptions.Options
         
         internal abstract ConfigEntryBase ConfigEntry { get; }
 
-        internal void SetCategoryName(string fallback, BaseOptionConfig config)
+        public virtual void SetCategoryName(string fallback, BaseOptionConfig config)
         {
             if (!string.IsNullOrEmpty(config.category))
             {
@@ -29,7 +29,7 @@ namespace RiskOfOptions.Options
             Category = fallback;
         }
 
-        internal void SetName(string fallback, BaseOptionConfig config)
+        public virtual void SetName(string fallback, BaseOptionConfig config)
         {
             if (!string.IsNullOrEmpty(config.name))
             {
@@ -40,7 +40,7 @@ namespace RiskOfOptions.Options
             Name = fallback;
         }
 
-        internal void SetDescription(string fallback, BaseOptionConfig config)
+        public virtual void SetDescription(string fallback, BaseOptionConfig config)
         {
             if (!string.IsNullOrEmpty(config.description))
             {
@@ -57,12 +57,12 @@ namespace RiskOfOptions.Options
             LanguageApi.Add(GetDescriptionToken(), Description);
         }
         
-        internal string GetNameToken()
+        public string GetNameToken()
         {
             return $"{ModSettingsManager.StartingText}.{ModGuid}.{Category}.{Name}.{OptionTypeName}.name".Replace(" ", "_").ToUpper();
         }
 
-        internal string GetDescriptionToken()
+        public string GetDescriptionToken()
         {
             return $"{ModSettingsManager.StartingText}.{ModGuid}.{Category}.{Name}.{OptionTypeName}.description".Replace(" ", "_").ToUpper();
         }
@@ -89,21 +89,14 @@ namespace RiskOfOptions.Options
             // ReSharper disable twice NonReadonlyMemberInGetHashCode
             return (Identifier != null ? StringComparer.InvariantCulture.GetHashCode(Identifier) : 0);
         }
-    }
 
-    internal static class OptionExtensions
-    {
-        internal static void SetProperties(this BaseOption option)
+        protected internal virtual void SetProperties()
         {
-            var entry = option.ConfigEntry;
-            if (entry == null)
-                return;
-
-            var config = option.GetConfig();
-            
-            option.SetCategoryName(entry.Definition.Section, config);
-            option.SetName(entry.Definition.Key, config);
-            option.SetDescription(entry.Description.Description, config);
+            if (ConfigEntry == null) return;
+            var config = GetConfig();
+            SetCategoryName(ConfigEntry.Definition.Section, config);
+            SetName(ConfigEntry.Definition.Key, config);
+            SetDescription(ConfigEntry.Description.Description, config);
         }
     }
 }

@@ -7,18 +7,22 @@ namespace RiskOfOptions.Options
 {
     public class CheckBoxOption : BaseOption, ITypedValueHolder<bool>
     {
-        private readonly bool _originalValue;
+        protected readonly bool originalValue;
         private readonly ConfigEntry<bool> _configEntry;
-        internal readonly CheckBoxConfig config;
+        protected readonly CheckBoxConfig config;
 
         public CheckBoxOption(ConfigEntry<bool> configEntry) : this(configEntry, new CheckBoxConfig()) { }
         
         public CheckBoxOption(ConfigEntry<bool> configEntry, bool restartRequired) : this(configEntry, new CheckBoxConfig { restartRequired = restartRequired }) { }
 
-        public CheckBoxOption(ConfigEntry<bool> configEntry, CheckBoxConfig config)
+        public CheckBoxOption(ConfigEntry<bool> configEntry, CheckBoxConfig config) : this(config, configEntry.Value)
         {
-            _originalValue = configEntry.Value;
             _configEntry = configEntry;
+        }
+
+        protected CheckBoxOption(CheckBoxConfig config, bool originalValue)
+        {
+            this.originalValue = originalValue;
             this.config = config;
         }
         
@@ -52,10 +56,10 @@ namespace RiskOfOptions.Options
 
         public bool GetOriginalValue()
         {
-            return _originalValue;
+            return originalValue;
         }
 
-        public bool Value
+        public virtual bool Value
         {
             get => _configEntry.Value; 
             set => _configEntry.Value = value;
