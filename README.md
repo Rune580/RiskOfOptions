@@ -135,6 +135,12 @@ Discord: Rune#0001
 Github: Rune580
 
 # Changelog
+    2.5.3:
+      Merged PR by Bubbet https://github.com/Rune580/RiskOfOptions/pull/28
+        - Abstracts references to bepinexconfig out.
+        - Allows mods to extend off of RoO's options.
+      Updated to preview C# language.
+
     2.5.2:
       Fixed descriptions not wrapping.
 
