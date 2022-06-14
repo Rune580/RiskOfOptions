@@ -7,18 +7,22 @@ namespace RiskOfOptions.Options
 {
     public class ColorOption : BaseOption, ITypedValueHolder<Color>
     {
-        private readonly Color _originalValue;
+        protected readonly Color originalValue;
         private readonly ConfigEntry<Color> _configEntry;
-        internal readonly ColorOptionConfig config;
+        protected readonly ColorOptionConfig config;
         
         public ColorOption(ConfigEntry<Color> configEntry) : this(configEntry, new ColorOptionConfig()) { }
         
         public ColorOption(ConfigEntry<Color> configEntry, bool restartRequired) : this(configEntry, new ColorOptionConfig { restartRequired = true }) { }
 
-        public ColorOption(ConfigEntry<Color> configEntry, ColorOptionConfig config)
+        public ColorOption(ConfigEntry<Color> configEntry, ColorOptionConfig config) : this(config, configEntry.Value)
         {
-            _originalValue = configEntry.Value;
             _configEntry = configEntry;
+        }
+
+        protected ColorOption(ColorOptionConfig config, Color originalValue)
+        {
+            this.originalValue = originalValue;
             this.config = config;
         }
 
@@ -52,10 +56,10 @@ namespace RiskOfOptions.Options
 
         public Color GetOriginalValue()
         {
-            return _originalValue;
+            return originalValue;
         }
 
-        public Color Value
+        public virtual Color Value
         {
             get => _configEntry.Value;
             set => _configEntry.Value = value;

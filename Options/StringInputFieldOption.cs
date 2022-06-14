@@ -10,18 +10,22 @@ namespace RiskOfOptions.Options
 {
     public class StringInputFieldOption : BaseOption, ITypedValueHolder<string>
     {
-        private readonly string _originalValue;
+        protected readonly string originalValue;
         private readonly ConfigEntry<string> _configEntry;
-        internal readonly InputFieldConfig config;
+        protected readonly InputFieldConfig config;
         
         public StringInputFieldOption(ConfigEntry<string> configEntry) : this(configEntry, new InputFieldConfig()) { }
 
         public StringInputFieldOption(ConfigEntry<string> configEntry, bool restartRequired) : this(configEntry, new InputFieldConfig { restartRequired =  restartRequired }) { }
 
-        public StringInputFieldOption(ConfigEntry<string> configEntry, InputFieldConfig config)
+        public StringInputFieldOption(ConfigEntry<string> configEntry, InputFieldConfig config) : this(config, configEntry.Value)
         {
-            _originalValue = configEntry.Value;
             _configEntry = configEntry;
+        }
+
+        protected StringInputFieldOption(InputFieldConfig config, string originalValue)
+        {
+            this.originalValue = originalValue;
             this.config = config;
         }
 
@@ -53,15 +57,15 @@ namespace RiskOfOptions.Options
 
         public bool ValueChanged()
         {
-            return !string.Equals(_configEntry.Value, _originalValue, StringComparison.InvariantCulture);
+            return !string.Equals(_configEntry.Value, originalValue, StringComparison.InvariantCulture);
         }
 
         public string GetOriginalValue()
         {
-            return _originalValue;
+            return originalValue;
         }
 
-        public string Value
+        public virtual string Value
         {
             get => _configEntry.Value;
             set => _configEntry.Value = value;
