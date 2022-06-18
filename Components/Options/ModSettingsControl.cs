@@ -4,19 +4,19 @@ using RoR2.UI;
 
 namespace RiskOfOptions.Components.Options
 {
-    public abstract class ModSettingsControl<T> : ModSetting
+    public abstract class ModSettingsControl<TValue> : ModSetting
     {
         private MPEventSystemLocator _eventSystemLocator;
-        private T _originalValue;
+        private TValue _originalValue;
         private bool _valueChanged;
 
         private BaseOptionConfig.IsDisabledDelegate _isDisabled;
         private bool _disabled;
         private bool _restartRequired;
         
-        protected ITypedValueHolder<T> valueHolder;
+        protected ITypedValueHolder<TValue> valueHolder;
 
-        public void SubmitValue(T newValue)
+        public void SubmitValue(TValue newValue)
         {
             if (!_valueChanged)
                 _originalValue = GetCurrentValue();
@@ -32,7 +32,7 @@ namespace RiskOfOptions.Components.Options
             optionController.OptionChanged();
         }
 
-        protected T GetCurrentValue()
+        protected TValue GetCurrentValue()
         {
             return valueHolder.Value;
         }
@@ -55,6 +55,14 @@ namespace RiskOfOptions.Components.Options
             UpdateControls();
         }
 
+        public void ResetToDefault()
+        {
+            if (option is null)
+                return;
+
+            SubmitValue((TValue)option.ConfigEntry.DefaultValue);
+        }
+
         protected override void Awake()
         {
             base.Awake();
@@ -64,7 +72,7 @@ namespace RiskOfOptions.Components.Options
             if (option == null)
                 return;
 
-            valueHolder ??= (ITypedValueHolder<T>)option;
+            valueHolder ??= (ITypedValueHolder<TValue>)option;
 
             _restartRequired = option.GetConfig().restartRequired;
             
