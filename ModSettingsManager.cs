@@ -38,6 +38,7 @@ namespace RiskOfOptions
             LanguageTokens.Register();
             
             SettingsModifier.Init();
+            CursorController.Init();
 
             var targetMethod = typeof(PauseManager).GetMethod("CCTogglePause", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
             var destMethod = typeof(ModSettingsManager).GetMethod(nameof(PauseManagerOnCCTogglePause), BindingFlags.NonPublic | BindingFlags.Static);
