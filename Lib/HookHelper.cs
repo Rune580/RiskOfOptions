@@ -6,7 +6,7 @@ namespace RiskOfOptions.Lib
     internal static class HookHelper
     {
         private const BindingFlags TargetFlags = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance;
-        private const BindingFlags DestFlags = BindingFlags.NonPublic | BindingFlags.Instance;
+        private const BindingFlags DestFlags = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance;
         
         internal static Hook NewHook<TTarget, TDest>(string targetMethodName, string destMethodName, TDest instance)
         {
