@@ -37,6 +37,7 @@ namespace RiskOfOptions.Utils
             hueController.onHueChanged.AddListener(UpdateHue);
             colorPicker.onValueChanged.AddListener(UpdateSatAndVal);
             hexField.onSubmit.AddListener(HexFieldSubmit);
+            hexField.onEndEdit.AddListener(HexFieldSubmit);
             rgbaSliders.onColorChanged.AddListener(SetColor);
         }
 
@@ -71,9 +72,8 @@ namespace RiskOfOptions.Utils
         private void HexFieldSubmit(string text)
         {
             if (int.TryParse(text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out int hex))
-            {
                 _hexValue = hex;
-            }
+            
             SetColor(_color.FromRGBHex(_hexValue));
         }
 
