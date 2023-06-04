@@ -150,7 +150,7 @@ namespace RiskOfOptions.Components.Panel
                 
                 ModListButton modListButton = newModButton.GetComponent<ModListButton>();
                 
-                modListButton.description = collection.description;
+                // modListButton.description = collection.description; // TODO FIXME
                 modListButton.nameLabel = modListButton.GetComponent<LanguageTextMeshController>();
                 modListButton.token = collection.NameToken;
                 modListButton.modGuid = collection.ModGuid;
