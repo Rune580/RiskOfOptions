@@ -38,7 +38,7 @@ namespace RiskOfOptions
             LanguageTokens.Register();
             
             SettingsModifier.Init();
-            CursorController.Init();
+            // CursorController.Init();
 
             var targetMethod = typeof(PauseManager).GetMethod("CCTogglePause", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
             var destMethod = typeof(ModSettingsManager).GetMethod(nameof(PauseManagerOnCCTogglePause), BindingFlags.NonPublic | BindingFlags.Static);
@@ -64,7 +64,21 @@ namespace RiskOfOptions
         {
             EnsureContainerExists(modGuid, modName);
             
-            OptionCollection[modGuid].description = description;
+            OptionCollection[modGuid].SetDescriptionText(description);
+        }
+        
+        public static void SetModDescriptionToken(string descriptionToken)
+        {
+            ModInfo modInfo = Assembly.GetCallingAssembly().GetModInfo();
+            
+            SetModDescriptionToken(descriptionToken, modInfo.ModGuid, modInfo.ModName);
+        }
+
+        public static void SetModDescriptionToken(string descriptionToken, string modGuid, string modName)
+        {
+            EnsureContainerExists(modGuid, modName);
+
+            OptionCollection[modGuid].DescriptionToken = descriptionToken;
         }
 
         public static void SetModIcon(Sprite iconSprite)

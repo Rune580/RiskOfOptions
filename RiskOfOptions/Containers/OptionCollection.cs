@@ -13,11 +13,22 @@ namespace RiskOfOptions.Containers
         public string ModName { get; }
         public string ModGuid { get; }
 
-        public string description = "";
+        // public string description = "";
         public Sprite icon = null;
 
         internal int CategoryCount => _categories.Count;
-        internal string NameToken => $"{ModSettingsManager.StartingText}.{ModGuid}.mod_list_button".Replace(" ", "_").ToUpper();
+        internal string NameToken => $"{ModSettingsManager.StartingText}.{ModGuid}.mod_list_button.name".Replace(" ", "_").ToUpper();
+
+        private string _descriptionToken;
+        internal string DescriptionToken
+        {
+            get
+            {
+                _descriptionToken ??= $"{ModSettingsManager.StartingText}.{ModGuid}.mod_list_button.description".Replace(" ", "_").ToUpper();
+                return _descriptionToken;
+            }
+            set => _descriptionToken = value;
+        }
 
         internal OptionCollection(string modName, string modGuid)
         {
@@ -25,6 +36,11 @@ namespace RiskOfOptions.Containers
             ModGuid = modGuid;
             
             LanguageApi.Add(NameToken, ModName);
+        }
+
+        internal void SetDescriptionText(string descriptionText)
+        {
+            LanguageApi.Add(DescriptionToken, descriptionText);
         }
 
         internal void AddOption(ref BaseOption option)
