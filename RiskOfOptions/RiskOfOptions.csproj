@@ -42,23 +42,23 @@
     <PackageReference Include="UnityEngine.Modules" Version="2019.4.26" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <!-- Copies dll and pdb to plugins folder -->
-    <Copy SourceFiles="@(OutputFiles)" DestinationFolder="$(RoR2Dir)\BepInEx\plugins" />
-  </Target>
-  
-  <Target Name="Thunderstore" Condition="'$(Configuration)' == 'Release'" AfterTargets="PostBuild">
-    <!-- Packages build into a zip that's ready to upload -->
-    <MakeDir Directories="@(ThunderstoreDirs)" />
-    <Copy SourceFiles="@(PackageFiles)" DestinationFolder="$(OutputPath)\thunderstore\package\" />
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(OutputPath)\thunderstore\package\RiskOfOptions\" />
-    <Delete Condition="Exists('$(OutputPath)\thunderstore\RiskOfOptions-Output.zip')" Files="$(OutputPath)\thunderstore\RiskOfOptions-Output.zip" />
-    <ZipDirectory SourceDirectory="$(OutputPath)\thunderstore\package\" DestinationFile="$(OutputPath)\thunderstore\RiskOfOptions-Output.zip" />
-  </Target>
-  
-  <Target Name="Unity Imports" Condition="'$(Configuration)' == 'Debug' And Exists($(UnityProjDir))" AfterTargets="PostBuild">
-    <!-- Copies files to a folder for use with a Unity project -->
-    <Copy SourceFiles="@(OutputFiles)" DestinationFolder="$(UnityProjDir)" />
-  </Target>
+<!--  <Target Name="PostBuild" AfterTargets="PostBuildEvent">-->
+<!--    &lt;!&ndash; Copies dll and pdb to plugins folder &ndash;&gt;-->
+<!--    <Copy SourceFiles="@(OutputFiles)" DestinationFolder="$(RoR2Dir)\BepInEx\plugins" />-->
+<!--  </Target>-->
+<!--  -->
+<!--  <Target Name="Thunderstore" Condition="'$(Configuration)' == 'Release'" AfterTargets="PostBuild">-->
+<!--    &lt;!&ndash; Packages build into a zip that's ready to upload &ndash;&gt;-->
+<!--    <MakeDir Directories="@(ThunderstoreDirs)" />-->
+<!--    <Copy SourceFiles="@(PackageFiles)" DestinationFolder="$(OutputPath)\thunderstore\package\" />-->
+<!--    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(OutputPath)\thunderstore\package\RiskOfOptions\" />-->
+<!--    <Delete Condition="Exists('$(OutputPath)\thunderstore\RiskOfOptions-Output.zip')" Files="$(OutputPath)\thunderstore\RiskOfOptions-Output.zip" />-->
+<!--    <ZipDirectory SourceDirectory="$(OutputPath)\thunderstore\package\" DestinationFile="$(OutputPath)\thunderstore\RiskOfOptions-Output.zip" />-->
+<!--  </Target>-->
+<!--  -->
+<!--  <Target Name="Unity Imports" Condition="'$(Configuration)' == 'Debug' And Exists($(UnityProjDir))" AfterTargets="PostBuild">-->
+<!--    &lt;!&ndash; Copies files to a folder for use with a Unity project &ndash;&gt;-->
+<!--    <Copy SourceFiles="@(OutputFiles)" DestinationFolder="$(UnityProjDir)" />-->
+<!--  </Target>-->
   
 </Project>
