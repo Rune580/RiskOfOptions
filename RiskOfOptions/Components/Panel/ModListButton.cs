@@ -1,4 +1,6 @@
-﻿using RoR2.UI;
+﻿using System;
+using RoR2;
+using RoR2.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -7,10 +9,20 @@ namespace RiskOfOptions.Components.Panel
 {
     public class ModListButton : HGButton
     {
+        #region Legacy
+
+        // Don't know if any mods rely on these, so I'm just marking them as obsolete for now.
+        
+        [Obsolete("No longer used")]
         public string description = "";
+
+        #endregion
+        
         public string token;
+        public string descriptionToken;
         public LanguageTextMeshController nameLabel;
-        public HGTextMeshProUGUI descriptionText;
+        public HGTextMeshProUGUI descriptionLabel;
+        
         public ModOptionPanelController Mopc { get; internal set; }
         public string modGuid;
         public HGHeaderNavigationController navigationController;
@@ -76,10 +88,14 @@ namespace RiskOfOptions.Components.Panel
 
         private void SetDescription()
         {
-            if (!descriptionText || description == "")
+            if (!descriptionLabel || descriptionToken is null)
                 return;
 
-            descriptionText.SetText(description);
+            string text = Language.currentLanguage.GetLocalizedStringByToken(descriptionToken);
+            if (text == descriptionToken)
+                text = "No description provided";
+
+            descriptionLabel.text = text;
         }
     }
 }

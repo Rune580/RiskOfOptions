@@ -19,6 +19,8 @@ namespace RiskOfOptions.Components.Panel
         {
             try
             {
+                ModOptionPanelController.OnModOptionsExit?.Invoke();
+                
                 if (!Mopc)
                     Mopc = GetComponentInParent<ModOptionPanelController>();
 

@@ -17,6 +17,8 @@ namespace RiskOfOptions.Components.Panel
 {
     public class ModOptionPanelController : MonoBehaviour
     {
+        public static Action OnModOptionsExit;
+        
         public bool initialized;
 
         public GameObject modListHighlight;
@@ -150,12 +152,12 @@ namespace RiskOfOptions.Components.Panel
                 
                 ModListButton modListButton = newModButton.GetComponent<ModListButton>();
                 
-                // modListButton.description = collection.description; // TODO FIXME
+                modListButton.descriptionToken = collection.DescriptionToken;
                 modListButton.nameLabel = modListButton.GetComponent<LanguageTextMeshController>();
                 modListButton.token = collection.NameToken;
                 modListButton.modGuid = collection.ModGuid;
                 modListButton.navigationController = navigationController;
-                modListButton.descriptionText = _panel.ModDescriptionPanel.GetComponentInChildren<HGTextMeshProUGUI>();
+                modListButton.descriptionLabel = _panel.ModDescriptionPanel.GetComponentInChildren<HGTextMeshProUGUI>();
 
                 // RectTransform modIconRectTransform = newModButton.transform.Find("ModIcon").gameObject.GetComponent<RectTransform>();
                 //
