@@ -135,6 +135,9 @@ Discord: @rune
 Github: Rune580
 
 # Changelog
+    2.6.1:
+      Forgot to include some assets that are required for the color picker.
+
     2.6.0:
       Added Method for setting mod descriptions with a language token.
       Added event when the mod options panel is closed.
