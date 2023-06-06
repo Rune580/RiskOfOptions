@@ -130,11 +130,20 @@ ModSettingsManager.SetModIcon(icon);
 
 # Contact
 
-Discord: Rune#0001
+Discord: @rune
 
 Github: Rune580
 
 # Changelog
+    2.6.1:
+      Forgot to include some assets that are required for the color picker.
+
+    2.6.0:
+      Added Method for setting mod descriptions with a language token.
+      Added event when the mod options panel is closed.
+      Slight behaviour change for color wheel, (I did this like a year ago and forgot to push it out in an update, so here you go.)
+      Any other commits that happened between last year and now.
+
     2.5.3:
       Merged PR by Bubbet https://github.com/Rune580/RiskOfOptions/pull/28
         - Abstracts references to bepinexconfig out.
