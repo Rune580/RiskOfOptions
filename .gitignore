@@ -357,3 +357,5 @@ MigrationBackup/
 .idea/**
 
 global.json
+
+.directory

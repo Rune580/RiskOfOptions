@@ -46,7 +46,7 @@ namespace RiskOfOptions.Resources
 
         private static GameObject LoadPrefab(string path)
         {
-            var prefab = _uiBundle.LoadAsset<GameObject>($"Assets/RiskOfOptions/prefabs/{path}");
+            var prefab = _uiBundle.LoadAsset<GameObject>($"assets/roo/prefabs/{path}");
 
             foreach (var resolver in prefab.GetComponentsInChildren<AssetResolver>())
                 resolver.AttemptResolve();

@@ -1,6 +1,9 @@
 using System;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using DefaultNamespace;
+using Newtonsoft.Json;
 using Nuke.Common;
 using Nuke.Common.CI;
 using Nuke.Common.Execution;
@@ -12,6 +15,7 @@ using Nuke.Common.Utilities.Collections;
 using static Nuke.Common.EnvironmentInfo;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.IO.PathConstruction;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 class Build : NukeBuild
 {
@@ -27,6 +31,9 @@ class Build : NukeBuild
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
+
+    [Parameter("Directory of RoR2")] readonly string RoR2Dir;
+    [Parameter("mod author")] readonly string Author;
 
     Project GetProject()
     {
@@ -46,11 +53,25 @@ class Build : NukeBuild
             DotNetTasks.DotNetRestore(new DotNetRestoreSettings().SetProjectFile(GetProject().Path));
         });
 
-    Target Compile => _ => _
-        .DependsOn(Restore)
+    Target UpdateAssetBundles => _ => _
         .Executes(() =>
         {
-            DotNetTasks.DotNetBuild(new DotNetBuildSettings().SetProjectFile(GetProject().Path));
+            var srcDir = RootDirectory / "Unity-RoO-UI" / "AssetBundles" / "StandaloneWindows";
+            var destDir = GetProject().Directory / "Resources" / "AssetBundles";
+
+            void CopyBundle(string bundle)
+            {
+                File.Copy(srcDir / bundle, destDir / bundle, true);
+            }
+
+            CopyBundle("uielements");
+        });
+
+    Target Compile => _ => _
+        .DependsOn(Restore, UpdateAssetBundles)
+        .Executes(() =>
+        {
+            DotNetTasks.DotNetBuild(new DotNetBuildSettings().SetProjectFile(GetProject().Path).SetConfiguration(Configuration));
         });
 
     Target CopyToUnityProj => _ => _
@@ -69,4 +90,63 @@ class Build : NukeBuild
 
     Target AllTargets => _ => _
         .DependsOn(Compile, CopyToUnityProj);
+
+    Target DeployToRoR2 => _ => _
+        .DependsOn(Compile)
+        .Executes(() =>
+        {
+            var gameDir = (AbsolutePath)RoR2Dir;
+            Assert.DirectoryExists(gameDir);
+            
+            var buildDir = GetProject().Directory / "bin" / Configuration / "netstandard2.0";
+            var destDir = gameDir / "BepInEx" / "plugins" / "RiskOfOptions";
+
+            if (!Directory.Exists(destDir))
+                Directory.CreateDirectory(destDir);
+            
+            buildDir.GlobFiles("*.dll", "*.pdb").ForEach(file =>
+            {
+                var destFile = destDir / file.Name;
+                File.Copy(file, destFile, true);
+            });
+        });
+
+    Target BuildThunderStorePackage => _ => _
+        .DependsOn(Compile)
+        .Executes(() =>
+        {
+            var buildDir = GetProject().Directory / "bin" / Configuration / "netstandard2.0";
+            
+            var manifestFile = RootDirectory / "manifest.json";
+            var iconFile = RootDirectory / "icon.png";
+            var readmeFile = RootDirectory / "README.md";
+
+            var publishDir = buildDir / "publish";
+
+            if (Directory.Exists(publishDir))
+                Directory.Delete(publishDir, true);
+
+            Directory.CreateDirectory(publishDir);
+
+            var modDir = publishDir / "RiskOfOptions";
+            Directory.CreateDirectory(modDir);
+            
+            buildDir.GlobFiles("*.dll").ForEach(file =>
+            {
+                File.Copy(file, modDir / file.Name);
+            });
+            
+            File.Copy(manifestFile, publishDir / manifestFile.Name);
+            File.Copy(iconFile, publishDir / iconFile.Name);
+            File.Copy(readmeFile, publishDir / readmeFile.Name);
+
+            var manifest = JsonSerializer.Deserialize<ThunderStoreManifest>(File.ReadAllText(manifestFile));
+
+            var destFile = buildDir / $"{Author}-{manifest.name}-{manifest.version_number}.zip";
+
+            if (destFile.Exists())
+                destFile.DeleteFile();
+            
+            ZipFile.CreateFromDirectory(publishDir, destFile);
+        });
 }
