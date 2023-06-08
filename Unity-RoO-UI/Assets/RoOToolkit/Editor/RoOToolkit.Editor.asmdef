@@ -1,0 +1,21 @@
+{
+    "name": "RoOToolkit.Editor",
+    "references": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "RoR2.dll",
+        "Unity.Addressables.dll",
+        "Unity.ResourceManager.dll",
+        "SimpleJSON.dll",
+        "RiskOfOptions.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

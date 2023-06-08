@@ -1,0 +1,5 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <uie:ObjectField label="Reference" />
+    <uie:ObjectField label="Target" />
+    <ui:Button text="Add" style="align-items: stretch;" />
+</ui:UXML>
