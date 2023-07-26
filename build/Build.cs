@@ -1,5 +1,8 @@
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Threading;
 using Nuke.Common;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
@@ -102,6 +105,42 @@ class Build : NukeBuild
                 var destFile = destDir / file.Name;
                 File.Copy(file, destFile, true);
             });
+        });
+
+    Target DebugRoR2 => _ => _
+        .DependsOn(DeployToRoR2)
+        .Executes(() =>
+        {
+            string host;
+            var args = "start steam://rungameid/632360";
+
+            if (System.OperatingSystem.IsWindows())
+            {
+                host = "cmd.exe";
+                args = $"/C {args}";
+            }
+            else
+            {
+                host = "/bin/bash";
+                args = $"-c \"{args}\"";
+            }
+            
+            using var startRoR2 = new Process
+            {
+                StartInfo =
+                {
+                    FileName = host,
+                    Arguments = args,
+                    CreateNoWindow = false,
+                    UseShellExecute = true,
+                    WindowStyle = ProcessWindowStyle.Hidden
+                }
+            };
+            
+            // Start RoR2 on steam, then wait 5 seconds for BepInEx debug to launch
+            startRoR2.Start();
+            startRoR2.WaitForExit();
+            Thread.Sleep(5000);
         });
 
     Target BuildThunderStorePackage => _ => _
