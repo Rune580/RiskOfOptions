@@ -1,4 +1,4 @@
-namespace DefaultNamespace;
+namespace RoO.Build;
 
 public class ThunderStoreManifest
 {
