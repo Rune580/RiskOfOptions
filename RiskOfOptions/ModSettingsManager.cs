@@ -55,9 +55,9 @@ namespace RiskOfOptions
 
         public static void SetModDescription(string description)
         {
-            ModInfo modInfo = Assembly.GetCallingAssembly().GetModInfo();
+            ModMetaData modMetaData = Assembly.GetCallingAssembly().GetModMetaData();
             
-            SetModDescription(description, modInfo.ModGuid, modInfo.ModName);
+            SetModDescription(description, modMetaData.Guid, modMetaData.Name);
         }
 
         public static void SetModDescription(string description, string modGuid, string modName)
@@ -69,9 +69,9 @@ namespace RiskOfOptions
         
         public static void SetModDescriptionToken(string descriptionToken)
         {
-            ModInfo modInfo = Assembly.GetCallingAssembly().GetModInfo();
+            ModMetaData modMetaData = Assembly.GetCallingAssembly().GetModMetaData();
             
-            SetModDescriptionToken(descriptionToken, modInfo.ModGuid, modInfo.ModName);
+            SetModDescriptionToken(descriptionToken, modMetaData.Guid, modMetaData.Name);
         }
 
         public static void SetModDescriptionToken(string descriptionToken, string modGuid, string modName)
@@ -83,9 +83,9 @@ namespace RiskOfOptions
 
         public static void SetModIcon(Sprite iconSprite)
         {
-            ModInfo modInfo = Assembly.GetCallingAssembly().GetModInfo();
+            ModMetaData modMetaData = Assembly.GetCallingAssembly().GetModMetaData();
 
-            SetModIcon(iconSprite, modInfo.ModGuid, modInfo.ModName);
+            SetModIcon(iconSprite, modMetaData.Guid, modMetaData.Name);
         }
         
         public static void SetModIcon(Sprite iconSprite, string modGuid, string modName)
@@ -97,9 +97,9 @@ namespace RiskOfOptions
 
         public static void AddOption(BaseOption option)
         {
-            ModInfo modInfo = Assembly.GetCallingAssembly().GetModInfo();
+            ModMetaData modMetaData = Assembly.GetCallingAssembly().GetModMetaData();
             
-            AddOption(option, modInfo.ModGuid, modInfo.ModName);
+            AddOption(option, modMetaData.Guid, modMetaData.Name);
         }
 
         public static void AddOption(BaseOption option, string modGuid, string modName)
