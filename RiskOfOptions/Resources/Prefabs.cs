@@ -8,6 +8,8 @@ namespace RiskOfOptions.Resources
     {
         private static AssetBundle _uiBundle;
 
+        public static GameObject animatedIcon;
+        
         public static GameObject modOptionsPanel;
         public static GameObject modListPanel;
         public static GameObject modListButton;
@@ -27,6 +29,8 @@ namespace RiskOfOptions.Resources
         internal static void Init()
         {
             _uiBundle = LoadBundle("uielements");
+
+            animatedIcon = LoadPrefab("RoO-Icon.prefab");
 
             modOptionsPanel = LoadPrefab("Options Panel.prefab");
             modListPanel = LoadPrefab("Mod List Panel.prefab");

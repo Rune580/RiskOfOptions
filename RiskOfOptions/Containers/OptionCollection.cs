@@ -13,13 +13,13 @@ namespace RiskOfOptions.Containers
         public string ModName { get; }
         public string ModGuid { get; }
 
-        // public string description = "";
-        public Sprite icon = null;
+        public Sprite? icon = null;
+        public GameObject? iconPrefab = null;
 
         internal int CategoryCount => _categories.Count;
         internal string NameToken => $"{ModSettingsManager.StartingText}.{ModGuid}.mod_list_button.name".Replace(" ", "_").ToUpper();
 
-        private string _descriptionToken;
+        private string? _descriptionToken;
         internal string DescriptionToken
         {
             get

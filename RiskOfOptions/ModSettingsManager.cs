@@ -94,6 +94,20 @@ namespace RiskOfOptions
 
             OptionCollection[modGuid].icon = iconSprite;
         }
+        
+        public static void SetModIcon(GameObject iconPrefab)
+        {
+            ModMetaData modMetaData = Assembly.GetCallingAssembly().GetModMetaData();
+
+            SetModIcon(iconPrefab, modMetaData.Guid, modMetaData.Name);
+        }
+        
+        public static void SetModIcon(GameObject iconPrefab, string modGuid, string modName)
+        {
+            EnsureContainerExists(modGuid, modName);
+
+            OptionCollection[modGuid].iconPrefab = iconPrefab;
+        }
 
         public static void AddOption(BaseOption option)
         {

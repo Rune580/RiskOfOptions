@@ -3,7 +3,7 @@ using System.Security.Permissions;
 using BepInEx;
 using BepInEx.Configuration;
 using RiskOfOptions.Options;
-
+using RiskOfOptions.Resources;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -36,6 +36,7 @@ public sealed class RiskOfOptionsPlugin : BaseUnityPlugin
         
         ModSettingsManager.Init();
         
+        ModSettingsManager.SetModIcon(Prefabs.animatedIcon);
         ModSettingsManager.AddOption(new ChoiceOption(decimalSeparator));
     }
 }
