@@ -1,5 +1,5 @@
 # RiskOfOptions
-![Animated icon made by UnsavedTrash#0001 on discord](https://thumbs.gfycat.com/LimitedFlashyCowbird-size_restricted.gif)
+![Animated icon made by UnsavedTrash#0001 on discord](https://cdn.rune580.dev/roo/images/roo-full.gif)
 
 An API to provide a user interface in game to interact with BepInEx ConfigEntry's.
 
