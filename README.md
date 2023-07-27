@@ -135,6 +135,14 @@ Discord: @rune
 Github: Rune580
 
 # Changelog
+    2.7.0:
+      All numeric InputFields now properly use InvariantCulture, for example numbers are formatted as `1,000,000.20`.
+        - RiskOfOptions exposes an option to change this behavior in-game.
+      RiskOfOptions option menu.
+      Experimental support for Prefabs as mod icons.
+        - The root object's RectTransform must have a width and height of 45.
+      Animated icon has been updated.
+
     2.6.1:
       Forgot to include some assets that are required for the color picker.
 

@@ -19,7 +19,7 @@ public sealed class RiskOfOptionsPlugin : BaseUnityPlugin
         ModName = "Risk Of Options",
         Author = "rune580",
         Guid = "com." + Author + "." + "riskofoptions",
-        Version = "2.6.1";
+        Version = "2.7.0";
 
     internal static ConfigEntry<bool>? seenNoMods;
     internal static ConfigEntry<bool>? seenMods;
