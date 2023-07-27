@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using RiskOfOptions.Options;
 using RoR2.UI;
 using TMPro;
 using UnityEngine;
@@ -71,12 +72,12 @@ namespace RiskOfOptions.Components.Options
                 slider.value = num;
 
             if (valueText)
-                valueText.text = string.Format(CultureInfo.InvariantCulture, formatString, num);
+                valueText.text = string.Format(Separator.GetCultureInfo(), formatString, num);
         }
         
         private void OnTextEdited(string newText)
         {
-            if (int.TryParse(newText, out int num))
+            if (int.TryParse(newText, NumberStyles.Any, Separator.GetCultureInfo(), out int num))
             {
                 num = Mathf.Clamp(num, minValue, maxValue);
                 

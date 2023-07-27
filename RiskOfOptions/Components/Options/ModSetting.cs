@@ -7,6 +7,8 @@ namespace RiskOfOptions.Components.Options
 {
     public abstract class ModSetting : MonoBehaviour
     {
+        protected static DecimalSeparator Separator => RiskOfOptionsPlugin.decimalSeparator!.Value;
+        
         public string nameToken;
         public string settingToken;
         public LanguageTextMeshController nameLabel;

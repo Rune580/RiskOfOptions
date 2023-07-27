@@ -750,6 +750,7 @@ MonoBehaviour:
   - addressablePath: RoR2/Base/UI/texUICleanButton.png
     targetPath: 
     name: texUICleanButton
+    assetType: 0
     rect:
       serializedVersion: 2
       x: 0
@@ -764,6 +765,7 @@ MonoBehaviour:
   - addressablePath: RoR2/Base/UI/texUIOutlineOnly.png
     targetPath: BaseOutline
     name: texUIOutlineOnly
+    assetType: 0
     rect:
       serializedVersion: 2
       x: 0
@@ -778,6 +780,7 @@ MonoBehaviour:
   - addressablePath: RoR2/Base/UI/texUIHighlightBoxOutlineThick.png
     targetPath: HoverOutline
     name: texUIHighlightBoxOutlineThick
+    assetType: 0
     rect:
       serializedVersion: 2
       x: 0
@@ -792,6 +795,7 @@ MonoBehaviour:
   - addressablePath: RoR2/Base/UI/texUICleanButton.png
     targetPath: SliderControl/Slider/Background
     name: texUICleanButton
+    assetType: 0
     rect:
       serializedVersion: 2
       x: 0
@@ -806,6 +810,7 @@ MonoBehaviour:
   - addressablePath: RoR2/Base/UI/texUICleanButton.png
     targetPath: SliderControl/Slider/Fill Area/Fill
     name: texUICleanButton
+    assetType: 0
     rect:
       serializedVersion: 2
       x: 0
@@ -820,6 +825,7 @@ MonoBehaviour:
   - addressablePath: RoR2/Base/UI/texUIHandle.png
     targetPath: SliderControl/Slider/Handle Slide Area/Handle
     name: texUIHandle
+    assetType: 0
     rect:
       serializedVersion: 2
       x: 0
@@ -834,6 +840,7 @@ MonoBehaviour:
   - addressablePath: RoR2/Base/UI/texUICleanButton.png
     targetPath: SliderControl/TextArea
     name: texUICleanButton
+    assetType: 0
     rect:
       serializedVersion: 2
       x: 0
@@ -957,14 +964,14 @@ MonoBehaviour:
   m_VerticalScrollbarEventHandler: {fileID: 0}
   m_LayoutGroup: {fileID: 0}
   m_ScrollSensitivity: 1
-  m_ContentType: 3
+  m_ContentType: 9
   m_InputType: 0
   m_AsteriskChar: 42
-  m_KeyboardType: 2
+  m_KeyboardType: 1
   m_LineType: 0
   m_HideMobileInput: 0
   m_HideSoftKeyboard: 0
-  m_CharacterValidation: 3
+  m_CharacterValidation: 8
   m_RegexValue: 
   m_GlobalPointSize: 14
   m_CharacterLimit: 0
@@ -1006,7 +1013,7 @@ MonoBehaviour:
   m_RestoreOriginalTextOnEscape: 1
   m_isRichTextEditingAllowed: 0
   m_LineLimit: 0
-  m_InputValidator: {fileID: 0}
+  m_InputValidator: {fileID: 11400000, guid: c7effdfb4795eb548bcd7116a5452395, type: 2}
 --- !u!1 &5363425445265975265
 GameObject:
   m_ObjectHideFlags: 0
@@ -1449,7 +1456,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
+  m_fontSize: 12
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
