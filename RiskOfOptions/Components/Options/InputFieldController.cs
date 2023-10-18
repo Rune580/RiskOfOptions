@@ -1,5 +1,4 @@
-﻿using System;
-using RiskOfOptions.Lib;
+﻿using RiskOfOptions.Lib;
 using RiskOfOptions.OptionConfigs;
 using RoR2.UI;
 using TMPro;
@@ -12,6 +11,7 @@ namespace RiskOfOptions.Components.Options
         public GameObject overlay;
         public RooInputField inputField;
         public InputFieldConfig.SubmitEnum submitOn;
+        public TMP_InputField.LineType lineType;
         public TMP_InputValidator validator;
         public TMP_InputField.CharacterValidation characterValidation;
         
@@ -19,6 +19,8 @@ namespace RiskOfOptions.Components.Options
         private HGTextMeshProUGUI _previewLabel;
         private bool _exitQueued;
         private string _previewToken;
+        private bool _leftShift;
+        private bool _rightShift;
 
         protected override void Awake()
         {
@@ -45,22 +47,12 @@ namespace RiskOfOptions.Components.Options
             button.onClick.AddListener(AttemptShow);
             button.disablePointerClick = false;
 
-            switch (submitOn)
-            {
-                case InputFieldConfig.SubmitEnum.OnChar:
-                    inputField.onSubmit.AddListener(SubmitText);
-                    inputField.onValueChanged.AddListener(SubmitText);
-                    break;
-                case InputFieldConfig.SubmitEnum.OnExitOrSubmit:
-                    inputField.onExit.AddListener(SubmitText);
-                    inputField.onSubmit.AddListener(SubmitText);
-                    break;
-                case InputFieldConfig.SubmitEnum.OnSubmit:
-                    inputField.onSubmit.AddListener(SubmitText);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            if (submitOn.HasFlag(InputFieldConfig.SubmitEnum.OnChar))
+                inputField.onValueChanged.AddListener(SubmitChar);
+            if (submitOn.HasFlag(InputFieldConfig.SubmitEnum.OnSubmit))
+                inputField.onSubmit.AddListener(SubmitText);
+            if (submitOn.HasFlag(InputFieldConfig.SubmitEnum.OnExit))
+                inputField.onExit.AddListener(SubmitText);
 
             inputField.text = GetCurrentValue();
             RefreshLabel();
@@ -68,24 +60,45 @@ namespace RiskOfOptions.Components.Options
         
         public void Update()
         {
+            bool shiftKey = GetShiftState();
             bool submitKey = Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter);
             bool validKey = Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.Mouse1) || Input.GetKeyDown(KeyCode.Escape);
 
-            if ((validKey && !inputField.inField) || submitKey)
+            if (validKey && !inputField.inField)
+            {
+                _exitQueued = true;
+            }
+
+            if (!_exitQueued && submitKey && lineType != TMP_InputField.LineType.MultiLineNewline && !shiftKey)
             {
                 _exitQueued = true;
 
-                if (submitKey && submitOn is InputFieldConfig.SubmitEnum.OnExitOrSubmit or InputFieldConfig.SubmitEnum.OnSubmit)
+                if (submitOn.HasFlag(InputFieldConfig.SubmitEnum.OnSubmit))
                     SubmitText(inputField.text);
             }
 
             if (_exitQueued)
             {
-                if (submitOn == InputFieldConfig.SubmitEnum.OnExitOrSubmit)
+                if (submitOn.HasFlag(InputFieldConfig.SubmitEnum.OnExit))
                     SubmitText(inputField.text);
                 
                 AttemptHide();
             }
+        }
+
+        private bool GetShiftState()
+        {
+            if (Input.GetKeyDown(KeyCode.LeftShift))
+                _leftShift = true;
+            if (Input.GetKeyDown(KeyCode.RightShift))
+                _rightShift = true;
+            
+            if (Input.GetKeyUp(KeyCode.LeftShift))
+                _leftShift = false;
+            if (Input.GetKeyUp(KeyCode.RightShift))
+                _rightShift = false;
+
+            return _leftShift || _rightShift;
         }
 
         protected new void OnEnable()
@@ -124,8 +137,22 @@ namespace RiskOfOptions.Components.Options
             UnHookLanguage();
         }
 
+        private void SubmitChar(string input)
+        {
+            if (lineType == TMP_InputField.LineType.SingleLine)
+                input = input.TrimEnd();
+
+            if (lineType == TMP_InputField.LineType.MultiLineSubmit && !GetShiftState())
+                input = input.TrimEnd();
+            
+            SubmitText(input);
+        }
+
         private void SubmitText(string input)
         {
+            if (_exitQueued)
+                input = input.TrimEnd();
+            
             RefreshLabel();
             SubmitValue(input);
         }
