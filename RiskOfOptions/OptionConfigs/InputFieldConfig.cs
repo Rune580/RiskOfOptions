@@ -6,7 +6,7 @@ namespace RiskOfOptions.OptionConfigs
     public class InputFieldConfig : BaseOptionConfig
     {
         public SubmitEnum submitOn = SubmitEnum.OnChar;
-        public TMP_InputField.LineType lineType = TMP_InputField.LineType.SingleLine;
+        public TMP_InputField.LineType lineType = TMP_InputField.LineType.MultiLineSubmit;
         
         /// <summary>
         /// Defines how an input field should determine when to submit the changes.
