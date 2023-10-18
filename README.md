@@ -135,6 +135,13 @@ Discord: @rune
 Github: Rune580
 
 # Changelog
+    2.7.1:
+      StringInputFields have improved newline behavior.
+        - InputFieldConfig has a new field `lineType`, it represents TMP's `lineType` enum.
+        - SubmitEnum is now marked with the `Flags` attribute, should allow for more fine-tuned input field behavior.
+      Because of the above changes, StringInputFields may behave differently to prior versions. If you relied on the 
+        previous behavior, sorry for making more work for you, but this should make input fields be more reliable.
+
     2.7.0:
       All numeric InputFields now properly use InvariantCulture, for example numbers are formatted as `1,000,000.20`.
         - RiskOfOptions exposes an option to change this behavior in-game.

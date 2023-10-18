@@ -1,6 +1,6 @@
 {
     "name": "Risk_Of_Options",
-    "version_number": "2.7.0",
+    "version_number": "2.7.1",
     "website_url": "https://github.com/Rune580/RiskOfOptions",
     "description": "A convenient API for adding BepInEx ConfigEntry's to a option menu",
     "dependencies": [
