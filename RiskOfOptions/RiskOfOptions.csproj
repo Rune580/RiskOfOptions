@@ -3,8 +3,14 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>preview</LangVersion>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+  
+  <PropertyGroup>
     <Authors>Rune580</Authors>
-    <PackageLicenseExpression>LGPL-3.0</PackageLicenseExpression>
+    <PackageId>Rune580.Mods.RiskOfRain2.RiskOfOptions</PackageId>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Rune580/RiskOfOptions</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Rune580/RiskOfOptions</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -12,6 +18,11 @@
     <Product>RiskOfOptions</Product>
     <BepInExPluginGuid>com.rune580.riskofoptions</BepInExPluginGuid>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <None Include="../README.md" Pack="true" PackagePath="/" Visible="false" />
+    <None Include="../LICENSE" Pack="true" PackagePath="/" Visible="false" />
+  </ItemGroup>
 
   <!-- MinVer -->
   <PropertyGroup>
@@ -62,5 +73,9 @@
     </ItemGroup>
 
     <Move SourceFiles="@(FilesToRename)" DestinationFiles="@(FilesToRename -&gt; Replace($(PlainVersion), $(MinVerVersion)))" />
+  </Target>
+
+  <Target Name="PublishThunderstoreArtifact" DependsOnTargets="SetPluginVersion">
+    <Exec Command="dotnet tcli publish --config-path $(ProjectDir)../Thunderstore/thunderstore.toml --file $(ProjectDir)../*-$(MinVerVersion).zip" />
   </Target>
 </Project>
