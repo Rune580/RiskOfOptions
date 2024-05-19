@@ -6,7 +6,14 @@ namespace RiskOfOptions.OptionConfigs
     public class InputFieldConfig : BaseOptionConfig
     {
         public SubmitEnum submitOn = SubmitEnum.OnChar;
+        
         public TMP_InputField.LineType lineType = TMP_InputField.LineType.MultiLineSubmit;
+
+        /// <summary>
+        /// Sets the <see cref="TMP_InputField.richText"/> bool on the <see cref="TMP_InputField"/> of this option.
+        /// <remarks>Defaults to true for backwards compatibility sake</remarks>
+        /// </summary>
+        public bool richText = true;
         
         /// <summary>
         /// Defines how an input field should determine when to submit the changes.

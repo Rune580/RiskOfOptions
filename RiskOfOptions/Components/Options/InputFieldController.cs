@@ -12,6 +12,7 @@ namespace RiskOfOptions.Components.Options
         public RooInputField inputField;
         public InputFieldConfig.SubmitEnum submitOn;
         public TMP_InputField.LineType lineType;
+        public bool richText;
         public TMP_InputValidator validator;
         public TMP_InputField.CharacterValidation characterValidation;
         
@@ -41,6 +42,8 @@ namespace RiskOfOptions.Components.Options
             
             if (!inputField)
                 return;
+
+            inputField.richText = richText;
             
             var button = transform.Find("Text Preview").GetComponentInChildren<HGButton>();
             button.onClick.RemoveAllListeners();

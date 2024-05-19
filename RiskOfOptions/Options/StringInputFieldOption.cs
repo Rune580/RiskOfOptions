@@ -44,6 +44,7 @@ namespace RiskOfOptions.Options
 
             controller.submitOn = config.submitOn;
             controller.lineType = config.lineType;
+            controller.richText = config.richText;
             controller.characterValidation = TMP_InputField.CharacterValidation.None;
             
             button.name = $"Mod Option Input Field, {Name}";
