@@ -1,11 +1,8 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30309.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RiskOfOptions", "RiskOfOptions/RiskOfOptions.csproj", "{56874E56-9185-4D1F-A0BA-39F95F84E90D}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.csproj", "{53FFF80B-9F8C-414A-B7B3-39BE19CFB366}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,8 +10,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{53FFF80B-9F8C-414A-B7B3-39BE19CFB366}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{53FFF80B-9F8C-414A-B7B3-39BE19CFB366}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56874E56-9185-4D1F-A0BA-39F95F84E90D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{56874E56-9185-4D1F-A0BA-39F95F84E90D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56874E56-9185-4D1F-A0BA-39F95F84E90D}.Release|Any CPU.ActiveCfg = Release|Any CPU

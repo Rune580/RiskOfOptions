@@ -12,15 +12,9 @@ using RiskOfOptions.Resources;
 
 namespace RiskOfOptions;
 
-[BepInPlugin(Guid, ModName, Version)]
+[BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 public sealed class RiskOfOptionsPlugin : BaseUnityPlugin
 {
-    private const string
-        ModName = "Risk Of Options",
-        Author = "rune580",
-        Guid = "com." + Author + "." + "riskofoptions",
-        Version = "2.7.1";
-
     internal static ConfigEntry<bool>? seenNoMods;
     internal static ConfigEntry<bool>? seenMods;
 
