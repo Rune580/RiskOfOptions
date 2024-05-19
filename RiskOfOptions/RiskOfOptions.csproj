@@ -1,65 +1,66 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>preview</LangVersion>
+    <Authors>Rune580</Authors>
+    <PackageLicenseExpression>LGPL-3.0</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/Rune580/RiskOfOptions</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Rune580/RiskOfOptions</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <AssemblyName>RiskOfOptions</AssemblyName>
+    <Product>RiskOfOptions</Product>
+    <BepInExPluginGuid>com.rune580.riskofoptions</BepInExPluginGuid>
   </PropertyGroup>
-  
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\riskofoptions" />
-    <EmbeddedResource Include="Resources\AssetBundles\**" />
-  </ItemGroup>
-  
-  <PropertyGroup>
-    <RoR2Dir Condition="Exists('D:\SteamLibrary\steamapps\common\Risk of Rain 2')">D:\SteamLibrary\steamapps\common\Risk of Rain 2</RoR2Dir>
-    <RoR2Dir Condition="Exists('$(MSBuildProgramFiles32)\Steam\steamapps\common\Risk of Rain 2')">$(MSBuildProgramFiles32)\Steam\steamapps\common\Risk of Rain 2</RoR2Dir>
-    
-    <UnityProjDir Condition="'$(Configuration)' == 'Debug' And Exists('D:\UnityProjects\RiskOfOptions-UI\Assets\RiskOfOptions')">D:\UnityProjects\RiskOfOptions-UI\Assets\RiskOfOptions</UnityProjDir>
-    <UnityProjDir Condition="'$(Configuration)' == 'Debug' And Exists('C:\Users\runem\Documents\UnityProjects\RiskOfOptions-UI\Assets\RiskOfOptions')">C:\Users\runem\Documents\UnityProjects\RiskOfOptions-UI\Assets\RiskOfOptions</UnityProjDir>
-    
-    <ManagedDir>$(RoR2Dir)\Risk of Rain 2_Data\Managed\</ManagedDir>
-    <BepinexDir>$(RoR2Dir)\BepInEx\</BepinexDir>
-    <CoreDir>$(BepinexDir)core\</CoreDir>
-    <PluginsDir>$(BepinexDir)plugins\</PluginsDir>
-  </PropertyGroup>
-  
-  <ItemGroup>
-    <ExcludedAssemblyFiles Include="$(ManagedDir)netstandard.dll;$(ManagedDir)System.*" InProject="false" />
 
-    <Reference Include="@(AssemblyFiles)" />
-  </ItemGroup>
-  
+  <!-- MinVer -->
+  <PropertyGroup>
+    <MinVerDefaultPreReleaseIdentifiers>dev</MinVerDefaultPreReleaseIdentifiers>
+    <MinVerTagPrefix>v</MinVerTagPrefix>
+  </PropertyGroup>
+
   <ItemGroup>
-    <OutputFiles Include="$(TargetPath);$(TargetDir)$(TargetName).pdb" InProject="false" />
-    <PackageFiles Include="../manifest.json;../icon.png;../README.md" />
-    <ThunderstoreDirs Include="$(OutputPath)\thunderstore\;$(OutputPath)\thunderstore\package;$(OutputPath)\thunderstore\package\RiskOfOptions\" InProject="false" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <PackageReference Include="BepInEx.Core" Version="5.4.19" />
+    <PackageReference Include="MinVer" Version="5.0.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="BepInEx.Analyzers" Version="1.0.*">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="BepInEx.Core" Version="5.4.21" />
+    <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
     <PackageReference Include="MonoMod" Version="22.5.1.1" />
     <PackageReference Include="RiskOfRain2.GameLibs" Version="1.2.3.1-r.0" />
     <PackageReference Include="UnityEngine.Modules" Version="2019.4.26" />
   </ItemGroup>
-
-<!--  <Target Name="PostBuild" AfterTargets="PostBuildEvent">-->
-<!--    &lt;!&ndash; Copies dll and pdb to plugins folder &ndash;&gt;-->
-<!--    <Copy SourceFiles="@(OutputFiles)" DestinationFolder="$(RoR2Dir)\BepInEx\plugins" />-->
-<!--  </Target>-->
-<!--  -->
-<!--  <Target Name="Thunderstore" Condition="'$(Configuration)' == 'Release'" AfterTargets="PostBuild">-->
-<!--    &lt;!&ndash; Packages build into a zip that's ready to upload &ndash;&gt;-->
-<!--    <MakeDir Directories="@(ThunderstoreDirs)" />-->
-<!--    <Copy SourceFiles="@(PackageFiles)" DestinationFolder="$(OutputPath)\thunderstore\package\" />-->
-<!--    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(OutputPath)\thunderstore\package\RiskOfOptions\" />-->
-<!--    <Delete Condition="Exists('$(OutputPath)\thunderstore\RiskOfOptions-Output.zip')" Files="$(OutputPath)\thunderstore\RiskOfOptions-Output.zip" />-->
-<!--    <ZipDirectory SourceDirectory="$(OutputPath)\thunderstore\package\" DestinationFile="$(OutputPath)\thunderstore\RiskOfOptions-Output.zip" />-->
-<!--  </Target>-->
-<!--  -->
-<!--  <Target Name="Unity Imports" Condition="'$(Configuration)' == 'Debug' And Exists($(UnityProjDir))" AfterTargets="PostBuild">-->
-<!--    &lt;!&ndash; Copies files to a folder for use with a Unity project &ndash;&gt;-->
-<!--    <Copy SourceFiles="@(OutputFiles)" DestinationFolder="$(UnityProjDir)" />-->
-<!--  </Target>-->
   
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\AssetBundles\**" />
+  </ItemGroup>
+
+  <Target Name="SetPluginVersion" BeforeTargets="AddGeneratedFile" DependsOnTargets="MinVer">
+    <PropertyGroup>
+      <PlainVersion>$(MinVerMajor).$(MinVerMinor).$(MinVerPatch)</PlainVersion>
+      <BepInExPluginVersion>$(PlainVersion)</BepInExPluginVersion>
+    </PropertyGroup>
+  </Target>
+  
+  <Target Name="CopyUnityAssetBundles" BeforeTargets="PreBuildEvent">
+    <ItemGroup>
+      <AssetBundles Include="uielements" />
+    </ItemGroup>
+    
+    <Copy SourceFiles="../Unity-RoO-UI/AssetBundles/StandaloneWindows/%(AssetBundles.Identity)" DestinationFiles="Resources/AssetBundles/%(AssetBundles.Identity)" />
+  </Target>
+
+  <Target Name="PackageThunderstoreArtifact" DependsOnTargets="SetPluginVersion" AfterTargets="PostBuildEvent" Condition="$(Configuration) == 'Release'">
+    <Exec Command="dotnet tcli build --config-path $(ProjectDir)../Thunderstore/thunderstore.toml --package-version $(PlainVersion)" />
+
+    <ItemGroup>
+      <FilesToRename Include="$(ProjectDir)../dist/*-$(PlainVersion).zip" />
+    </ItemGroup>
+
+    <Move SourceFiles="@(FilesToRename)" DestinationFiles="@(FilesToRename -&gt; Replace($(PlainVersion), $(MinVerVersion)))" />
+  </Target>
 </Project>

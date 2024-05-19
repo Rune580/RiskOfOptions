@@ -1,0 +1,42 @@
+[config]
+schemaVerison = "0.0.1"
+
+[general]
+repository = "https://thunderstore.io"
+
+[package]
+namespace = "Rune580"
+name = "Risk_Of_Options"
+description = "A convenient API for adding BepInEx ConfigEntry's to a option menu"
+websiteUrl = "https://github.com/Rune580/RiskOfOptions"
+containsNsfwContent = false
+
+[package.dependencies]
+bbepis-BepInExPack = "5.4.2113"
+
+[build]
+icon = "icons/roo-icon-static.png"
+readme = "../README.md"
+outdir = "../dist"
+
+[[build.copy]]
+source = "../RiskOfOptions/bin/Release/netstandard2.0/RiskOfOptions.dll"
+target = "plugins/RiskOfOptions/"
+
+[[build.copy]]
+source = "../RiskOfOptions/bin/Release/netstandard2.0/RiskOfOptions.pdb"
+target = "plugins/RiskOfOptions/"
+
+[[build.copy]]
+source = "../CHANGELOG.md"
+target = "/"
+
+[[build.copy]]
+source = "../LICENSE"
+target = "/"
+
+[publish]
+communities = [ "riskofrain2" ]
+
+[publish.categories]
+riskofrain2 = [ "mods", "libraries", "client-side" ]
