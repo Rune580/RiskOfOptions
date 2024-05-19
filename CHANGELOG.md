@@ -1,3 +1,7 @@
+## 2.7.2
+### Added
+`richText` `bool` field to `InputFieldConfig` to configure how the in-game input field handles rich text.
+
 ## 2.7.1
 StringInputFields have improved newline behavior.
 - InputFieldConfig has a new field `lineType`, it represents TMP's `lineType` enum.
