@@ -21,6 +21,8 @@ namespace RiskOfOptions.Resources
         public static GameObject sliderButton;
         public static GameObject stepSliderButton;
         public static GameObject intSliderButton;
+        public static GameObject floatFieldButton;
+        public static GameObject intFieldButton;
         public static GameObject inputFieldButton;
         public static GameObject colorPickerButton;
         
@@ -43,6 +45,8 @@ namespace RiskOfOptions.Resources
             sliderButton = LoadPrefab("ModSettingsButton, Slider.prefab");
             stepSliderButton = LoadPrefab("ModSettingsButton, Step Slider.prefab");
             intSliderButton = LoadPrefab("ModSettingsButton, Int Slider.prefab");
+            floatFieldButton = LoadPrefab("ModSettingsButton, Float Field.prefab");
+            intFieldButton = LoadPrefab("ModSettingsButton, Int Field.prefab");
             inputFieldButton = LoadPrefab("ModSettingsButton, InputField.prefab");
             colorPickerButton = LoadPrefab("ModSettingsButton, ColorPicker.prefab");
             colorPickerOverlay = LoadPrefab("Color Picker Overlay.prefab");

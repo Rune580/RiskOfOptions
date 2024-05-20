@@ -472,6 +472,9 @@ MonoBehaviour:
   optionController: {fileID: 0}
   overlay: {fileID: 3593532837220813944}
   inputField: {fileID: 8071909959851068326}
+  submitOn: 0
+  lineType: 0
+  richText: 0
   validator: {fileID: 0}
   characterValidation: 0
 --- !u!114 &455013673915894987
@@ -491,6 +494,7 @@ MonoBehaviour:
   - addressablePath: RoR2/Base/UI/texUICleanButton.png
     targetPath: 
     name: texUICleanButton
+    assetType: 0
     rect:
       serializedVersion: 2
       x: 0
@@ -505,6 +509,7 @@ MonoBehaviour:
   - addressablePath: RoR2/Base/UI/texUIOutlineOnly.png
     targetPath: BaseOutline
     name: texUIOutlineOnly
+    assetType: 0
     rect:
       serializedVersion: 2
       x: 0
@@ -519,6 +524,7 @@ MonoBehaviour:
   - addressablePath: RoR2/Base/UI/texUIHighlightBoxOutlineThick.png
     targetPath: HoverOutline
     name: texUIHighlightBoxOutlineThick
+    assetType: 0
     rect:
       serializedVersion: 2
       x: 0
@@ -533,6 +539,7 @@ MonoBehaviour:
   - addressablePath: RoR2/Base/UI/texUICleanButton.png
     targetPath: Text Preview/Text Preview Button
     name: texUICleanButton
+    assetType: 0
     rect:
       serializedVersion: 2
       x: 0
@@ -547,6 +554,7 @@ MonoBehaviour:
   - addressablePath: RoR2/Base/UI/texUIOutlineOnly.png
     targetPath: Text Preview/Text Preview Button/BaseOutline
     name: texUIOutlineOnly
+    assetType: 0
     rect:
       serializedVersion: 2
       x: 0
@@ -561,6 +569,7 @@ MonoBehaviour:
   - addressablePath: RoR2/Base/UI/texUIHighlightBoxOutlineThick.png
     targetPath: Text Preview/Text Preview Button/HoverOutline
     name: texUIHighlightBoxOutlineThick
+    assetType: 0
     rect:
       serializedVersion: 2
       x: 0
@@ -575,6 +584,7 @@ MonoBehaviour:
   - addressablePath: RoR2/Base/UI/texUICleanButton.png
     targetPath: Text Overlay
     name: texUICleanButton
+    assetType: 0
     rect:
       serializedVersion: 2
       x: 0
@@ -892,7 +902,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -50}
-  m_SizeDelta: {x: 528, y: 0}
+  m_SizeDelta: {x: 528, y: 50.82}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2108886806729545468
 MonoBehaviour:
@@ -1056,6 +1066,9 @@ MonoBehaviour:
   m_LineLimit: 0
   m_InputValidator: {fileID: 0}
   inField: 0
+  onExit:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!222 &6520587859053423035
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1084,7 +1097,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 0}
-  m_Type: 0
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -1471,7 +1484,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
+  m_fontSize: 12
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1

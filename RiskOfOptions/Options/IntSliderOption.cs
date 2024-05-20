@@ -19,6 +19,7 @@ namespace RiskOfOptions.Options
         {
             _configEntry = configEntry;
         }
+        
         protected IntSliderOption(IntSliderConfig config, int originalValue)
         {
             this.originalValue = originalValue;

@@ -27,6 +27,8 @@ namespace RiskOfOptions.Components.Panel
         private GameObject _sliderPrefab;
         private GameObject _stepSliderPrefab;
         private GameObject _intSliderPrefab;
+        private GameObject _floatFieldPrefab;
+        private GameObject _intFieldPrefab;
         private GameObject _keyBindPrefab;
         private GameObject _inputFieldPrefab;
         private GameObject _choicePrefab;
@@ -61,6 +63,7 @@ namespace RiskOfOptions.Components.Panel
             AddPanelsToSettings();
             CheckIfRestartNeeded();
         }
+        
         private void CreatePrefabs()
         {
             RuntimePrefabManager.InitializePrefabs(gameObject);
@@ -74,6 +77,8 @@ namespace RiskOfOptions.Components.Panel
             _sliderPrefab = RuntimePrefabManager.Get<SliderPrefab>().Slider;
             _stepSliderPrefab = RuntimePrefabManager.Get<StepSliderPrefab>().StepSlider;
             _intSliderPrefab = RuntimePrefabManager.Get<IntSliderPrefab>().IntSlider;
+            _floatFieldPrefab = RuntimePrefabManager.Get<FloatFieldPrefab>().FloatField;
+            _intFieldPrefab = RuntimePrefabManager.Get<IntFieldPrefab>().IntField;
             _keyBindPrefab = RuntimePrefabManager.Get<KeyBindPrefab>().KeyBind;
             _inputFieldPrefab = RuntimePrefabManager.Get<InputFieldPrefab>().InputField;
             _choicePrefab = RuntimePrefabManager.Get<ChoicePrefab>().ChoiceButton;
@@ -84,6 +89,8 @@ namespace RiskOfOptions.Components.Panel
             _sliderPrefab.SetActive(false);
             _stepSliderPrefab.SetActive(false);
             _intSliderPrefab.SetActive(false);
+            _floatFieldPrefab.SetActive(false);
+            _intFieldPrefab.SetActive(false);
             _keyBindPrefab.SetActive(false);
             _inputFieldPrefab.SetActive(false);
             _choicePrefab.SetActive(false);
@@ -354,6 +361,8 @@ namespace RiskOfOptions.Components.Panel
                     SliderOption => option.CreateOptionGameObject(_sliderPrefab, verticalLayoutTransform),
                     StepSliderOption => option.CreateOptionGameObject(_stepSliderPrefab, verticalLayoutTransform),
                     IntSliderOption => option.CreateOptionGameObject(_intSliderPrefab, verticalLayoutTransform),
+                    FloatFieldOption => option.CreateOptionGameObject(_floatFieldPrefab, verticalLayoutTransform),
+                    IntFieldOption => option.CreateOptionGameObject(_intFieldPrefab, verticalLayoutTransform),
                     KeyBindOption => option.CreateOptionGameObject(_keyBindPrefab, verticalLayoutTransform),
                     StringInputFieldOption => option.CreateOptionGameObject(_inputFieldPrefab, verticalLayoutTransform),
                     GenericButtonOption => option.CreateOptionGameObject(_genericButtonPrefab, verticalLayoutTransform),

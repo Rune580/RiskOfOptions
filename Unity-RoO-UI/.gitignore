@@ -71,6 +71,8 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
+/[Aa]ssets/[Tt]ext[Mm]esh [Pp]ro
+
 !**/[Pp]ackages/manifest.json
 !**/[Pp]ackages/RiskOfOptions
 !**/[Pp]ackages/RiskOfOptions/*
