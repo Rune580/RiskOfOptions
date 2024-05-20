@@ -12,6 +12,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Rune580/RiskOfOptions</PackageProjectUrl>
+    <PackageIcon>roo-icon-static.png</PackageIcon>
     <RepositoryUrl>https://github.com/Rune580/RiskOfOptions</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <AssemblyName>RiskOfOptions</AssemblyName>
@@ -22,6 +23,7 @@
   <ItemGroup>
     <None Include="../README.md" Pack="true" PackagePath="/" Visible="false" />
     <None Include="../LICENSE" Pack="true" PackagePath="/" Visible="false" />
+    <None Include="../Thunderstore/icons/roo-icon-static.png" Pack="true" PackagePath="/" Visible="false" />
   </ItemGroup>
 
   <!-- MinVer -->
