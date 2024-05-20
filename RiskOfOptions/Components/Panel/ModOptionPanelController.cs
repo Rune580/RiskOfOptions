@@ -362,7 +362,7 @@ namespace RiskOfOptions.Components.Panel
                     StepSliderOption => option.CreateOptionGameObject(_stepSliderPrefab, verticalLayoutTransform),
                     IntSliderOption => option.CreateOptionGameObject(_intSliderPrefab, verticalLayoutTransform),
                     FloatFieldOption => option.CreateOptionGameObject(_floatFieldPrefab, verticalLayoutTransform),
-                    IntFieldOption => option.CreateOptionGameObject(_inputFieldPrefab, verticalLayoutTransform),
+                    IntFieldOption => option.CreateOptionGameObject(_intFieldPrefab, verticalLayoutTransform),
                     KeyBindOption => option.CreateOptionGameObject(_keyBindPrefab, verticalLayoutTransform),
                     StringInputFieldOption => option.CreateOptionGameObject(_inputFieldPrefab, verticalLayoutTransform),
                     GenericButtonOption => option.CreateOptionGameObject(_genericButtonPrefab, verticalLayoutTransform),
