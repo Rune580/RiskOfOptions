@@ -1,6 +1,11 @@
 # RiskOfOptions
 ![Animated icon made by UnsavedTrash#0001 on discord](https://cdn.rune580.dev/roo/images/roo-full.gif)
 
+[![NuGet Version](https://img.shields.io/nuget/v/Rune580.Mods.RiskOfRain2.RiskOfOptions?style=for-the-badge&logo=nuget)](https://www.nuget.org/packages/Rune580.Mods.RiskOfRain2.RiskOfOptions)
+[![Thunderstore Version](https://img.shields.io/thunderstore/v/Rune580/Risk_Of_Options?style=for-the-badge&logo=thunderstore&logoColor=white)](https://thunderstore.io/c/riskofrain2/p/Rune580/Risk_Of_Options/)
+[![Thunderstore Downloads](https://img.shields.io/thunderstore/dt/Rune580/Risk_Of_Options?style=for-the-badge&logo=thunderstore&logoColor=white)](https://thunderstore.io/c/riskofrain2/p/Rune580/Risk_Of_Options/)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Rune580/RiskOfOptions/build.yml?branch=master&style=for-the-badge&logo=github)](https://github.com/Rune580/RiskOfOptions/actions/workflows/build.yml)
+
 An API to provide a user interface in game to interact with BepInEx ConfigEntry's.
 
 ## Currently supported options

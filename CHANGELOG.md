@@ -1,3 +1,14 @@
+## 2.8.0
+### Added
+- `FloatFieldOption`, `FloatFieldConfig` - Slider option but without the slider
+- `IntFieldOption`, `IntFieldConfig` - IntSlider but without the slider :smirk_cat:
+
+### Changed
+- The background image of the InputField is now `Sliced` instead of `Simple` which results in it _not_ looking stretched anymore.
+
+### Other
+RoO is now on [![NuGet Version](https://img.shields.io/nuget/v/Rune580.Mods.RiskOfRain2.RiskOfOptions?style=for-the-badge&logo=nuget)](https://www.nuget.org/packages/Rune580.Mods.RiskOfRain2.RiskOfOptions)
+
 ## 2.7.2
 ### Added
 `richText` `bool` field to `InputFieldConfig` to configure how the in-game input field handles rich text.
