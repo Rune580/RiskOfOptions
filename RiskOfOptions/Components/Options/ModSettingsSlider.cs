@@ -75,7 +75,7 @@ namespace RiskOfOptions.Components.Options
 
         private void OnTextEdited(string newText)
         {
-            if (float.TryParse(newText, NumberStyles.Any, Separator.GetCultureInfo(), out float num))
+            if (float.TryParse(newText, NumberStyles.Any, Separator.GetCultureInfo(), out var num))
             {
                 num = Mathf.Clamp(num, minValue, maxValue);
                 
