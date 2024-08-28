@@ -41,6 +41,9 @@ public class ModListButton : HGButton
         if (nameLabel)
             nameLabel.token = token;
 
+        if (!modIcon)
+            modIcon = transform.Find("Icon Area").Find("Mod Icon").gameObject.GetComponent<Image>();
+
         // Prefer prefabs over sprite icons
         if (ModSettingsManager.OptionCollection[modGuid].iconPrefab is not null)
             PrefabIcon();

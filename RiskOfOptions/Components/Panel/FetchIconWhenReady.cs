@@ -16,7 +16,7 @@ namespace RiskOfOptions.Components.Panel
 
         private void Start()
         {
-            _image.sprite = Assets.Load<Sprite>("assets/RiskOfOptions/missing_icon.png");
+            _image.sprite = RiskOfOptions.Resources.Assets.Load<Sprite>("assets/RiskOfOptions/missing_icon.png");
 
             SetTexture();
         }

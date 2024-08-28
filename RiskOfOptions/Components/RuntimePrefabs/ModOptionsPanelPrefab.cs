@@ -147,6 +147,8 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             
             Canvas.GetComponent<RectTransform>().anchorMax = new Vector2(1f, 1f);
 
+            Canvas.GetComponent<CanvasGroup>().alpha = 1f;
+
             Object.DestroyImmediate(Canvas.GetComponent<SettingsPanelController>());
             Object.DestroyImmediate(Canvas.GetComponent<Image>());
             Object.DestroyImmediate(Canvas.GetComponent<HGButtonHistory>());
@@ -319,7 +321,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             CategoryPageIndicator.SetActive(false);
 
             var image = CategoryPageIndicator.GetComponent<Image>();
-            image.sprite = Assets.Load<Sprite>("assets/RiskOfOptions/IndicatorDot.png");
+            image.sprite = RiskOfOptions.Resources.Assets.Load<Sprite>("assets/RiskOfOptions/IndicatorDot.png");
             image.preserveAspect = true;
 
             var dotRectTransform = CategoryPageIndicator.GetComponent<RectTransform>();
@@ -333,7 +335,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             CategoryPageIndicatorOutline.transform.SetParent(CategoryPageIndicators.transform);
             CategoryPageIndicatorOutline.SetActive(true);
             
-            CategoryPageIndicatorOutline.GetComponent<Image>().sprite = Assets.Load<Sprite>("assets/RiskOfOptions/IndicatorOutline.png");
+            CategoryPageIndicatorOutline.GetComponent<Image>().sprite = RiskOfOptions.Resources.Assets.Load<Sprite>("assets/RiskOfOptions/IndicatorOutline.png");
             
             var outlineRectTransform = CategoryPageIndicatorOutline.GetComponent<RectTransform>();
             outlineRectTransform.pivot = Vector2.zero;
@@ -343,7 +345,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
 
             var leftButtonRectTransform = CategoryLeftButton.GetComponent<RectTransform>();
             leftButtonRectTransform.sizeDelta = new Vector2(64, 64);
-            leftButtonRectTransform.anchoredPosition = new Vector2(60, -54);
+            leftButtonRectTransform.anchoredPosition = new Vector2(60, 54);
 
             CategoryLeftButton.GetComponentInChildren<LanguageTextMeshController>().token = LanguageTokens.LeftPageButton;
 
@@ -356,7 +358,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             
             CategoryRightButton = Object.Instantiate(CategoryLeftButton, scrollView.transform);
 
-            CategoryRightButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(1064, -54);
+            CategoryRightButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(1064, 54);
              
             CategoryRightButton.GetComponentInChildren<LanguageTextMeshController>().token = LanguageTokens.RightPageButton;
 
@@ -441,7 +443,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             restartIconLayoutElement.preferredWidth = 30;
 
             Image restartIcon = restartIconGameObject.AddComponent<Image>();
-            restartIcon.sprite = Assets.Load<Sprite>("assets/RiskOfOptions/ror2RestartSymbol.png");
+            restartIcon.sprite = RiskOfOptions.Resources.Assets.Load<Sprite>("assets/RiskOfOptions/ror2RestartSymbol.png");
             restartIcon.preserveAspect = true;
 
             restartIconGameObject.transform.SetParent(sizeFitterObject.transform);

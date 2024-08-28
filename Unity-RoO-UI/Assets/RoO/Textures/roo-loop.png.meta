@@ -129,7 +129,7 @@ TextureImporter:
       213: -5082295262797514383
     second: roo-loop_41
   externalObjects: {}
-  serializedVersion: 11
+  serializedVersion: 12
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -149,6 +149,8 @@ TextureImporter:
   isReadable: 0
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -158,8 +160,8 @@ TextureImporter:
   textureSettings:
     serializedVersion: 2
     filterMode: 0
-    aniso: -1
-    mipBias: -100
+    aniso: 1
+    mipBias: 0
     wrapU: 1
     wrapV: 1
     wrapW: 0
@@ -180,10 +182,14 @@ TextureImporter:
   textureType: 8
   textureShape: 1
   singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
   maxTextureSizeSet: 0
   compressionQualitySet: 0
   textureFormatSet: 0
+  ignorePngGamma: 0
   applyGammaDecoding: 0
+  cookieLightType: 1
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -199,6 +205,18 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
+    maxTextureSize: 4096
+    resizeAlgorithm: 1
+    textureFormat: -1
+    textureCompression: 2
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Server
     maxTextureSize: 4096
     resizeAlgorithm: 1
     textureFormat: -1
@@ -1104,6 +1122,49 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      roo-loop_0: 7799582915633417080
+      roo-loop_1: -3941494578972469154
+      roo-loop_10: 7244497741573882311
+      roo-loop_11: -8280001137231670581
+      roo-loop_12: -1225209246988867639
+      roo-loop_13: 1664309662218106990
+      roo-loop_14: 4790383203059577415
+      roo-loop_15: 6540376804264055960
+      roo-loop_16: 1026987333751525490
+      roo-loop_17: -4679667561088629258
+      roo-loop_18: 1627009474833193328
+      roo-loop_19: -6875159694788604815
+      roo-loop_2: -8941212721042760508
+      roo-loop_20: -2154804637164453514
+      roo-loop_21: 139099899073738438
+      roo-loop_22: -600038274277294380
+      roo-loop_23: -9210000312772528888
+      roo-loop_24: 4017533229638369237
+      roo-loop_25: -1097351250421442909
+      roo-loop_26: 8795965906465220301
+      roo-loop_27: 6152487561693750610
+      roo-loop_28: 3105900403713464515
+      roo-loop_29: 3520332612090887455
+      roo-loop_3: -1915452420189405405
+      roo-loop_30: -1198685139023209759
+      roo-loop_31: 3805221884474113206
+      roo-loop_32: 195852745530874318
+      roo-loop_33: -7922227171293000599
+      roo-loop_34: 8202399331561750070
+      roo-loop_35: 6749681493888153125
+      roo-loop_36: -7469546704651664952
+      roo-loop_37: 6502591886655471974
+      roo-loop_38: -3257602351815577157
+      roo-loop_39: 2604271652833710973
+      roo-loop_4: 6333086580471998019
+      roo-loop_40: 8297579770961288733
+      roo-loop_41: -5082295262797514383
+      roo-loop_5: 5182595187370010341
+      roo-loop_6: 8903479239381238194
+      roo-loop_7: -1637732572851688100
+      roo-loop_8: -8782938027130027360
+      roo-loop_9: -5540950053408526479
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

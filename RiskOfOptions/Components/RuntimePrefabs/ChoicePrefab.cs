@@ -108,7 +108,8 @@ namespace RiskOfOptions.Components.RuntimePrefabs
              templateCanvas.sortingOrder = 30000;
 
              dropDownTemplate.GetOrAddComponent<GraphicRaycaster>();
-             dropDownTemplate.GetOrAddComponent<CanvasGroup>();
+             var dropDownCanvasGroup = dropDownTemplate.GetOrAddComponent<CanvasGroup>();
+             dropDownCanvasGroup.alpha = 1f;
 
              var templateRectTransform = dropDownTemplate.GetComponent<RectTransform>();
 

@@ -49,7 +49,7 @@ namespace RiskOfOptions.Components.Panel
         private IEnumerator _animateRoutine;
         
         private ModOptionsPanelPrefab _panel;
-        private ModSetting[] _modSettings = Array.Empty<ModSetting>();
+        private ModSetting[] _modSettings = [];
 
         private void Awake()
         {
@@ -125,7 +125,7 @@ namespace RiskOfOptions.Components.Panel
 
             headers.Add(header);
 
-            GetComponent<HGHeaderNavigationController>().headers = headers.ToArray();
+            GetComponent<HGHeaderNavigationController>().headers = headers.ToList();
 
             transform.Find("SafeArea").Find("HeaderContainer").Find("Header (JUICED)").Find("GenericGlyph (Right)").SetAsLastSibling();
             
@@ -192,7 +192,7 @@ namespace RiskOfOptions.Components.Panel
             //_leftGlyph.SetActive(true);
             //_rightGlyph.SetActive(true);
 
-            navigationController.headers = headers.ToArray();
+            navigationController.headers = headers.ToList();
 
             navigationController.currentHeaderIndex = -1;
         }
@@ -328,7 +328,7 @@ namespace RiskOfOptions.Components.Panel
             categoryScrollRect.FixExtra();
             categoryScrollRect.Reload();
 
-            navigationController.headers = headers.ToArray();
+            navigationController.headers = headers.ToList();
             navigationController.MoveHeaderLeft();
 
             _panel.CategoryRightButton.SetActive(true);
@@ -634,14 +634,17 @@ namespace RiskOfOptions.Components.Panel
             }
         }
 
-        public void OnDisable()
+        private void OnDestroy()
         {
-            initialized = false;
-            
             DestroyImmediate(_keyBindPrefab);
             DestroyImmediate(modListHighlight);
             
             RuntimePrefabManager.DestroyPrefabs();
+        }
+
+        public void OnDisable()
+        {
+            initialized = false;
         }
 
         public void OnEnable()

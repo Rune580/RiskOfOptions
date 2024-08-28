@@ -12,13 +12,14 @@ namespace RiskOfOptions
     {
         public static void Init()
         {
-            GameObject pauseMenuPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/UI/PauseScreen.prefab").WaitForCompletion();
+            var settingsPanelTitle = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/UI/SettingsPanelTitle.prefab").WaitForCompletion();
+            var settingsPanel = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/UI/SettingsPanel.prefab").WaitForCompletion();
             
-            if (pauseMenuPrefab == null)
+            if (settingsPanelTitle == null || settingsPanel == null)
                 throw new Exception("Couldn't initialize Risk Of Options! Continue at your own risk!");
 
-            pauseMenuPrefab.GetComponentInChildren<PauseScreenController>().settingsPanelPrefab
-                .AddComponent<ModOptionPanelController>();
+            settingsPanelTitle.AddComponent<ModOptionPanelController>();
+            settingsPanel.AddComponent<ModOptionPanelController>();
             
             LanguageApi.Add(LanguageTokens.HeaderToken, "MOD OPTIONS");
             
