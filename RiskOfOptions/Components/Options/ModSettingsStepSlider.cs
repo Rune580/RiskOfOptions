@@ -1,100 +1,111 @@
 ﻿using System;
 using System.Globalization;
+using RiskOfOptions.OptionConfigs;
 using RiskOfOptions.Options;
 using RoR2.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace RiskOfOptions.Components.Options
+namespace RiskOfOptions.Components.Options;
+
+public class ModSettingsStepSlider : ModSettingsControl<float, StepSliderConfig>
 {
-    public class ModSettingsStepSlider : ModSettingsControl<float>
+    public Slider slider;
+    public TMP_InputField valueText;
+        
+    public float minValue;
+    public float maxValue;
+    public float increment;
+    public string formatString;
+        
+    private SliderConfig.SliderTryParse? _tryParse;
+
+    protected override void Awake()
     {
-        public Slider slider;
-        public TMP_InputField valueText;
+        base.Awake();
+            
+        if (!slider)
+            return;
+            
+        _tryParse = Config?.TryParseDelegate;
+            
+        slider.onValueChanged.AddListener(OnSliderValueChanged);
+        valueText.onEndEdit.AddListener(OnTextEdited);
+        valueText.onSubmit.AddListener(OnTextEdited);
+    }
         
-        public float minValue;
-        public float maxValue;
-        public float increment;
-        public string formatString;
+    protected override void Disable()
+    {
+        slider.interactable = false;
+            
+        slider.transform.Find("Fill Area").Find("Fill").GetComponent<Image>().color = slider.colors.disabledColor;
+        slider.transform.parent.Find("TextArea").GetComponent<Image>().color = slider.colors.disabledColor;
+            
+        foreach (var button in GetComponentsInChildren<HGButton>())
+            button.interactable = false;
+    }
 
-        protected override void Awake()
-        {
-            base.Awake();
+    protected override void Enable()
+    {
+        slider.interactable = true;
             
-            if (!slider)
-                return;
+        slider.transform.Find("Fill Area").Find("Fill").GetComponent<Image>().color = slider.colors.normalColor;
+        slider.transform.parent.Find("TextArea").GetComponent<Image>().color = GetComponent<HGButton>().colors.normalColor;
             
-            slider.onValueChanged.AddListener(OnSliderValueChanged);
-            valueText.onEndEdit.AddListener(OnTextEdited);
-            valueText.onSubmit.AddListener(OnTextEdited);
-        }
+        foreach (var button in GetComponentsInChildren<HGButton>())
+            button.interactable = true;
+    }
+
+    private void OnSliderValueChanged(float newValue)
+    {
+        if (InUpdateControls)
+            return;
+
+        float remapValue = (newValue * increment) + minValue;
+
+        SubmitValue(remapValue);
+    }
+
+    protected override void OnUpdateControls()
+    {
+        base.OnUpdateControls();
+
+        float num = Mathf.Clamp(GetCurrentValue(), minValue, maxValue);
+            
+        if (slider)
+            slider.value = Math.Abs(num - minValue) / increment;
+
+        if (valueText)
+            valueText.text = string.Format(Separator.GetCultureInfo(), formatString, num);
+    }
         
-        protected override void Disable()
+    private void OnTextEdited(string newText)
+    {
+        if (TryParse(newText, Separator.GetCultureInfo(), out var num))
         {
-            slider.interactable = false;
-            
-            slider.transform.Find("Fill Area").Find("Fill").GetComponent<Image>().color = slider.colors.disabledColor;
-            slider.transform.parent.Find("TextArea").GetComponent<Image>().color = slider.colors.disabledColor;
-            
-            foreach (var button in GetComponentsInChildren<HGButton>())
-                button.interactable = false;
-        }
+            num = Mathf.Clamp(num, minValue, maxValue);
 
-        protected override void Enable()
+            float step = Mathf.Abs(num - minValue) / increment;
+
+            SubmitValue(Mathf.RoundToInt(step) * increment + minValue);
+        }
+        else
         {
-            slider.interactable = true;
-            
-            slider.transform.Find("Fill Area").Find("Fill").GetComponent<Image>().color = slider.colors.normalColor;
-            slider.transform.parent.Find("TextArea").GetComponent<Image>().color = GetComponent<HGButton>().colors.normalColor;
-            
-            foreach (var button in GetComponentsInChildren<HGButton>())
-                button.interactable = true;
+            SubmitValue(GetCurrentValue());
         }
-
-        private void OnSliderValueChanged(float newValue)
-        {
-            if (InUpdateControls)
-                return;
-
-            float remapValue = (newValue * increment) + minValue;
-
-            SubmitValue(remapValue);
-        }
-
-        protected override void OnUpdateControls()
-        {
-            base.OnUpdateControls();
-
-            float num = Mathf.Clamp(GetCurrentValue(), minValue, maxValue);
-            
-            if (slider)
-                slider.value = Math.Abs(num - minValue) / increment;
-
-            if (valueText)
-                valueText.text = string.Format(Separator.GetCultureInfo(), formatString, num);
-        }
+    }
         
-        private void OnTextEdited(string newText)
-        {
-            if (float.TryParse(newText, NumberStyles.Any, Separator.GetCultureInfo(), out float num))
-            {
-                num = Mathf.Clamp(num, minValue, maxValue);
+    private bool TryParse(string input, CultureInfo cultureInfo, out float value)
+    {
+        return _tryParse is not null
+            ? _tryParse(input, cultureInfo, out value)
+            : float.TryParse(input, NumberStyles.Any, cultureInfo, out value);
+    }
 
-                float step = Mathf.Abs(num - minValue) / increment;
-
-                SubmitValue(Mathf.RoundToInt(step) * increment + minValue);
-            }
-            else
-            {
-                SubmitValue(GetCurrentValue());
-            }
-        }
-
-        public void MoveSlider(float delta)
-        {
-            if (slider)
-                slider.normalizedValue += delta;
-        }
+    public void MoveSlider(float delta)
+    {
+        if (slider)
+            slider.normalizedValue += delta;
     }
 }

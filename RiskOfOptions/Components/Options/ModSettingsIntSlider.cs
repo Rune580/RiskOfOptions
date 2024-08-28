@@ -1,98 +1,109 @@
 ﻿using System.Globalization;
+using RiskOfOptions.OptionConfigs;
 using RiskOfOptions.Options;
 using RoR2.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace RiskOfOptions.Components.Options
+namespace RiskOfOptions.Components.Options;
+
+public class ModSettingsIntSlider : ModSettingsControl<int, IntSliderConfig>
 {
-    public class ModSettingsIntSlider : ModSettingsControl<int>
+    public Slider slider;
+    public TMP_InputField valueText;
+
+    public int minValue;
+    public int maxValue;
+    public string formatString;
+
+    private IntSliderConfig.IntSliderTryParse? _tryParse;
+
+    protected override void Awake()
     {
-        public Slider slider;
-        public TMP_InputField valueText;
+        base.Awake();
 
-        public int minValue;
-        public int maxValue;
-        public string formatString;
-
-        protected override void Awake()
-        {
-            base.Awake();
-
-            if (!slider)
-                return;
-
-            slider.minValue = minValue;
-            slider.maxValue = maxValue;
-            slider.wholeNumbers = true;
+        if (!slider)
+            return;
             
-            slider.onValueChanged.AddListener(OnSliderValueChanged);
-            valueText.onEndEdit.AddListener(OnTextEdited);
-            valueText.onSubmit.AddListener(OnTextEdited);
-        }
+        _tryParse = Config?.TryParseDelegate;
 
-        protected override void Disable()
-        {
-            slider.interactable = false;
+        slider.minValue = minValue;
+        slider.maxValue = maxValue;
+        slider.wholeNumbers = true;
             
-            slider.transform.Find("Fill Area").Find("Fill").GetComponent<Image>().color = slider.colors.disabledColor;
-            slider.transform.parent.Find("TextArea").GetComponent<Image>().color = slider.colors.disabledColor;
+        slider.onValueChanged.AddListener(OnSliderValueChanged);
+        valueText.onEndEdit.AddListener(OnTextEdited);
+        valueText.onSubmit.AddListener(OnTextEdited);
+    }
+
+    protected override void Disable()
+    {
+        slider.interactable = false;
             
-            foreach (var button in GetComponentsInChildren<HGButton>())
-                button.interactable = false;
-        }
-
-        protected override void Enable()
-        {
-            slider.interactable = true;
+        slider.transform.Find("Fill Area").Find("Fill").GetComponent<Image>().color = slider.colors.disabledColor;
+        slider.transform.parent.Find("TextArea").GetComponent<Image>().color = slider.colors.disabledColor;
             
-            slider.transform.Find("Fill Area").Find("Fill").GetComponent<Image>().color = slider.colors.normalColor;
-            slider.transform.parent.Find("TextArea").GetComponent<Image>().color = GetComponent<HGButton>().colors.normalColor;
+        foreach (var button in GetComponentsInChildren<HGButton>())
+            button.interactable = false;
+    }
+
+    protected override void Enable()
+    {
+        slider.interactable = true;
             
-            foreach (var button in GetComponentsInChildren<HGButton>())
-                button.interactable = true;
-        }
-
-        private void OnSliderValueChanged(float newValue)
-        {
-            if (InUpdateControls)
-                return;
+        slider.transform.Find("Fill Area").Find("Fill").GetComponent<Image>().color = slider.colors.normalColor;
+        slider.transform.parent.Find("TextArea").GetComponent<Image>().color = GetComponent<HGButton>().colors.normalColor;
             
-            SubmitValue(Mathf.RoundToInt(newValue));
-        }
+        foreach (var button in GetComponentsInChildren<HGButton>())
+            button.interactable = true;
+    }
 
-        protected override void OnUpdateControls()
-        {
-            base.OnUpdateControls();
+    private void OnSliderValueChanged(float newValue)
+    {
+        if (InUpdateControls)
+            return;
+            
+        SubmitValue(Mathf.RoundToInt(newValue));
+    }
 
-            int num = Mathf.Clamp(GetCurrentValue(), minValue, maxValue);
+    protected override void OnUpdateControls()
+    {
+        base.OnUpdateControls();
 
-            if (slider)
-                slider.value = num;
+        int num = Mathf.Clamp(GetCurrentValue(), minValue, maxValue);
 
-            if (valueText)
-                valueText.text = string.Format(Separator.GetCultureInfo(), formatString, num);
-        }
+        if (slider)
+            slider.value = num;
+
+        if (valueText)
+            valueText.text = string.Format(Separator.GetCultureInfo(), formatString, num);
+    }
         
-        private void OnTextEdited(string newText)
+    private void OnTextEdited(string newText)
+    {
+        if (TryParse(newText, Separator.GetCultureInfo(), out var num))
         {
-            if (int.TryParse(newText, NumberStyles.Any, Separator.GetCultureInfo(), out int num))
-            {
-                num = Mathf.Clamp(num, minValue, maxValue);
+            num = Mathf.Clamp(num, minValue, maxValue);
                 
-                SubmitValue(num);
-            }
-            else
-            {
-                SubmitValue(GetCurrentValue());
-            }
+            SubmitValue(num);
         }
-
-        public void MoveSlider(float delta)
+        else
         {
-            if (slider)
-                slider.normalizedValue += delta;
+            SubmitValue(GetCurrentValue());
         }
+    }
+        
+    private bool TryParse(string input, CultureInfo cultureInfo, out int value)
+    {
+        return _tryParse is not null
+            ? _tryParse(input, cultureInfo, out value)
+            : int.TryParse(input, NumberStyles.Any, cultureInfo, out value);
+    }
+
+    public void MoveSlider(float delta)
+    {
+        if (slider)
+            slider.normalizedValue += delta;
     }
 }
