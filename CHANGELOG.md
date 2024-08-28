@@ -1,3 +1,11 @@
+## 2.8.1
+### Added
+- Support for latest RoR2 update.
+- `TryParseDelegate` to relevant Numeric Fields and Slider configs.
+
+### Notes
+- The RoR2 update broke RoO pretty badly, there may be some visual issues right now, but functionally everything should work again.
+
 ## 2.8.0
 ### Added
 - `FloatFieldOption`, `FloatFieldConfig` - Slider option but without the slider
