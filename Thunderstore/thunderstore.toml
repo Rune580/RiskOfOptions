@@ -20,11 +20,11 @@ readme = "../README.md"
 outdir = "../dist"
 
 [[build.copy]]
-source = "../RiskOfOptions/bin/Release/netstandard2.0/RiskOfOptions.dll"
+source = "../RiskOfOptions/bin/Release/netstandard2.1/RiskOfOptions.dll"
 target = "plugins/RiskOfOptions/"
 
 [[build.copy]]
-source = "../RiskOfOptions/bin/Release/netstandard2.0/RiskOfOptions.pdb"
+source = "../RiskOfOptions/bin/Release/netstandard2.1/RiskOfOptions.pdb"
 target = "plugins/RiskOfOptions/"
 
 [[build.copy]]
