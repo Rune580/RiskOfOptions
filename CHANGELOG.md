@@ -1,3 +1,10 @@
+## 2.8.2
+### Fixed
+- Minor regression that caused Step Sliders to display their values as a percentage by default.
+
+### Changed
+- the field `formatString` is now obsolete please use the property `FormatString` instead.
+
 ## 2.8.1
 ### Added
 - Support for latest RoR2 update.
