@@ -40,7 +40,7 @@ namespace RiskOfOptions.Options
             
             settingsSlider.minValue = config.min;
             settingsSlider.maxValue = config.max;
-            settingsSlider.formatString = config.formatString;
+            settingsSlider.formatString = config.FormatString;
             
             slider.name = $"Mod Option Slider, {Name}";
 

@@ -44,7 +44,7 @@ namespace RiskOfOptions.Options
             settingsSlider.increment = config.increment;
             settingsSlider.minValue = config.min;
             settingsSlider.maxValue = config.max;
-            settingsSlider.formatString = config.formatString;
+            settingsSlider.formatString = config.FormatString;
             
             double stepsHighAccuracy = Math.Abs(config.min - config.max) / config.increment;
             
