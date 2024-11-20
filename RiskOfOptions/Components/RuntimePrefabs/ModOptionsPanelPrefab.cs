@@ -343,9 +343,10 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             CategoryLeftButton = Object.Instantiate(_emptyButton, scrollView.transform);
             Object.DestroyImmediate(CategoryLeftButton.GetComponent<LayoutElement>());
 
+            float scrollButtonAnchoredPositionY = RiskOfOptionsPlugin.categoryScrollButtonAnchoredPositionY?.Value ?? -60;
             var leftButtonRectTransform = CategoryLeftButton.GetComponent<RectTransform>();
             leftButtonRectTransform.sizeDelta = new Vector2(64, 64);
-            leftButtonRectTransform.anchoredPosition = new Vector2(60, 54);
+            leftButtonRectTransform.anchoredPosition = new Vector2(60, scrollButtonAnchoredPositionY);
 
             CategoryLeftButton.GetComponentInChildren<LanguageTextMeshController>().token = LanguageTokens.LeftPageButton;
 
@@ -358,7 +359,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             
             CategoryRightButton = Object.Instantiate(CategoryLeftButton, scrollView.transform);
 
-            CategoryRightButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(1064, 54);
+            CategoryRightButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(1064, scrollButtonAnchoredPositionY);
              
             CategoryRightButton.GetComponentInChildren<LanguageTextMeshController>().token = LanguageTokens.RightPageButton;
 
