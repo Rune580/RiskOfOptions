@@ -343,11 +343,14 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             CategoryLeftButton = Object.Instantiate(_emptyButton, scrollView.transform);
             Object.DestroyImmediate(CategoryLeftButton.GetComponent<LayoutElement>());
 
-            const float categoryScrollButtonAnchoredPositionY = -60; // -54 for main menu; -60 for pause menu??
+            Vector2 anchorMiddleLeft = new Vector2(0, 0.5f);
+            Vector2 anchorMiddleRight = new Vector2(1, 0.5f);
+
             var leftButtonRectTransform = CategoryLeftButton.GetComponent<RectTransform>();
+            leftButtonRectTransform.anchorMin = anchorMiddleLeft;
+            leftButtonRectTransform.anchorMax = anchorMiddleLeft;
             leftButtonRectTransform.sizeDelta = new Vector2(64, 64);
-            leftButtonRectTransform.anchoredPosition = new Vector2(60, categoryScrollButtonAnchoredPositionY);
-            // leftButtonRectTransform.localPosition = new Vector2(-522, categoryScrollButtonAnchoredPositionY); // values obtained using UnityExplorer; but setting local position via code seems to get overwritten — maybe because of pivot/anchor?
+            leftButtonRectTransform.anchoredPosition = Vector2.right * 60;
 
             CategoryLeftButton.GetComponentInChildren<LanguageTextMeshController>().token = LanguageTokens.LeftPageButton;
 
@@ -360,7 +363,10 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             
             CategoryRightButton = Object.Instantiate(CategoryLeftButton, scrollView.transform);
 
-            CategoryRightButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(1105, categoryScrollButtonAnchoredPositionY);
+            var rightButtonRectTransform = CategoryRightButton.GetComponent<RectTransform>();
+            rightButtonRectTransform.anchorMin = anchorMiddleRight;
+            rightButtonRectTransform.anchorMax = anchorMiddleRight;
+            rightButtonRectTransform.anchoredPosition *= new Vector2(-1, 1); // Invert x
 
             CategoryRightButton.GetComponentInChildren<LanguageTextMeshController>().token = LanguageTokens.RightPageButton;
 
