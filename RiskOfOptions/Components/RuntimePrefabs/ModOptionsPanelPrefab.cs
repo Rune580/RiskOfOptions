@@ -343,10 +343,11 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             CategoryLeftButton = Object.Instantiate(_emptyButton, scrollView.transform);
             Object.DestroyImmediate(CategoryLeftButton.GetComponent<LayoutElement>());
 
-            float scrollButtonAnchoredPositionY = RiskOfOptionsPlugin.categoryScrollButtonAnchoredPositionY?.Value ?? -60;
+            const float categoryScrollButtonAnchoredPositionY = -60; // -54 for main menu; -60 for pause menu??
             var leftButtonRectTransform = CategoryLeftButton.GetComponent<RectTransform>();
             leftButtonRectTransform.sizeDelta = new Vector2(64, 64);
-            leftButtonRectTransform.anchoredPosition = new Vector2(60, scrollButtonAnchoredPositionY);
+            leftButtonRectTransform.anchoredPosition = new Vector2(60, categoryScrollButtonAnchoredPositionY);
+            // leftButtonRectTransform.localPosition = new Vector2(-522, categoryScrollButtonAnchoredPositionY); // values obtained using UnityExplorer; but setting local position via code seems to get overwritten — maybe because of pivot/anchor?
 
             CategoryLeftButton.GetComponentInChildren<LanguageTextMeshController>().token = LanguageTokens.LeftPageButton;
 
@@ -359,8 +360,8 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             
             CategoryRightButton = Object.Instantiate(CategoryLeftButton, scrollView.transform);
 
-            CategoryRightButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(1064, scrollButtonAnchoredPositionY);
-             
+            CategoryRightButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(1105, categoryScrollButtonAnchoredPositionY);
+
             CategoryRightButton.GetComponentInChildren<LanguageTextMeshController>().token = LanguageTokens.RightPageButton;
 
             CategoryLeftButton.name = "Previous Category Page Button";

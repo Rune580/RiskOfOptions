@@ -20,8 +20,6 @@ public sealed class RiskOfOptionsPlugin : BaseUnityPlugin
 
     public static ConfigEntry<DecimalSeparator>? decimalSeparator;
 
-    internal static ConfigEntry<float>? categoryScrollButtonAnchoredPositionY;
-
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Awake is automatically called by Unity")]
     private void Awake()
     {
@@ -29,8 +27,6 @@ public sealed class RiskOfOptionsPlugin : BaseUnityPlugin
         seenMods = Config.Bind("One Time Stuff", "Has seen the mods prompt", false);
         
         decimalSeparator = Config.Bind("Display", "DecimalSeparator", DecimalSeparator.Period, "Changes how numbers are displayed across RoO.\nPeriod: 1,000.00\nComma: 1.000,00");
-
-        categoryScrollButtonAnchoredPositionY = Config.Bind("Layout (Debug)", nameof(categoryScrollButtonAnchoredPositionY), -60f, "");
 
         ModSettingsManager.Init();
         
