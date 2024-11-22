@@ -27,7 +27,7 @@ public sealed class RiskOfOptionsPlugin : BaseUnityPlugin
         seenMods = Config.Bind("One Time Stuff", "Has seen the mods prompt", false);
         
         decimalSeparator = Config.Bind("Display", "DecimalSeparator", DecimalSeparator.Period, "Changes how numbers are displayed across RoO.\nPeriod: 1,000.00\nComma: 1.000,00");
-        
+
         ModSettingsManager.Init();
         
         ModSettingsManager.SetModIcon(Prefabs.animatedIcon);
