@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using BepInEx.Configuration;
 using RiskOfOptions.Lib;
 using RiskOfOptions.OptionConfigs;
+using RoR2;
 using UnityEngine;
 
 namespace RiskOfOptions.Options
@@ -15,7 +16,9 @@ namespace RiskOfOptions.Options
         public string Category { get; internal set; }
         public string Name { get; internal set; }
         public string Description { get; internal set; }
-        
+        public string DescriptionToken { get; internal set; }
+        public string NameToken { get; internal set; }
+
         internal abstract ConfigEntryBase ConfigEntry { get; }
 
         public virtual void SetCategoryName(string fallback, BaseOptionConfig config)
@@ -59,11 +62,13 @@ namespace RiskOfOptions.Options
         
         public string GetNameToken()
         {
+            if (!string.IsNullOrEmpty(NameToken)) return NameToken;
             return $"{ModSettingsManager.StartingText}.{ModGuid}.{Category}.{Name}.{OptionTypeName}.name".Replace(" ", "_").ToUpper();
         }
 
         public string GetDescriptionToken()
         {
+            if (!string.IsNullOrEmpty(DescriptionToken)) return DescriptionToken;
             return $"{ModSettingsManager.StartingText}.{ModGuid}.{Category}.{Name}.{OptionTypeName}.description".Replace(" ", "_").ToUpper();
         }
         
@@ -98,5 +103,34 @@ namespace RiskOfOptions.Options
             SetName(ConfigEntry.Definition.Key, config);
             SetDescription(ConfigEntry.Description.Description, config);
         }
+
+        /// <summary>
+        /// If a custom name token is present, translates it and returns the final string.
+        /// Otherwise, returns the default name (should be the same as the config value).
+        /// </summary>
+        public string GetLocalizedName()
+        {
+            if (!string.IsNullOrEmpty(NameToken))
+            {
+                return Language.GetString(NameToken);
+            }
+            return Name;
+        }
+
+
+        /// <summary>
+        /// If a custom description token is present, translates it and returns the final string.
+        /// Otherwise, returns the default description (should be the same as the config value).
+        /// </summary>
+        public string GetLocalizedDescription()
+        {
+            if (!string.IsNullOrEmpty(DescriptionToken))
+            {
+                return Language.GetString(DescriptionToken);
+            }
+            return Description;
+        }
+
+
     }
 }
