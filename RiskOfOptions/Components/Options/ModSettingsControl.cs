@@ -4,7 +4,7 @@ using RoR2.UI;
 
 namespace RiskOfOptions.Components.Options;
 
-public abstract class ModSettingsControl<TValue> : ModSettingsControl<TValue, BaseOptionConfig>;
+public abstract class ModSettingsControl<TValue> : ModSettingsControl<TValue, BaseOptionConfig>{}
 
 public abstract class ModSettingsControl<TValue, TOptionConfig> : ModSetting
     where TOptionConfig : BaseOptionConfig
