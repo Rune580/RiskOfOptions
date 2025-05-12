@@ -110,11 +110,7 @@ namespace RiskOfOptions.Options
         /// </summary>
         public string GetLocalizedName()
         {
-            if (!string.IsNullOrEmpty(NameToken))
-            {
-                return Language.GetString(NameToken);
-            }
-            return Name;
+            return Language.GetString(GetNameToken());
         }
 
 
@@ -124,11 +120,7 @@ namespace RiskOfOptions.Options
         /// </summary>
         public string GetLocalizedDescription()
         {
-            if (!string.IsNullOrEmpty(DescriptionToken))
-            {
-                return Language.GetString(DescriptionToken);
-            }
-            return Description;
+            return Language.GetString(GetDescriptionToken());
         }
 
 
