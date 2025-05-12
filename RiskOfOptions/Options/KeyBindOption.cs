@@ -40,7 +40,7 @@ namespace RiskOfOptions.Options
             controller.nameToken = GetNameToken();
             controller.settingToken = Identifier;
             
-            keyBind.transform.Find("ButtonText").GetComponent<HGTextMeshProUGUI>().SetText(Name);
+            keyBind.transform.Find("ButtonText").GetComponent<HGTextMeshProUGUI>().SetText(GetLocalizedName());
             keyBind.name = $"Mod Option KeyBind, {Name}";
 
             foreach (var button in keyBind.GetComponentsInChildren<HGButton>())

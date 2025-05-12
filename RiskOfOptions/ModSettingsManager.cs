@@ -129,6 +129,28 @@ namespace RiskOfOptions
             OptionCollection.AddOption(ref option);
         }
 
+        /// <summary>
+        /// Creates an option with the option of custom name and description tokens.
+        /// </summary>
+        /// <param name="option">The base option to create</param>
+        /// <param name="modGuid">GUID of the mod</param>
+        /// <param name="modName">Name of the mod</param>
+        /// <param name="nameToken">Token to use to localize the option name. Uses the config value if null/empty string is provided.</param>
+        /// <param name="descriptionToken">Token to use to localize the description. Uses the config value if null/empty string is provided.</param>
+        public static void AddOption(BaseOption option, string modGuid, string modName, string nameToken,
+            string descriptionToken)
+        {
+            option.SetProperties();
+
+            option.ModGuid = modGuid;
+            option.ModName = modName;
+            option.NameToken = nameToken;
+            option.DescriptionToken = descriptionToken;
+            option.Identifier = $"{modGuid}.{option.Category}.{option.Name}.{option.OptionTypeName}".Replace(" ", "_").ToUpper();
+
+            OptionCollection.AddOption(ref option);
+        }
+
         private static void EnsureContainerExists(string modGuid, string modName)
         {
             if (!OptionCollection.ContainsModGuid(modGuid))
