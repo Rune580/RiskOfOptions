@@ -1,3 +1,14 @@
+## 2.8.4
+### Fixed
+- Rollback to the codebase of 2.8.2 as I've seen reports of 2.8.3 being borked. I'll fix the recent changes later.
+
+## 2.8.3
+### Added
+- [Custom localization for options](https://github.com/Rune580/RiskOfOptions/pull/43) by @[TheAshenWolf](https://github.com/TheAshenWolf)
+
+### Fixed
+- [Fix positioning of category scroll buttons](https://github.com/Rune580/RiskOfOptions/pull/42) by @[itsschwer](https://github.com/itsschwer)
+
 ## 2.8.2
 ### Fixed
 - Minor regression that caused Step Sliders to display their values as a percentage by default.
@@ -33,10 +44,10 @@ StringInputFields have improved newline behavior.
 - InputFieldConfig has a new field `lineType`, it represents TMP's `lineType` enum.
 - SubmitEnum is now marked with the `Flags` attribute, should allow for more fine-tuned input field behavior.
 - `Shift` + `Enter` will always insert a newline, if the StringInputField is configured to allow newlines, without submitting.
-Because of the above changes, StringInputFields may behave differently to prior versions. If you relied on the
-previous behavior, sorry for making more work for you, but this should make input fields be more reliable.
-In addition the default behavior for StringInputFields are `MultiLineSubmit` as this mimics the previous
-behavior the closest.
+  Because of the above changes, StringInputFields may behave differently to prior versions. If you relied on the
+  previous behavior, sorry for making more work for you, but this should make input fields be more reliable.
+  In addition the default behavior for StringInputFields are `MultiLineSubmit` as this mimics the previous
+  behavior the closest.
 
 ## 2.7.0
 All numeric InputFields now properly use InvariantCulture, for example numbers are formatted as `1,000,000.20`.
@@ -61,7 +72,7 @@ Forgot to include some assets that are required for the color picker.
 Merged PR by Bubbet https://github.com/Rune580/RiskOfOptions/pull/28
 - Abstracts references to bepinexconfig out.
 - Allows mods to extend off of RoO's options.
-Updated to preview C# language.
+  Updated to preview C# language.
 
 ## 2.5.2
 Fixed descriptions not wrapping.
@@ -77,9 +88,9 @@ Added ColorPickerUtil for manually opening a color picker.
 Added 2 new submit modes for input fields:
 - OnExitOrSubmit
 - OnSubmit
-These can be used with the `submitOn` Field in the InputFieldConfig.
-Fixed an issue where having multiple input fields causes hitching.
-Fixed an issue where input fields wouldn't visually revert.
+  These can be used with the `submitOn` Field in the InputFieldConfig.
+  Fixed an issue where having multiple input fields causes hitching.
+  Fixed an issue where input fields wouldn't visually revert.
 
 ## 2.4.2
 Sliders can now have their values be manually set in the text box. No more finagling the slider to get the value you want.
@@ -104,10 +115,10 @@ Disable functionality is now fully implemented on all simple options.
 Quite a few things in this update, as always let me know if you have any issues.
 - Added ChoiceOption, takes an CongiEntry<enum>.
 - Removed dependency on R2API, I didn't really use it anyways, now you don't have to worry about an unnecessary dependency.
-haha dependencies bad ;))))))))))))))))
+  haha dependencies bad ;))))))))))))))))
 - Fixed animation issues with the Mod Options menu while playing in singleplayer.
 - Added workaround for when a mod embeds it's own settings api (the reason why one would do this alludes me...),
-as they can break the Mod Options panel.
+  as they can break the Mod Options panel.
 
 ## 2.2.0
 Added GenericButtonOption which allows for devs to supply a UnityAction that is invoked when the button is pressed.
