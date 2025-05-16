@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,7 +49,7 @@ namespace RiskOfOptions.Components.Panel
         private IEnumerator _animateRoutine;
         
         private ModOptionsPanelPrefab _panel;
-        private ModSetting[] _modSettings = Array.Empty<ModSetting>();
+        private ModSetting[] _modSettings = [];
 
         private void Awake()
         {
