@@ -62,13 +62,15 @@ namespace RiskOfOptions.Options
         
         public string GetNameToken()
         {
-            if (!string.IsNullOrEmpty(NameToken)) return NameToken;
+            if (!string.IsNullOrEmpty(NameToken))
+                return NameToken;
             return $"{ModSettingsManager.StartingText}.{ModGuid}.{Category}.{Name}.{OptionTypeName}.name".Replace(" ", "_").ToUpper();
         }
 
         public string GetDescriptionToken()
         {
-            if (!string.IsNullOrEmpty(DescriptionToken)) return DescriptionToken;
+            if (!string.IsNullOrEmpty(DescriptionToken))
+                return DescriptionToken;
             return $"{ModSettingsManager.StartingText}.{ModGuid}.{Category}.{Name}.{OptionTypeName}.description".Replace(" ", "_").ToUpper();
         }
         
