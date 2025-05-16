@@ -383,7 +383,7 @@ namespace RiskOfOptions.Components.Panel
 
                     button.GetComponentInChildren<HGButton>().onSelect.AddListener(delegate
                     {
-                        _panel.ModOptionsDescriptionPanel.GetComponentInChildren<HGTextMeshProUGUI>().SetText(option.Description);
+                        _panel.ModOptionsDescriptionPanel.GetComponentInChildren<HGTextMeshProUGUI>().SetText(option.GetLocalizedDescription());
                     });
                 }
 
