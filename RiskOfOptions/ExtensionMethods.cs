@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using BepInEx;
 using RiskOfOptions.Lib;
@@ -8,11 +10,23 @@ namespace RiskOfOptions;
 
 internal static class ExtensionMethods
 {
+    internal static IEnumerable<Type> GetValidTypes(this Assembly assembly)
+    {
+        try
+        {
+            return assembly.GetTypes();
+        }
+        catch (ReflectionTypeLoadException e)
+        {
+            return e.Types.Where(type => type is not null);
+        }
+    }
+    
     internal static ModMetaData GetModMetaData(this Assembly assembly)
     {
         ModMetaData modMetaData = default;
             
-        Type[] types = assembly.GetExportedTypes();
+        var types = assembly.GetValidTypes();
             
         foreach (var item in types)
         {
