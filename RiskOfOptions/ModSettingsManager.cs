@@ -161,5 +161,12 @@ namespace RiskOfOptions
             if (!OptionCollection.ContainsModGuid(modGuid))
                 OptionCollection[modGuid] = new OptionCollection(modName, modGuid);
         }
+
+        public static void SetCategoryNameToken(string modGuid, BaseOption option, string nameToken)
+        {
+            // We send in an option to get the category from it, as that is a good way to make sure the user doesn't
+            // send in a string that does not exist.
+            OptionCollection[modGuid][option.Category].SetNameToken(nameToken);
+        }
     }
 }

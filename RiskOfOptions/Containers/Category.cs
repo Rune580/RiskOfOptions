@@ -12,13 +12,25 @@ namespace RiskOfOptions.Containers
         
         public string ModGuid { get; }
         
-        internal string NameToken => $"{ModSettingsManager.StartingText}.{ModGuid}.category.{name}".Replace(" ", "_").ToUpper();
+        internal string NameToken
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(_customNameToken))
+                    return _customNameToken;
+                return $"{ModSettingsManager.StartingText}.{ModGuid}.category.{name}".Replace(" ", "_").ToUpper();
+            }
+        }
+
         internal int OptionCount => _options.Count;
+        
+        private string _customNameToken;
         
         internal Category(string name, string modGuid)
         {
             this.name = name;
             ModGuid = modGuid;
+            _customNameToken = string.Empty;
             
             LanguageApi.Add(NameToken, name);
         }
@@ -64,6 +76,16 @@ namespace RiskOfOptions.Containers
         public static bool operator !=(Category left, Category right)
         {
             return !(left == right);
+        }
+        
+        /// <summary>
+        /// Sets a custom name token for the category.
+        /// Pass in an empty string to remove the custom token (returns to default token).
+        /// </summary>
+        /// <param name="nameToken">Token to set</param>
+        public void SetNameToken(string nameToken)
+        {
+            _customNameToken = nameToken;
         }
     }
 }
