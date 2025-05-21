@@ -38,7 +38,11 @@ namespace RiskOfOptions.Options
         internal override void RegisterTokens()
         {
             base.RegisterTokens();
+            RegisterChoiceTokens();
+        }
 
+        public void RegisterChoiceTokens()
+        {
             string[] names = Enum.GetNames(Value.GetType());
 
             _nameTokens = new string[names.Length];

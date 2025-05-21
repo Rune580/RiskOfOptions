@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using MonoMod.RuntimeDetour;
@@ -147,6 +147,11 @@ namespace RiskOfOptions
             option.NameToken = nameToken;
             option.DescriptionToken = descriptionToken;
             option.Identifier = $"{modGuid}.{option.Category}.{option.Name}.{option.OptionTypeName}".Replace(" ", "_").ToUpper();
+
+            if (option is ChoiceOption choiceOption)
+            {
+                choiceOption.RegisterChoiceTokens();
+            }
 
             OptionCollection.AddOption(ref option);
         }
