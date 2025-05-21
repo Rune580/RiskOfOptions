@@ -1,3 +1,10 @@
+## 2.8.3
+### Added
+- [Custom localization for options](https://github.com/Rune580/RiskOfOptions/pull/43) by @[TheAshenWolf](https://github.com/TheAshenWolf)
+
+### Fixed
+- [Fix positioning of category scroll buttons](https://github.com/Rune580/RiskOfOptions/pull/42) by @[itsschwer](https://github.com/itsschwer)
+
 ## 2.8.2
 ### Fixed
 - Minor regression that caused Step Sliders to display their values as a percentage by default.
