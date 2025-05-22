@@ -41,7 +41,7 @@ namespace RiskOfOptions.Options
             RegisterChoiceTokens();
         }
 
-        public void RegisterChoiceTokens()
+        internal void RegisterChoiceTokens()
         {
             string[] names = Enum.GetNames(Value.GetType());
 
