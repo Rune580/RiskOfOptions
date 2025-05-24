@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using MonoMod.RuntimeDetour;
@@ -148,6 +148,11 @@ namespace RiskOfOptions
             option.DescriptionToken = descriptionToken;
             option.Identifier = $"{modGuid}.{option.Category}.{option.Name}.{option.OptionTypeName}".Replace(" ", "_").ToUpper();
 
+            if (option is ChoiceOption choiceOption)
+            {
+                choiceOption.RegisterChoiceTokens();
+            }
+
             OptionCollection.AddOption(ref option);
         }
 
@@ -155,6 +160,13 @@ namespace RiskOfOptions
         {
             if (!OptionCollection.ContainsModGuid(modGuid))
                 OptionCollection[modGuid] = new OptionCollection(modName, modGuid);
+        }
+
+        public static void SetCategoryNameToken(string modGuid, BaseOption option, string nameToken)
+        {
+            // We send in an option to get the category from it, as that is a good way to make sure the user doesn't
+            // send in a string that does not exist.
+            OptionCollection[modGuid][option.Category].SetNameToken(nameToken);
         }
     }
 }
