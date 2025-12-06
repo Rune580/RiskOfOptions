@@ -1,3 +1,7 @@
+## 2.8.4
+### Fixed
+- Rollback to the codebase of 2.8.2 as I've seen reports of 2.8.3 being borked. I'll fix the recent changes later.
+
 ## 2.8.3
 ### Added
 - [Custom localization for options](https://github.com/Rune580/RiskOfOptions/pull/43) by @[TheAshenWolf](https://github.com/TheAshenWolf)

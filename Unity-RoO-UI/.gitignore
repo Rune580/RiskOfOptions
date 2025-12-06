@@ -85,3 +85,8 @@ crashlytics-build.properties
 /[Aa]ssets/[Tt]hunder[Kk]it[Ss]ettings/
 /[Aa]ssets/[Tt]hunder[Kk]it[Ss]ettings/*
 /[Aa]ssets/[Ss]treamingAssets
+
+/[Aa]sset[Bb]undles/[Ss]tandalone[Ww]indows/[Ss]tandalone[Ww]indows
+/[Aa]sset[Bb]undles/[Ss]tandalone[Ww]indows/*.manifest
+
+.vscode
