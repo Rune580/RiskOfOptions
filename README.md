@@ -13,6 +13,8 @@ An API to provide a user interface in game to interact with BepInEx ConfigEntry'
 - Sliders `float`
 - StepSliders `float`
 - IntSliders `int`
+- FloatFields `float`
+- IntFields `int`
 - KeyBinds `KeyboardShortcut`
 - String Input Fields `string`
 - Choice DropDowns `Enum`
@@ -83,7 +85,7 @@ And that's it, said KeyboardShortcut will show up on the ModOptions menu.
 Checkbox and Slider configs can be set with a delegate that will be used to check if said option should be disabled in the menu.
 ```C#
 ConfigEntry<bool> disableThing = Config.Bind(...);
-ConfigEntry<bool> overridenThing = Config.Bind(...); 
+ConfigEntry<bool> overridenThing = Config.Bind(...);
 
 ModSettingsManager.AddOption(new CheckBoxOption(disableThing));
 ModSettingsManager.AddOption(new CheckBoxOption(overridenThing, new CheckBoxConfig() { checkIfDisabled = Check }));

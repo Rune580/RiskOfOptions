@@ -38,6 +38,8 @@ namespace RiskOfOptions.Components.Options
         public abstract void Revert();
 
         public abstract void CheckIfDisabled();
+
+        public virtual void UpdateModifiedIndicator() { }
         
         protected abstract void Disable();
 

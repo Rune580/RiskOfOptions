@@ -47,9 +47,18 @@ namespace RiskOfOptions.Components.RuntimePrefabs
              button.targetGraphic = dropDownTargetGraphic;
              button.navigation = new Navigation();
              button.onClick.RemoveAllListeners();
-            
-             ChoiceButton.AddComponent<DropDownController>().nameLabel = ChoiceButton.transform.Find("Text, Name").GetComponent<LanguageTextMeshController>();
-            
+
+             Transform ChoiceButtonLabel = ChoiceButton.transform.Find("Text, Name");
+             ChoiceButton.AddComponent<DropDownController>().nameLabel = ChoiceButtonLabel.GetComponent<LanguageTextMeshController>();
+
+            // todo: fix this in the Unity prefab and update the asset bundle?
+            // values obtained from cross-referencing other option prefabs using Unity Explorer
+            RectTransform fixPosition = (RectTransform)ChoiceButtonLabel;
+            fixPosition.anchoredPosition = Vector2.zero;
+            fixPosition.pivot = new Vector2(0.5f, 0.5f);
+            fixPosition.sizeDelta = new Vector2(-24, -8);
+            fixPosition.anchorMax = new Vector2(0.5f, 1f);
+             
              var dropDownGameObject = ChoiceButton.transform.Find("CarouselRect").Find("ResolutionDropdown").gameObject;
              dropDownGameObject.name = "Dropdown";
             

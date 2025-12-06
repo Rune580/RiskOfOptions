@@ -17,6 +17,7 @@ public class ModSettingsStepSlider : ModSettingsControl<float, StepSliderConfig>
     public float minValue;
     public float maxValue;
     public float increment;
+    public bool remapManualInputToStep;
     public string formatString;
         
     private SliderConfig.SliderTryParse? _tryParse;
@@ -86,9 +87,13 @@ public class ModSettingsStepSlider : ModSettingsControl<float, StepSliderConfig>
         {
             num = Mathf.Clamp(num, minValue, maxValue);
 
-            float step = Mathf.Abs(num - minValue) / increment;
+            if (remapManualInputToStep)
+            {
+                float step = Mathf.Abs(num - minValue) / increment;
+                num = Mathf.RoundToInt(step) * increment + minValue;
+            }
 
-            SubmitValue(Mathf.RoundToInt(step) * increment + minValue);
+            SubmitValue(num);
         }
         else
         {

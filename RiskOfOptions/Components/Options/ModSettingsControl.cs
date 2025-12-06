@@ -20,7 +20,8 @@ public abstract class ModSettingsControl<TValue, TOptionConfig> : ModSetting
     protected TOptionConfig? Config { get; private set; }
         
     protected ITypedValueHolder<TValue> valueHolder;
-    
+
+    private UnityEngine.UI.RawImage? modifiedIndicator;
 
     public void SubmitValue(TValue newValue)
     {
@@ -41,6 +42,20 @@ public abstract class ModSettingsControl<TValue, TOptionConfig> : ModSetting
     protected TValue GetCurrentValue()
     {
         return valueHolder.Value;
+    }
+
+    protected TValue GetDefaultValue()
+    {
+        // ConfigEntry is null on mods that use ZioRiskOfOptions (see https://github.com/Rune580/RiskOfOptions/pull/28 )
+        if (option.ConfigEntry == null)
+        {
+#if DEBUG
+            UnityEngine.Debug.LogWarning($"{nameof(RiskOfOptions)}: Could not get default value, mod uses ZioRiskOfOptions?");
+#endif
+            return GetCurrentValue();
+        }
+
+        return (TValue)option.ConfigEntry.DefaultValue;
     }
 
     public override bool HasChanged()
@@ -66,7 +81,7 @@ public abstract class ModSettingsControl<TValue, TOptionConfig> : ModSetting
         if (option is null)
             return;
 
-        SubmitValue((TValue)option.ConfigEntry.DefaultValue);
+        SubmitValue(GetDefaultValue());
     }
 
     protected override void Awake()
@@ -81,6 +96,8 @@ public abstract class ModSettingsControl<TValue, TOptionConfig> : ModSetting
         valueHolder ??= (ITypedValueHolder<TValue>)option;
 
         Config = (TOptionConfig)option.GetConfig();
+
+        CreateModifiedIndicator();
 
         _restartRequired = Config.restartRequired;
             
@@ -140,6 +157,16 @@ public abstract class ModSettingsControl<TValue, TOptionConfig> : ModSetting
         }
     }
 
+    public override void UpdateModifiedIndicator()
+    {
+        if (modifiedIndicator)
+        {
+            bool nonDefault = !GetCurrentValue().Equals(GetDefaultValue());
+            modifiedIndicator.enabled = (nonDefault || HasChanged()) && RiskOfOptionsPlugin.showModifiedIndicator!.Value;
+            modifiedIndicator.color = HasChanged() ? RiskOfOptionsPlugin.hasChangedModifiedColor!.Value : RiskOfOptionsPlugin.nonDefaultModifiedColor!.Value;
+        }
+    }
+
     protected bool InUpdateControls { get; private set; }
 
     protected void UpdateControls()
@@ -155,6 +182,7 @@ public abstract class ModSettingsControl<TValue, TOptionConfig> : ModSetting
 
         CheckIfDisabled();
         RestartRequiredCheck();
+        UpdateModifiedIndicator();
 
         InUpdateControls = true;
         OnUpdateControls();
@@ -162,4 +190,21 @@ public abstract class ModSettingsControl<TValue, TOptionConfig> : ModSetting
     }
         
     protected virtual void OnUpdateControls() {}
+
+    private void CreateModifiedIndicator()
+    {
+        UnityEngine.GameObject child = new UnityEngine.GameObject("Modified Indicator", typeof(UnityEngine.UI.RawImage));
+        UnityEngine.RectTransform childTransform = (UnityEngine.RectTransform)child.transform;
+        childTransform.SetParent(this.transform);
+        childTransform.SetAsFirstSibling(); // to move to bottom layer, visually
+        childTransform.pivot = new UnityEngine.Vector2(0, 0.5f);
+        childTransform.anchoredPosition = UnityEngine.Vector2.zero;
+        childTransform.anchorMax = new UnityEngine.Vector2(0.016f, 0.92f);
+        childTransform.anchorMin = new UnityEngine.Vector2(0.009f, 0.08f);
+        childTransform.sizeDelta = UnityEngine.Vector2.zero;
+
+        modifiedIndicator = child.GetComponent<UnityEngine.UI.RawImage>();
+        modifiedIndicator.color = RiskOfOptionsPlugin.nonDefaultModifiedColor!.Value;
+        modifiedIndicator.enabled = RiskOfOptionsPlugin.showModifiedIndicator!.Value;
+    }
 }

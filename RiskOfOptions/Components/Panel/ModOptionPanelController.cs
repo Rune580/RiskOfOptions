@@ -683,7 +683,10 @@ namespace RiskOfOptions.Components.Panel
             foreach (var modSetting in _modSettings)
             {
                 if (modSetting)
+                {
                     modSetting.CheckIfDisabled();
+                    modSetting.UpdateModifiedIndicator();
+                }
             }
                 
         }
