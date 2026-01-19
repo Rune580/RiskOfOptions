@@ -1,3 +1,17 @@
+## 2.8.5
+### Added
+- Re-added changes from 2.8.3.
+- Add a "modified" indicator to the side of options that have been modified (similar to indicator in VS Code settings) by @[itsschwer](https://github.com/itsschwer)
+  - Options that have a non-default value show a blue "modified" indicator.
+  - Options that have been modified and can be reverted using the "Revert" button (now "Reset to Default")  show a yellow "modified" indicator. This takes precedence over the blue non-default indicator.
+  - These colors can be configured.
+- Add a setting to `StepSliderConfig` called `remapManualInputToStep` to allow text entry of values that are not remapped to the nearest increment. by @[itsschwer](https://github.com/itsschwer)
+
+### Fixed
+- Choice Options indentations changes by @[itsschwer](https://github.com/itsschwer)
+
+I finally remembered to push this update out. - Rune
+
 ## 2.8.4
 ### Fixed
 - Rollback to the codebase of 2.8.2 as I've seen reports of 2.8.3 being borked. I'll fix the recent changes later.
