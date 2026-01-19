@@ -607,20 +607,20 @@ PlayerSettings:
   webGLDecompressionFallback: 0
   webGLPowerPreference: 2
   scriptingDefineSymbols:
-    Android: TK_ADDRESSABLE
-    EmbeddedLinux: TK_ADDRESSABLE
-    GameCoreXboxOne: TK_ADDRESSABLE
+    Android: TK_ADDRESSABLE;RISKOFRAIN2
+    EmbeddedLinux: TK_ADDRESSABLE;RISKOFRAIN2
+    GameCoreXboxOne: TK_ADDRESSABLE;RISKOFRAIN2
     LinuxHeadlessSimulation: TK_ADDRESSABLE
-    Lumin: TK_ADDRESSABLE
-    Nintendo Switch: TK_ADDRESSABLE
-    PS4: TK_ADDRESSABLE
-    PS5: TK_ADDRESSABLE
-    Stadia: TK_ADDRESSABLE
-    Standalone: TK_ADDRESSABLE
-    WebGL: TK_ADDRESSABLE
-    Windows Store Apps: TK_ADDRESSABLE
-    XboxOne: TK_ADDRESSABLE
-    tvOS: TK_ADDRESSABLE
+    Lumin: TK_ADDRESSABLE;RISKOFRAIN2
+    Nintendo Switch: TK_ADDRESSABLE;RISKOFRAIN2
+    PS4: TK_ADDRESSABLE;RISKOFRAIN2
+    PS5: TK_ADDRESSABLE;RISKOFRAIN2
+    Stadia: TK_ADDRESSABLE;RISKOFRAIN2
+    Standalone: TK_ADDRESSABLE;RISKOFRAIN2
+    WebGL: TK_ADDRESSABLE;RISKOFRAIN2
+    Windows Store Apps: TK_ADDRESSABLE;RISKOFRAIN2
+    XboxOne: TK_ADDRESSABLE;RISKOFRAIN2
+    tvOS: TK_ADDRESSABLE;RISKOFRAIN2
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}

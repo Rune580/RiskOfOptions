@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.passivepicasso.thunderkit": "https://github.com/PassivePicasso/ThunderKit.git#8.0.3",
+    "com.passivepicasso.thunderkit": "https://github.com/PassivePicasso/ThunderKit.git#9.1.6",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.assetbundlebrowser": "1.7.0",
     "com.unity.collab-proxy": "2.2.0",
