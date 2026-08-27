@@ -90,3 +90,5 @@ crashlytics-build.properties
 /[Aa]sset[Bb]undles/[Ss]tandalone[Ww]indows/*.manifest
 
 .vscode
+
+.idea
