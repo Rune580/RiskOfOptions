@@ -104,7 +104,7 @@ namespace RiskOfOptions.Components.Panel
             
             HGHeaderNavigationController navigationController = GetComponent<HGHeaderNavigationController>();
             
-            _panel.ModOptionsHeaderButton.transform.SetParent(headerArea);
+            _panel.ModOptionsHeaderButton.transform.SetParent(headerArea, false);
             
             _panel.ModOptionsHeaderButton.GetComponentInChildren<HGButton>().onClick.AddListener(delegate ()
             {
