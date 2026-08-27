@@ -26,6 +26,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8570188921231862372}
   - {fileID: 6748414617245779619}
@@ -65,6 +66,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.000003, y: 1.000003, z: 1.000003}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5435689624639268628}
   m_RootOrder: 1
@@ -97,6 +99,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -132,7 +135,7 @@ GameObject:
   - component: {fileID: 3719065922505916236}
   - component: {fileID: 5233719090453687053}
   - component: {fileID: 6207940917963515017}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Mod List Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -149,6 +152,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 439494236889890126}
   - {fileID: 5435689624639268628}
@@ -183,6 +187,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -214,6 +219,7 @@ MonoBehaviour:
   transitionDuration: 0.2
   panningMagnitude: 30
   destroyOnEndOfTransition: 0
+  disableAndResetOnEndOfTransition: 0
 --- !u!225 &1167570866842230802
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -242,6 +248,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 4500676327772458140}
+        m_TargetAssemblyTypeName: 
         m_MethodName: TransitionPanFromLeft
         m_Mode: 1
         m_Arguments:
@@ -253,6 +260,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 4500676327772458140}
+        m_TargetAssemblyTypeName: 
         m_MethodName: TransitionAlphaFadeIn
         m_Mode: 1
         m_Arguments:
@@ -342,6 +350,8 @@ MonoBehaviour:
   selectedTextColor: {r: 1, g: 1, b: 1, a: 1}
   unselectedTextColor: {r: 1, g: 1, b: 1, a: 1}
   makeSelectedHeaderButtonNoninteractable: 1
+  ControllerResetButton: {fileID: 0}
+  isPrimaryPlayer: 0
   headers: []
 --- !u!114 &5233719090453687053
 MonoBehaviour:
@@ -355,7 +365,7 @@ MonoBehaviour:
   m_Script: {fileID: -393720481, guid: 0980d1b63c490224994fbd8d1bc5b3c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serializedData: 09000000870000001f000000526f52322f426173652f55492f7465785549506f707570526563742e706e670e0000007465785549506f70757052656374160000005363726f6c6c20566965772f496d61676550616e656c000000000000000000000000000000430000004300008042000080420000c84200000000010000000000a0400000a0400000a0400000a0409300000021000000526f52322f426173652f55492f7465785549436c65616e427574746f6e2e706e67100000007465785549436c65616e427574746f6e1e0000005363726f6c6c20566965772f5363726f6c6c62617220566572746963616c000000000000000000000000000080430000804200000043000000420000c842000000000100000000000041000000410000004100000041a700000021000000526f52322f426173652f55492f7465785549436c65616e427574746f6e2e706e67100000007465785549436c65616e427574746f6e320000005363726f6c6c20566965772f5363726f6c6c62617220566572746963616c2f536c6964696e6720417265612f48616e646c65000000000000000000000000000080430000804200000043000000420000c842000000000100000000000041000000410000004100000041ce00000029000000526f52322f426173652f55492f7465785549486967686c69676874426f784f75746c696e652e706e67180000007465785549486967686c69676874426f784f75746c696e65490000005363726f6c6c20566965772f5363726f6c6c62617220566572746963616c2f536c6964696e6720417265612f48616e646c652f486f7665724f75746c696e655363726f6c6c52656374000000000000000000000000000080430000804200000043000000420000c8420000000001000000000080400000804000008040000080409500000021000000526f52322f426173652f55492f7465785549436c65616e427574746f6e2e706e67100000007465785549436c65616e427574746f6e200000005363726f6c6c20566965772f5363726f6c6c62617220486f72697a6f6e74616c000000000000000000000000000080430000804200000043000000420000c842000000000100000000000041000000410000004100000041a900000021000000526f52322f426173652f55492f7465785549436c65616e427574746f6e2e706e67100000007465785549436c65616e427574746f6e340000005363726f6c6c20566965772f5363726f6c6c62617220486f72697a6f6e74616c2f536c6964696e6720417265612f48616e646c65000000000000000000000000000080430000804200000043000000420000c842000000000100000000000041000000410000004100000041c000000033000000526f52322f426173652f55492f7465785549416e696d6174654865616465724772616469656e74496e7665727465642e706e67220000007465785549416e696d6174654865616465724772616469656e74496e7665727465642700000047656e65726963486561646572486967686c696768742f427574746f6e466c61736850616e656c000000000000000000000000000080430000804300000043000000430000c84200000000010000000000a042000000000000a042000000007200000026000000526f52322f426173652f55492f6d617455495061696e7453747265616b466c6173682e6d6174150000006d617455495061696e7453747265616b466c6173682700000047656e65726963486561646572486967686c696768742f427574746f6e466c61736850616e656c01000000a400000025000000526f52322f426173652f55492f7465785549486967686c696768744865616465722e706e67140000007465785549486967686c696768744865616465722700000047656e65726963486561646572486967686c696768742f486967686c69676874436f726e657273000000000000000000000000000080420000804200000042000000420000c842000000000100000000009041000090410000904100009041
+  serializedData: 09000000870000001f000000526f52322f426173652f55492f7465785549506f707570526563742e706e670e0000007465785549506f70757052656374160000005363726f6c6c20566965772f496d61676550616e656c000000000000000000000000000000430000004300008042000080420000c84200000000010000000000a0400000a0400000a0400000a0409300000021000000526f52322f426173652f55492f7465785549436c65616e427574746f6e2e706e67100000007465785549436c65616e427574746f6e1e0000005363726f6c6c20566965772f5363726f6c6c62617220566572746963616c000000000000000000000000000080430000804200000043000000420000c842000000000100000000000041000000410000004100000041a700000021000000526f52322f426173652f55492f7465785549436c65616e427574746f6e2e706e67100000007465785549436c65616e427574746f6e320000005363726f6c6c20566965772f5363726f6c6c62617220566572746963616c2f536c6964696e6720417265612f48616e646c65000000000000000000000000000080430000804200000043000000420000c842000000000100000000000041000000410000004100000041ce00000029000000526f52322f426173652f55492f7465785549486967686c69676874426f784f75746c696e652e706e67180000007465785549486967686c69676874426f784f75746c696e65490000005363726f6c6c20566965772f5363726f6c6c62617220566572746963616c2f536c6964696e6720417265612f48616e646c652f486f7665724f75746c696e655363726f6c6c52656374000000000000000000000000000080430000804200000043000000420000c8420000000001000000000080400000804000008040000080409500000021000000526f52322f426173652f55492f7465785549436c65616e427574746f6e2e706e67100000007465785549436c65616e427574746f6e200000005363726f6c6c20566965772f5363726f6c6c62617220486f72697a6f6e74616c000000000000000000000000000080430000804200000043000000420000c842000000000100000000000041000000410000004100000041a900000021000000526f52322f426173652f55492f7465785549436c65616e427574746f6e2e706e67100000007465785549436c65616e427574746f6e340000005363726f6c6c20566965772f5363726f6c6c62617220486f72697a6f6e74616c2f536c6964696e6720417265612f48616e646c65000000000000000000000000000080430000804200000043000000420000c842000000000100000000000041000000410000004100000041c000000033000000526f52322f426173652f55492f7465785549416e696d6174654865616465724772616469656e74496e7665727465642e706e67220000007465785549416e696d6174654865616465724772616469656e74496e7665727465642700000047656e65726963486561646572486967686c696768742f427574746f6e466c61736850616e656c000000000000000000000000000080430000804300000043000000430000c84200000000010000000000a042000000000000a04200000000a400000025000000526f52322f426173652f55492f7465785549486967686c696768744865616465722e706e67140000007465785549486967686c696768744865616465722700000047656e65726963486561646572486967686c696768742f486967686c69676874436f726e657273000000000000000000000000000080420000804200000042000000420000c8420000000001000000000090410000904100009041000090418500000039000000526f52322f426173652f55492f5370656369616c55494d6174657269616c732f6d617455495061696e7453747265616b466c6173682e6d6174150000006d617455495061696e7453747265616b466c6173682700000047656e65726963486561646572486967686c696768742f427574746f6e466c61736850616e656c01000000
   entries:
   - addressablePath: RoR2/Base/UI/texUIPopupRect.png
     targetPath: Scroll View/ImagePanel
@@ -462,21 +472,6 @@ MonoBehaviour:
     extrude: 0
     meshType: 1
     border: {x: 80, y: 0, z: 80, w: 0}
-  - addressablePath: RoR2/Base/UI/matUIPaintStreakFlash.mat
-    targetPath: GenericHeaderHighlight/ButtonFlashPanel
-    name: matUIPaintStreakFlash
-    assetType: 1
-    rect:
-      serializedVersion: 2
-      x: 0
-      y: 0
-      width: 0
-      height: 0
-    pivot: {x: 0, y: 0}
-    pixelsPerUnit: 0
-    extrude: 0
-    meshType: 0
-    border: {x: 0, y: 0, z: 0, w: 0}
   - addressablePath: RoR2/Base/UI/texUIHighlightHeader.png
     targetPath: GenericHeaderHighlight/HighlightCorners
     name: texUIHighlightHeader
@@ -492,6 +487,21 @@ MonoBehaviour:
     extrude: 0
     meshType: 1
     border: {x: 18, y: 18, z: 18, w: 18}
+  - addressablePath: RoR2/Base/UI/SpecialUIMaterials/matUIPaintStreakFlash.mat
+    targetPath: GenericHeaderHighlight/ButtonFlashPanel
+    name: matUIPaintStreakFlash
+    assetType: 1
+    rect:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 0
+      height: 0
+    pivot: {x: 0, y: 0}
+    pixelsPerUnit: 0
+    extrude: 0
+    meshType: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &6207940917963515017
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -536,6 +546,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8912407532446980791}
   m_Father: {fileID: 2529248986044547259}
@@ -569,6 +580,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -597,7 +609,7 @@ GameObject:
   - component: {fileID: 3177153931568492767}
   - component: {fileID: 7314440410548635175}
   - component: {fileID: 6311099740463023284}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Scroll View
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -614,6 +626,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8750263373548760274}
   - {fileID: 5256961426320405728}
@@ -695,6 +708,7 @@ MonoBehaviour:
   allowVerticalScrollingWithGamepadSticks: 0
   stickScale: 0
   requiredTopLayer: {fileID: 0}
+  dropDown: {fileID: 0}
 --- !u!114 &6311099740463023284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -735,6 +749,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: -1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7094784787758587628}
   m_RootOrder: 0
@@ -767,6 +782,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -809,6 +825,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1586616241954344565}
   m_RootOrder: 0
@@ -841,6 +858,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -868,7 +886,7 @@ GameObject:
   - component: {fileID: 2303374356625051198}
   - component: {fileID: 7213682143006954102}
   - component: {fileID: 1244073290514614150}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: VerticalLayout
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -885,6 +903,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8373784164903310201}
   m_RootOrder: 0
@@ -919,6 +938,7 @@ MonoBehaviour:
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!222 &2303374356625051198
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -942,6 +962,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 0.628}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -996,6 +1017,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1485041567760254280}
   m_Father: {fileID: 5890441021944580249}
@@ -1019,7 +1041,7 @@ GameObject:
   - component: {fileID: 6959827148350927450}
   - component: {fileID: 6604087517549072094}
   - component: {fileID: 5439139361900901943}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: BlurPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1036,6 +1058,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 439494236889890126}
   m_RootOrder: 0
@@ -1068,6 +1091,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -1083,6 +1107,8 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   source: {fileID: 0}
+  oldSource: {fileID: 0}
+  pausesGame: 0
   spriteBlending: 0.65
 --- !u!114 &6604087517549072094
 MonoBehaviour:
@@ -1117,7 +1143,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializedData: 
-  image: {fileID: 6959827148350927450}
+  image: {fileID: 0}
 --- !u!1 &6359276453211123558
 GameObject:
   m_ObjectHideFlags: 0
@@ -1147,6 +1173,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5435689624639268628}
   m_RootOrder: 0
@@ -1179,6 +1206,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -1264,6 +1292,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1586616241954344565}
   m_Father: {fileID: 439494236889890126}
@@ -1297,6 +1326,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0.3254902, g: 0.40392157, b: 0.47058824, a: 0.7607843}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -1325,6 +1355,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 0
+    m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
@@ -1387,7 +1418,7 @@ GameObject:
   - component: {fileID: 5256961426320405728}
   - component: {fileID: 6955871995059210664}
   - component: {fileID: 2992868353478494258}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ImagePanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1404,6 +1435,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 439494236889890126}
   m_RootOrder: 1
@@ -1436,6 +1468,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0.11764706, g: 0.13725491, b: 0.14901961, a: 0.9607843}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -1461,7 +1494,7 @@ GameObject:
   - component: {fileID: 8373784164903310201}
   - component: {fileID: 5528285127730643421}
   - component: {fileID: 7639445803342415491}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Viewport
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1478,6 +1511,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8442782022560751446}
   m_Father: {fileID: 439494236889890126}
@@ -1540,6 +1574,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: -1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2529248986044547259}
   m_Father: {fileID: 439494236889890126}
@@ -1573,6 +1608,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0.3254902, g: 0.40392157, b: 0.47058824, a: 0.7607843}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -1601,6 +1637,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 0
+    m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
@@ -1678,6 +1715,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7094784787758587628}
   m_Father: {fileID: 6469545166662219318}
