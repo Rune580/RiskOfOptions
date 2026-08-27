@@ -282,10 +282,10 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             GameObject scrollView = CategoryHeader.transform.Find("Scroll View").gameObject;
 
             CategoryPageIndicators = new GameObject("Indicators", typeof(RectTransform));
-            CategoryPageIndicators.transform.SetParent(scrollView.transform);
+            CategoryPageIndicators.transform.SetParent(scrollView.transform, false);
             
             GameObject layoutGroup = new GameObject("LayoutGroup", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(ContentSizeFitter));
-            layoutGroup.transform.SetParent(CategoryPageIndicators.transform);
+            layoutGroup.transform.SetParent(CategoryPageIndicators.transform, false);
 
             var horizontalLayoutGroup = layoutGroup.GetComponent<HorizontalLayoutGroup>();
 
@@ -300,7 +300,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
 
             layoutRectTransform.anchorMin = new Vector2(0.5f, 0);
             layoutRectTransform.anchorMax = new Vector2(0.5f, 0);
-            layoutRectTransform.anchoredPosition = new Vector2(0, 8);
+            layoutRectTransform.anchoredPosition = new Vector2(0, 16);
             layoutRectTransform.pivot = new Vector2(0.5f, 0.5f);
 
             var fitter = layoutGroup.GetComponent<ContentSizeFitter>();
@@ -312,12 +312,12 @@ namespace RiskOfOptions.Components.RuntimePrefabs
 
             holderRectTransform.sizeDelta = Vector2.zero;
             holderRectTransform.anchorMin = new Vector2(0, 0f);
-            holderRectTransform.anchorMax = new Vector2(1, 0.23f);
+            holderRectTransform.anchorMax = new Vector2(1, 0.25f);
             holderRectTransform.pivot = new Vector2(0.5f, 1f);
             holderRectTransform.anchoredPosition = new Vector2(0, 0);
 
             CategoryPageIndicator = new GameObject("Indicator Dot", typeof(RectTransform), typeof(LayoutElement), typeof(CanvasRenderer), typeof(Image), typeof(Button));
-            CategoryPageIndicator.transform.SetParent(CategoryPageIndicators.transform);
+            CategoryPageIndicator.transform.SetParent(CategoryPageIndicators.transform, false);
             CategoryPageIndicator.SetActive(false);
 
             var image = CategoryPageIndicator.GetComponent<Image>();
@@ -332,7 +332,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             dotLayoutElement.minHeight = CategoryScrollRect.DotScale;
             
             CategoryPageIndicatorOutline = new GameObject("Indicator Outline", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-            CategoryPageIndicatorOutline.transform.SetParent(CategoryPageIndicators.transform);
+            CategoryPageIndicatorOutline.transform.SetParent(CategoryPageIndicators.transform, false);
             CategoryPageIndicatorOutline.SetActive(true);
             
             CategoryPageIndicatorOutline.GetComponent<Image>().sprite = RiskOfOptions.Resources.Assets.Load<Sprite>("assets/RiskOfOptions/IndicatorOutline.png");
@@ -454,7 +454,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             restartIcon.sprite = RiskOfOptions.Resources.Assets.Load<Sprite>("assets/RiskOfOptions/ror2RestartSymbol.png");
             restartIcon.preserveAspect = true;
 
-            restartIconGameObject.transform.SetParent(sizeFitterObject.transform);
+            restartIconGameObject.transform.SetParent(sizeFitterObject.transform, false);
             restartIconGameObject.transform.SetAsFirstSibling();
         }
     }
