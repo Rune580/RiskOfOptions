@@ -1,6 +1,7 @@
 ﻿using RiskOfOptions.OptionConfigs;
 using RiskOfOptions.Options;
 using RoR2.UI;
+using UnityEngine;
 
 namespace RiskOfOptions.Components.Options;
 
@@ -21,7 +22,8 @@ public abstract class ModSettingsControl<TValue, TOptionConfig> : ModSetting
         
     protected ITypedValueHolder<TValue> valueHolder;
 
-    private UnityEngine.UI.RawImage? modifiedIndicator;
+    [SerializeField]
+    private UnityEngine.UI.RawImage modifiedIndicator;
 
     public void SubmitValue(TValue newValue)
     {
@@ -96,9 +98,9 @@ public abstract class ModSettingsControl<TValue, TOptionConfig> : ModSetting
         valueHolder ??= (ITypedValueHolder<TValue>)option;
 
         Config = (TOptionConfig)option.GetConfig();
-
-        CreateModifiedIndicator();
-
+        
+        UpdateModifiedIndicator();
+        
         _restartRequired = Config.restartRequired;
             
         var isDisabled = Config.checkIfDisabled;
@@ -190,21 +192,4 @@ public abstract class ModSettingsControl<TValue, TOptionConfig> : ModSetting
     }
         
     protected virtual void OnUpdateControls() {}
-
-    private void CreateModifiedIndicator()
-    {
-        UnityEngine.GameObject child = new UnityEngine.GameObject("Modified Indicator", typeof(UnityEngine.UI.RawImage));
-        UnityEngine.RectTransform childTransform = (UnityEngine.RectTransform)child.transform;
-        childTransform.SetParent(this.transform);
-        childTransform.SetAsFirstSibling(); // to move to bottom layer, visually
-        childTransform.pivot = new UnityEngine.Vector2(0, 0.5f);
-        childTransform.anchoredPosition = UnityEngine.Vector2.zero;
-        childTransform.anchorMax = new UnityEngine.Vector2(0.016f, 0.92f);
-        childTransform.anchorMin = new UnityEngine.Vector2(0.009f, 0.08f);
-        childTransform.sizeDelta = UnityEngine.Vector2.zero;
-
-        modifiedIndicator = child.GetComponent<UnityEngine.UI.RawImage>();
-        modifiedIndicator.color = RiskOfOptionsPlugin.nonDefaultModifiedColor!.Value;
-        modifiedIndicator.enabled = RiskOfOptionsPlugin.showModifiedIndicator!.Value;
-    }
 }
