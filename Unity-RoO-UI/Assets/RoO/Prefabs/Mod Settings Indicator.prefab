@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6458424269875935360}
   - component: {fileID: 2819156178075139003}
   - component: {fileID: 4821096787743025662}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Mod Settings Indicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -282,9 +282,11 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             GameObject scrollView = CategoryHeader.transform.Find("Scroll View").gameObject;
 
             CategoryPageIndicators = new GameObject("Indicators", typeof(RectTransform));
+            CategoryPageIndicators.layer = 5;
             CategoryPageIndicators.transform.SetParent(scrollView.transform, false);
             
             GameObject layoutGroup = new GameObject("LayoutGroup", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(ContentSizeFitter));
+            layoutGroup.layer = 5;
             layoutGroup.transform.SetParent(CategoryPageIndicators.transform, false);
 
             var horizontalLayoutGroup = layoutGroup.GetComponent<HorizontalLayoutGroup>();
@@ -317,6 +319,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             holderRectTransform.anchoredPosition = new Vector2(0, 0);
 
             CategoryPageIndicator = new GameObject("Indicator Dot", typeof(RectTransform), typeof(LayoutElement), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+            CategoryPageIndicator.layer = 5;
             CategoryPageIndicator.transform.SetParent(CategoryPageIndicators.transform, false);
             CategoryPageIndicator.SetActive(false);
 
@@ -332,6 +335,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             dotLayoutElement.minHeight = CategoryScrollRect.DotScale;
             
             CategoryPageIndicatorOutline = new GameObject("Indicator Outline", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            CategoryPageIndicatorOutline.layer = 5;
             CategoryPageIndicatorOutline.transform.SetParent(CategoryPageIndicators.transform, false);
             CategoryPageIndicatorOutline.SetActive(true);
             
