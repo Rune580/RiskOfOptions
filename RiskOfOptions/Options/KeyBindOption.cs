@@ -35,7 +35,7 @@ namespace RiskOfOptions.Options
         {
             GameObject keyBind = Object.Instantiate(prefab, parent);
 
-            KeyBindController controller = keyBind.GetComponentInChildren<KeyBindController>();
+            ModSettingsKeyBind controller = keyBind.GetComponentInChildren<ModSettingsKeyBind>();
 
             controller.nameToken = GetNameToken();
             controller.settingToken = Identifier;
@@ -43,8 +43,8 @@ namespace RiskOfOptions.Options
             keyBind.transform.Find("ButtonText").GetComponent<HGTextMeshProUGUI>().SetText(GetLocalizedName());
             keyBind.name = $"Mod Option KeyBind, {Name}";
 
-            foreach (var button in keyBind.GetComponentsInChildren<HGButton>())
-                button.onClick.AddListener(delegate { controller.StartListening(); });
+            // foreach (var button in keyBind.GetComponentsInChildren<HGButton>())
+            //     button.onClick.AddListener(delegate { controller.StartListening(); });
 
             return keyBind;
         }
