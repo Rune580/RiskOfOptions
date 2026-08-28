@@ -45,8 +45,8 @@ namespace RiskOfOptions.Components.Panel
         
         private bool _lateInit;
 
-        public const int Spacing = -8;
-        public const int DotScale = 25;
+        public const int Spacing = -4;
+        public const int DotScale = 20;
 
         private static readonly Color InactiveColor = new(0.3f, 0.3f, 0.3f, 1);
 

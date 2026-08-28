@@ -29,6 +29,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1505703682815356644}
   m_Father: {fileID: 8414918136964757660}
@@ -62,6 +63,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -120,6 +122,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1811965187795788859}
   m_RootOrder: 2
@@ -152,6 +155,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -201,6 +205,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canvasSortingOrderDelta: 1
   canvas: {fileID: 7011976419673688958}
+  enableRectClipping: 0
+  rectClipper: {fileID: 0}
 --- !u!1 &4293771133014716192
 GameObject:
   m_ObjectHideFlags: 0
@@ -238,11 +244,13 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6609115180805553804}
   - {fileID: 2842790972862425428}
   - {fileID: 4469581307430900823}
   - {fileID: 6995339838378767626}
+  - {fileID: 5686888708473845687}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 1.3e-44, y: 1.3e-44, z: 0}
@@ -287,6 +295,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -327,6 +336,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 3
+    m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
@@ -357,6 +367,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 7374949286249695731}
+        m_TargetAssemblyTypeName: 
         m_MethodName: InvokeClick
         m_Mode: 1
         m_Arguments:
@@ -369,8 +380,10 @@ MonoBehaviour:
         m_CallState: 2
   allowAllEventSystems: 1
   submitOnPointerUp: 1
+  selectOnPointerEnter: 1
   disablePointerClick: 1
   disableGamepadClick: 0
+  useBaseGamepadClick: 0
   requiredTopLayer: {fileID: 0}
   onFindSelectableLeft:
     m_PersistentCalls:
@@ -384,13 +397,18 @@ MonoBehaviour:
   onDeselect:
     m_PersistentCalls:
       m_Calls: []
+  onDebugSelect:
+    m_PersistentCalls:
+      m_Calls: []
   defaultFallbackButton: 0
+  preferSiblings: 0
   showImageOnHover: 1
   imageOnHover: {fileID: 8407411412994968387}
   imageOnInteractable: {fileID: 0}
   updateTextOnHover: 0
   hoverLanguageTextMeshController: {fileID: 0}
   hoverToken: 
+  hoverHighlightGameObject: {fileID: 0}
   uiClickSoundOverride: 
 --- !u!114 &8349059539121918411
 MonoBehaviour:
@@ -459,6 +477,7 @@ MonoBehaviour:
   settingToken: 
   nameLabel: {fileID: 4437205948300356150}
   optionController: {fileID: 0}
+  modifiedIndicator: {fileID: 6173578010856728265}
   checkBox: {fileID: 3890750967770772731}
   checkBoxFalse: {fileID: 0}
   checkBoxTrue: {fileID: 0}
@@ -479,6 +498,7 @@ MonoBehaviour:
   - addressablePath: RoR2/Base/UI/texUICleanButton.png
     targetPath: 
     name: texUICleanButton
+    assetType: 0
     rect:
       serializedVersion: 2
       x: 0
@@ -493,6 +513,7 @@ MonoBehaviour:
   - addressablePath: RoR2/Base/UI/texUIOutlineOnly.png
     targetPath: BaseOutline
     name: texUIOutlineOnly
+    assetType: 0
     rect:
       serializedVersion: 2
       x: 0
@@ -507,6 +528,7 @@ MonoBehaviour:
   - addressablePath: RoR2/Base/UI/texUIHighlightBoxOutlineThick.png
     targetPath: HoverOutline
     name: texUIHighlightBoxOutlineThick
+    assetType: 0
     rect:
       serializedVersion: 2
       x: 0
@@ -521,6 +543,7 @@ MonoBehaviour:
   - addressablePath: RoR2/Base/UI/texUICheckboxes.png
     targetPath: CarouselRect/BoolButton/BoolSprite
     name: texUICheckboxes_0
+    assetType: 0
     rect:
       serializedVersion: 2
       x: 0
@@ -535,6 +558,7 @@ MonoBehaviour:
   - addressablePath: RoR2/Base/UI/texUIHighlightBoxOutlineThick.png
     targetPath: CarouselRect/BoolButton/BoolSprite/HoverOutline
     name: texUIHighlightBoxOutlineThick
+    assetType: 0
     rect:
       serializedVersion: 2
       x: 0
@@ -590,6 +614,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 563277871829603754}
   m_RootOrder: 0
@@ -622,6 +647,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -665,6 +691,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 563277871829603754}
   m_Father: {fileID: 6995339838378767626}
@@ -709,6 +736,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 0
+    m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
@@ -739,6 +767,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2214556625721667196}
+        m_TargetAssemblyTypeName: 
         m_MethodName: Toggle
         m_Mode: 1
         m_Arguments:
@@ -751,8 +780,10 @@ MonoBehaviour:
         m_CallState: 2
   allowAllEventSystems: 1
   submitOnPointerUp: 0
+  selectOnPointerEnter: 1
   disablePointerClick: 0
   disableGamepadClick: 0
+  useBaseGamepadClick: 0
   requiredTopLayer: {fileID: 0}
   onFindSelectableLeft:
     m_PersistentCalls:
@@ -766,13 +797,18 @@ MonoBehaviour:
   onDeselect:
     m_PersistentCalls:
       m_Calls: []
+  onDebugSelect:
+    m_PersistentCalls:
+      m_Calls: []
   defaultFallbackButton: 0
+  preferSiblings: 0
   showImageOnHover: 1
   imageOnHover: {fileID: 8971045362312368787}
   imageOnInteractable: {fileID: 0}
   updateTextOnHover: 0
   hoverLanguageTextMeshController: {fileID: 0}
   hoverToken: 
+  hoverHighlightGameObject: {fileID: 0}
   uiClickSoundOverride: 
 --- !u!1 &5402637802970688071
 GameObject:
@@ -802,6 +838,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1811965187795788859}
   m_RootOrder: 0
@@ -834,6 +871,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -938,6 +976,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1811965187795788859}
   m_RootOrder: 1
@@ -970,6 +1009,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0.28627452}
   m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -1012,6 +1052,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8414918136964757660}
   m_Father: {fileID: 1811965187795788859}
@@ -1045,6 +1086,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -1059,3 +1101,140 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1001 &1678450137576509239
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 1811965187795788859}
+    m_Modifications:
+    - target: {fileID: 6458424269875935360, guid: 97d556f0379fd30d5812a7d8522da5ed,
+        type: 3}
+      propertyPath: m_Pivot.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6458424269875935360, guid: 97d556f0379fd30d5812a7d8522da5ed,
+        type: 3}
+      propertyPath: m_Pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6458424269875935360, guid: 97d556f0379fd30d5812a7d8522da5ed,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6458424269875935360, guid: 97d556f0379fd30d5812a7d8522da5ed,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.016
+      objectReference: {fileID: 0}
+    - target: {fileID: 6458424269875935360, guid: 97d556f0379fd30d5812a7d8522da5ed,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.92
+      objectReference: {fileID: 0}
+    - target: {fileID: 6458424269875935360, guid: 97d556f0379fd30d5812a7d8522da5ed,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.009
+      objectReference: {fileID: 0}
+    - target: {fileID: 6458424269875935360, guid: 97d556f0379fd30d5812a7d8522da5ed,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.08
+      objectReference: {fileID: 0}
+    - target: {fileID: 6458424269875935360, guid: 97d556f0379fd30d5812a7d8522da5ed,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6458424269875935360, guid: 97d556f0379fd30d5812a7d8522da5ed,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6458424269875935360, guid: 97d556f0379fd30d5812a7d8522da5ed,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6458424269875935360, guid: 97d556f0379fd30d5812a7d8522da5ed,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6458424269875935360, guid: 97d556f0379fd30d5812a7d8522da5ed,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6458424269875935360, guid: 97d556f0379fd30d5812a7d8522da5ed,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6458424269875935360, guid: 97d556f0379fd30d5812a7d8522da5ed,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6458424269875935360, guid: 97d556f0379fd30d5812a7d8522da5ed,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6458424269875935360, guid: 97d556f0379fd30d5812a7d8522da5ed,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6458424269875935360, guid: 97d556f0379fd30d5812a7d8522da5ed,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6458424269875935360, guid: 97d556f0379fd30d5812a7d8522da5ed,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6458424269875935360, guid: 97d556f0379fd30d5812a7d8522da5ed,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6458424269875935360, guid: 97d556f0379fd30d5812a7d8522da5ed,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6458424269875935360, guid: 97d556f0379fd30d5812a7d8522da5ed,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6568725274405845482, guid: 97d556f0379fd30d5812a7d8522da5ed,
+        type: 3}
+      propertyPath: m_Name
+      value: Mod Settings Indicator
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 97d556f0379fd30d5812a7d8522da5ed, type: 3}
+--- !u!224 &5686888708473845687 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 6458424269875935360, guid: 97d556f0379fd30d5812a7d8522da5ed,
+    type: 3}
+  m_PrefabInstance: {fileID: 1678450137576509239}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6173578010856728265 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4821096787743025662, guid: 97d556f0379fd30d5812a7d8522da5ed,
+    type: 3}
+  m_PrefabInstance: {fileID: 1678450137576509239}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
