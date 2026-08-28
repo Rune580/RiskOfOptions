@@ -25,6 +25,7 @@ namespace RiskOfOptions.Resources
         public static GameObject intFieldButton;
         public static GameObject inputFieldButton;
         public static GameObject colorPickerButton;
+        public static GameObject enumDropDownButton;
         
         public static GameObject colorPickerOverlay;
 
@@ -50,6 +51,7 @@ namespace RiskOfOptions.Resources
             inputFieldButton = LoadPrefab("ModSettingsButton, InputField.prefab");
             colorPickerButton = LoadPrefab("ModSettingsButton, ColorPicker.prefab");
             colorPickerOverlay = LoadPrefab("Color Picker Overlay.prefab");
+            enumDropDownButton = LoadPrefab("ModSettingsButton, Enum DropDown.prefab");
         }
 
         private static GameObject LoadPrefab(string path)

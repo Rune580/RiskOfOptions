@@ -59,9 +59,9 @@ namespace RiskOfOptions.Options
 
         public override GameObject CreateOptionGameObject(GameObject prefab, Transform parent)
         {
-            GameObject button = Object.Instantiate(prefab, parent);
+            var button = Object.Instantiate(prefab, parent);
 
-            DropDownController controller = button.GetComponentInChildren<DropDownController>();
+            var controller = button.GetComponentInChildren<ModSettingsEnumDropDown>();
 
             controller.nameToken = GetNameToken();
             controller.settingToken = Identifier;
