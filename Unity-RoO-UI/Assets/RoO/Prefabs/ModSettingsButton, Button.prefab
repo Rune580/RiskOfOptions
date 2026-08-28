@@ -399,7 +399,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
+  m_fontSize: 12
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1059,6 +1059,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Mod Settings Indicator
+      objectReference: {fileID: 0}
+    - target: {fileID: 6568725274405845482, guid: 97d556f0379fd30d5812a7d8522da5ed,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 97d556f0379fd30d5812a7d8522da5ed, type: 3}
