@@ -18,6 +18,7 @@ namespace RiskOfOptions.Resources
         public static GameObject modOptionCategories;
 
         public static GameObject boolButton;
+        public static GameObject genericButton;
         public static GameObject sliderButton;
         public static GameObject stepSliderButton;
         public static GameObject intSliderButton;
@@ -43,6 +44,7 @@ namespace RiskOfOptions.Resources
             modOptionCategories = LoadPrefab("Category Headers.prefab");
             
             boolButton = LoadPrefab("ModSettingsButton, Bool.prefab");
+            genericButton = LoadPrefab("ModSettingsButton, Button.prefab");
             sliderButton = LoadPrefab("ModSettingsButton, Slider.prefab");
             stepSliderButton = LoadPrefab("ModSettingsButton, Step Slider.prefab");
             intSliderButton = LoadPrefab("ModSettingsButton, Int Slider.prefab");
