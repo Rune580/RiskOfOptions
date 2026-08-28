@@ -1907,6 +1907,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: ModSettingsButton, Bool
       objectReference: {fileID: 0}
+    - target: {fileID: 6241505468146502663, guid: a1ee04911201dc445bef466b21152437,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a1ee04911201dc445bef466b21152437, type: 3}
 --- !u!1001 &2082592182
