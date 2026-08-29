@@ -1,3 +1,13 @@
+## 2.8.6
+### Changed
+- "modified" indicator is now a prefab, its visuals may look different now.
+- Set the layer of UI prefabs to the UI layer.
+- Category indicators have had their size changed.
+
+### Fixed
+- Visual bugs/regressions casued by changes in 2.8.1 have mostly been ironed out.
+- Some UI Elements kept their world position when reparented, resulting in visual issues in certain scenarios.
+
 ## 2.8.5
 ### Added
 - Re-added changes from 2.8.3.
