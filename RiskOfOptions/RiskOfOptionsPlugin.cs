@@ -13,7 +13,7 @@ using RiskOfOptions.Resources;
 
 namespace RiskOfOptions;
 
-[BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+[BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 public sealed class RiskOfOptionsPlugin : BaseUnityPlugin
 {
     internal static ConfigEntry<bool>? seenNoMods;

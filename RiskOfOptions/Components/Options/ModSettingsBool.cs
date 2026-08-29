@@ -1,48 +1,48 @@
 ﻿using RoR2.UI;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 
-namespace RiskOfOptions.Components.Options
+namespace RiskOfOptions.Components.Options;
+
+public class ModSettingsBool : ModSettingsControl<bool>
 {
-    public class ModSettingsBool : ModSettingsControl<bool>
+    public GameObject? checkBoxFalse;
+    public GameObject? checkBoxTrue;
+
+    public bool IsChecked => GetCurrentValue();
+
+    protected override void Disable()
     {
-        public Image checkBox;
-        public Sprite checkBoxFalse;
-        public Sprite checkBoxTrue;
+        foreach (var button in GetComponentsInChildren<HGButton>())
+            button.interactable = false;
+    }
 
-        public bool IsChecked => GetCurrentValue();
+    protected override void Enable()
+    {
+        foreach (var button in GetComponentsInChildren<HGButton>())
+            button.interactable = true;
+    }
 
-        protected override void Disable()
-        {
-            foreach (var button in GetComponentsInChildren<HGButton>())
-                button.interactable = false;
-        }
+    public void Toggle()
+    {
+        var value = GetCurrentValue();
+        value = !value;
 
-        protected override void Enable()
-        {
-            foreach (var button in GetComponentsInChildren<HGButton>())
-                button.interactable = true;
-        }
+        SubmitValue(value);
+    }
 
-        public void Toggle()
-        {
-            bool value = GetCurrentValue();
-            value = !value;
+    protected override void OnUpdateControls()
+    {
+        base.OnUpdateControls();
 
-            SubmitValue(value);
-        }
+        if (!this)
+            return;
 
-        protected override void OnUpdateControls()
-        {
-            base.OnUpdateControls();
+        if (!checkBoxFalse || !checkBoxTrue)
+            return;
 
-            if (!this)
-                return;
-
-            if (!checkBox)
-                return;
-
-            checkBox.sprite = IsChecked ? checkBoxTrue : checkBoxFalse;
-        }
+        checkBoxTrue!.SetActive(IsChecked);
+        checkBoxFalse!.SetActive(!IsChecked);
     }
 }

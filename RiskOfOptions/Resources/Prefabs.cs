@@ -2,70 +2,81 @@
 using RiskOfOptions.Components.AssetResolution;
 using UnityEngine;
 
-namespace RiskOfOptions.Resources
+namespace RiskOfOptions.Resources;
+
+public static class Prefabs
 {
-    public static class Prefabs
+    private static AssetBundle _uiBundle;
+
+    public static GameObject animatedIcon;
+
+    public static GameObject mainPanel;
+    public static GameObject modOptionsHeaderButton;
+        
+    public static GameObject modOptionsPanel;
+    public static GameObject modListPanel;
+    public static GameObject modListButton;
+    public static GameObject modDescriptionPanel;
+    public static GameObject modOptionDescriptionPanel;
+    public static GameObject modOptionCategories;
+
+    public static GameObject boolButton;
+    public static GameObject genericButton;
+    public static GameObject sliderButton;
+    public static GameObject stepSliderButton;
+    public static GameObject intSliderButton;
+    public static GameObject floatFieldButton;
+    public static GameObject intFieldButton;
+    public static GameObject inputFieldButton;
+    public static GameObject colorPickerButton;
+    public static GameObject enumDropDownButton;
+    public static GameObject keyBindButton;
+        
+    public static GameObject colorPickerOverlay;
+
+    internal static void Init()
     {
-        private static AssetBundle _uiBundle;
+        _uiBundle = LoadBundle("uielements");
 
-        public static GameObject animatedIcon;
-        
-        public static GameObject modOptionsPanel;
-        public static GameObject modListPanel;
-        public static GameObject modListButton;
-        public static GameObject modDescriptionPanel;
-        public static GameObject modOptionDescriptionPanel;
-        public static GameObject modOptionCategories;
+        animatedIcon = LoadPrefab("RoO-Icon.prefab");
 
-        public static GameObject boolButton;
-        public static GameObject sliderButton;
-        public static GameObject stepSliderButton;
-        public static GameObject intSliderButton;
-        public static GameObject floatFieldButton;
-        public static GameObject intFieldButton;
-        public static GameObject inputFieldButton;
-        public static GameObject colorPickerButton;
-        
-        public static GameObject colorPickerOverlay;
+        mainPanel = LoadPrefab("Mod Options Panel.prefab");
+        modOptionsHeaderButton = LoadPrefab("GenericHeaderButton (Mod Options).prefab");
 
-        internal static void Init()
-        {
-            _uiBundle = LoadBundle("uielements");
-
-            animatedIcon = LoadPrefab("RoO-Icon.prefab");
-
-            modOptionsPanel = LoadPrefab("Options Panel.prefab");
-            modListPanel = LoadPrefab("Mod List Panel.prefab");
-            modListButton = LoadPrefab("Mod List Button.prefab");
-            modDescriptionPanel = LoadPrefab("Mod Description Panel.prefab");
-            modOptionDescriptionPanel = LoadPrefab("Option Description Panel.prefab");
-            modOptionCategories = LoadPrefab("Category Headers.prefab");
+        modOptionsPanel = LoadPrefab("Options Panel.prefab");
+        modListPanel = LoadPrefab("Mod List Panel.prefab");
+        modListButton = LoadPrefab("Mod List Button.prefab");
+        modDescriptionPanel = LoadPrefab("Mod Description Panel.prefab");
+        modOptionDescriptionPanel = LoadPrefab("Option Description Panel.prefab");
+        modOptionCategories = LoadPrefab("Category Headers.prefab");
             
-            boolButton = LoadPrefab("ModSettingsButton, Bool.prefab");
-            sliderButton = LoadPrefab("ModSettingsButton, Slider.prefab");
-            stepSliderButton = LoadPrefab("ModSettingsButton, Step Slider.prefab");
-            intSliderButton = LoadPrefab("ModSettingsButton, Int Slider.prefab");
-            floatFieldButton = LoadPrefab("ModSettingsButton, Float Field.prefab");
-            intFieldButton = LoadPrefab("ModSettingsButton, Int Field.prefab");
-            inputFieldButton = LoadPrefab("ModSettingsButton, InputField.prefab");
-            colorPickerButton = LoadPrefab("ModSettingsButton, ColorPicker.prefab");
-            colorPickerOverlay = LoadPrefab("Color Picker Overlay.prefab");
-        }
+        boolButton = LoadPrefab("ModSettingsButton, Bool.prefab");
+        genericButton = LoadPrefab("ModSettingsButton, Button.prefab");
+        sliderButton = LoadPrefab("ModSettingsButton, Slider.prefab");
+        stepSliderButton = LoadPrefab("ModSettingsButton, Step Slider.prefab");
+        intSliderButton = LoadPrefab("ModSettingsButton, Int Slider.prefab");
+        floatFieldButton = LoadPrefab("ModSettingsButton, Float Field.prefab");
+        intFieldButton = LoadPrefab("ModSettingsButton, Int Field.prefab");
+        inputFieldButton = LoadPrefab("ModSettingsButton, InputField.prefab");
+        colorPickerButton = LoadPrefab("ModSettingsButton, ColorPicker.prefab");
+        colorPickerOverlay = LoadPrefab("Color Picker Overlay.prefab");
+        enumDropDownButton = LoadPrefab("ModSettingsButton, Enum DropDown.prefab");
+        keyBindButton = LoadPrefab("ModSettingsButton, KeyBind.prefab");
+    }
 
-        private static GameObject LoadPrefab(string path)
-        {
-            var prefab = _uiBundle.LoadAsset<GameObject>($"assets/roo/prefabs/{path}");
+    private static GameObject LoadPrefab(string path)
+    {
+        var prefab = _uiBundle.LoadAsset<GameObject>($"assets/roo/prefabs/{path}");
 
-            foreach (var resolver in prefab.GetComponentsInChildren<AssetResolver>())
-                resolver.AttemptResolve();
+        foreach (var resolver in prefab.GetComponentsInChildren<AssetResolver>())
+            resolver.AttemptResolve();
 
-            return prefab;
-        }
+        return prefab;
+    }
             
-        private static AssetBundle LoadBundle(string name)
-        {
-            using var assetStream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"RiskOfOptions.Resources.AssetBundles.{name}");
-            return AssetBundle.LoadFromStream(assetStream);
-        }
+    private static AssetBundle LoadBundle(string name)
+    {
+        using var assetStream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"RiskOfOptions.Resources.AssetBundles.{name}");
+        return AssetBundle.LoadFromStream(assetStream);
     }
 }

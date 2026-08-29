@@ -1,6 +1,5 @@
-﻿using RoR2.UI;
-using System;
-using RiskOfOptions.Components.Panel;
+﻿using System;
+using RiskOfOptions.Components;
 using RiskOfOptions.Components.RuntimePrefabs;
 using RiskOfOptions.Lib;
 using UnityEngine;
@@ -17,9 +16,9 @@ namespace RiskOfOptions
             
             if (settingsPanelTitle == null || settingsPanel == null)
                 throw new Exception("Couldn't initialize Risk Of Options! Continue at your own risk!");
-
-            settingsPanelTitle.AddComponent<ModOptionPanelController>();
-            settingsPanel.AddComponent<ModOptionPanelController>();
+            
+            settingsPanelTitle.AddComponent<InitializeRoOUi>();
+            settingsPanel.AddComponent<InitializeRoOUi>();
             
             LanguageApi.Add(LanguageTokens.HeaderToken, "MOD OPTIONS");
             

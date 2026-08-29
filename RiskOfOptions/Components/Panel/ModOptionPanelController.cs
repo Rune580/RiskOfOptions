@@ -163,8 +163,8 @@ namespace RiskOfOptions.Components.Panel
                 modListButton.nameLabel = modListButton.GetComponent<LanguageTextMeshController>();
                 modListButton.token = collection.NameToken;
                 modListButton.modGuid = collection.ModGuid;
-                modListButton.navigationController = navigationController;
-                modListButton.descriptionLabel = _panel.ModDescriptionPanel.GetComponentInChildren<HGTextMeshProUGUI>();
+                // modListButton.navigationController = navigationController;
+                // modListButton.descriptionLabel = _panel.ModDescriptionPanel.GetComponentInChildren<HGTextMeshProUGUI>();
 
                 // RectTransform modIconRectTransform = newModButton.transform.Find("ModIcon").gameObject.GetComponent<RectTransform>();
                 //
