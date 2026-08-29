@@ -14,12 +14,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 10.0.x
 
       - name: Restore project
         run: |
@@ -30,13 +30,13 @@ jobs:
         run: dotnet pack -c Release
       
       - name: Upload Thunderstore artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: thunderstore-build
           path: ./dist/*.zip
 
       - name: Upload nupkg artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nupkg-build
           path: ./*/bin/Release/*.nupkg
@@ -49,10 +49,10 @@ jobs:
       RELEASE_VERSION: ${{ github.ref_name }}
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
       
       - name: Delete old release if it already exists
         run: gh release delete --yes "${RELEASE_VERSION}"
@@ -80,23 +80,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       
       - name: Download nupkg artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: nupkg-build
       
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 10.0.x
+      
+      - name: NuGet login (OIDC -> temp API key)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}
       
       - name: Publish to NuGet.org
         env:
             NUGET_API_TOKEN: ${{ secrets.NUGET_API_TOKEN }}
         run: |
-          dotnet nuget push ./*/bin/Release/*.nupkg --api-key $NUGET_API_TOKEN --source https://api.nuget.org/v3/index.json
+          dotnet nuget push ./*/bin/Release/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
   
   deploy-to-thunderstore:
     name: Deploy to Thunderstore
@@ -104,17 +110,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Download Thunderstore artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: thunderstore-build
       
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 10.0.x
 
       - name: Restore project tools
         run: dotnet tool restore
