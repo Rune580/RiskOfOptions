@@ -1,6 +1,7 @@
 ﻿using System;
-using RoR2;
+using RiskOfOptions.Containers;
 using RoR2.UI;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -19,14 +20,18 @@ public class ModListButton : HGButton
         
     public string token = "";
     public string descriptionToken = "";
-    public LanguageTextMeshController? nameLabel;
-    public HGTextMeshProUGUI? descriptionLabel;
-        
-    public ModOptionPanelController Mopc { get; internal set; }
+    public LanguageTextMeshController nameLabel = null!;
     public string modGuid = "";
-    // TODO: Replace with own component for navigation mod list. 
-    public HGHeaderNavigationController? navigationController;
     public Image? modIcon;
+
+    public Action<string>? onSetModDescription;
+
+    internal void SetMod(OptionCollection collection)
+    {
+        descriptionToken = collection.DescriptionToken;
+        token = collection.NameToken;
+        modGuid = collection.ModGuid;
+    }
 
     public override void OnSelect(BaseEventData eventData)
     {
@@ -39,7 +44,7 @@ public class ModListButton : HGButton
         base.Awake();
 
         if (nameLabel)
-            nameLabel!.token = token;
+            nameLabel.token = token;
 
         if (!modIcon)
             modIcon = transform.Find("Icon Area").Find("Mod Icon").gameObject.GetComponent<Image>();
@@ -87,8 +92,8 @@ public class ModListButton : HGButton
         if (nameLabel)
             nameLabel!.token = token;
 
-        if (!Mopc)
-            Mopc = GetComponentInParent<ModOptionPanelController>();
+        // if (!Mopc)
+        //     Mopc = GetComponentInParent<ModOptionPanelController>();
             
         onClick.AddListener(OnClick);
     }
@@ -109,24 +114,18 @@ public class ModListButton : HGButton
 
     private void OnClick()
     {
-        if (navigationController)
-            navigationController!.ChooseHeaderByButton(this);
-        
-        if (string.IsNullOrWhiteSpace(modGuid))
-            return;
-        
-        Mopc.LoadModOptionsFromOptionCollection(modGuid);
+        Debug.Log("TODO!");
+        // if (navigationController)
+        //     navigationController!.ChooseHeaderByButton(this);
+        //
+        // if (string.IsNullOrWhiteSpace(modGuid))
+        //     return;
+        //
+        // Mopc.LoadModOptionsFromOptionCollection(modGuid);
     }
 
     private void SetDescription()
     {
-        if (!descriptionLabel || !string.IsNullOrWhiteSpace(descriptionToken))
-            return;
-
-        var text = Language.currentLanguage.GetLocalizedStringByToken(descriptionToken);
-        if (text == descriptionToken)
-            text = "No description provided";
-
-        descriptionLabel!.text = text;
+        onSetModDescription?.Invoke(descriptionToken);
     }
 }

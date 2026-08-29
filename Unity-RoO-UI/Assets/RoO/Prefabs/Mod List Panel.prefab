@@ -18,7 +18,6 @@ GameObject:
   - component: {fileID: 1325324468542956470}
   - component: {fileID: 2341084269386174030}
   - component: {fileID: 2158352990173817142}
-  - component: {fileID: 3719065922505916236}
   m_Layer: 5
   m_Name: Mod List Panel
   m_TagString: Untagged
@@ -217,26 +216,6 @@ MonoBehaviour:
   m_Script: {fileID: -103623725, guid: 951ce57ad9993c1f840a4dceb5f8b763, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &3719065922505916236
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2341084269386174029}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 927250022, guid: 951ce57ad9993c1f840a4dceb5f8b763, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  headerHighlightObject: {fileID: 827044664720756014}
-  currentHeaderIndex: 0
-  selectedTextColor: {r: 1, g: 1, b: 1, a: 1}
-  unselectedTextColor: {r: 1, g: 1, b: 1, a: 1}
-  makeSelectedHeaderButtonNoninteractable: 1
-  ControllerResetButton: {fileID: 0}
-  isPrimaryPlayer: 0
-  headers: []
 --- !u!1001 &360877115951150125
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -356,12 +335,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d6ab9a41d316ea8e4a5138943bf7115c, type: 3}
---- !u!1 &827044664720756014 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1042679446676830467, guid: d6ab9a41d316ea8e4a5138943bf7115c,
-    type: 3}
-  m_PrefabInstance: {fileID: 360877115951150125}
-  m_PrefabAsset: {fileID: 0}
 --- !u!224 &5435689624639268628 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5651284403682513721, guid: d6ab9a41d316ea8e4a5138943bf7115c,

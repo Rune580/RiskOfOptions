@@ -383,10 +383,8 @@ MonoBehaviour:
   description: 
   token: 
   descriptionToken: 
-  nameLabel: {fileID: 0}
-  descriptionLabel: {fileID: 0}
+  nameLabel: {fileID: 834658241797160444}
   modGuid: 
-  navigationController: {fileID: 0}
   modIcon: {fileID: 7461975643728483629}
 --- !u!114 &8898158528807986190
 MonoBehaviour:
