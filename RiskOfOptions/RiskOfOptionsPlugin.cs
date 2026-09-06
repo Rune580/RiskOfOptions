@@ -5,6 +5,7 @@ using BepInEx.Configuration;
 using RiskOfOptions.OptionConfigs;
 using RiskOfOptions.Options;
 using RiskOfOptions.Resources;
+using RiskOfOptions.Utils;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -27,6 +28,8 @@ public sealed class RiskOfOptionsPlugin : BaseUnityPlugin
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Awake is automatically called by Unity")]
     private void Awake()
     {
+        Debug.Logger = Logger;
+        
         const string ONE_TIME_STUFF = "One Time Stuff";
         seenNoMods = Config.Bind(ONE_TIME_STUFF, "Has seen the no mods prompt", false);
         seenMods = Config.Bind(ONE_TIME_STUFF, "Has seen the mods prompt", false);
