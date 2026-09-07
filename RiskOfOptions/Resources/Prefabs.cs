@@ -73,7 +73,13 @@ public static class Prefabs
 
         return prefab;
     }
-            
+
+    public static Material LoadMaterial(string path) => _uiBundle.LoadAsset<Material>($"assets/roo/materials/{path}");
+
+    public static Shader LoadShader(string path) => _uiBundle.LoadAsset<Shader>($"assets/roo/shaders/{path}");
+
+    public static Sprite LoadSprite(string path) => _uiBundle.LoadAsset<Sprite>($"assets/roo/textures/{path}");
+
     private static AssetBundle LoadBundle(string name)
     {
         using var assetStream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"RiskOfOptions.Resources.AssetBundles.{name}");
