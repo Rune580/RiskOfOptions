@@ -19,7 +19,7 @@ namespace RiskOfOptions.Options
         public string DescriptionToken { get; internal set; }
         public string NameToken { get; internal set; }
 
-        internal abstract ConfigEntryBase ConfigEntry { get; }
+        internal abstract ConfigEntryBase? ConfigEntry { get; }
 
         public virtual void SetCategoryName(string fallback, BaseOptionConfig config)
         {
@@ -78,7 +78,7 @@ namespace RiskOfOptions.Options
 
         public abstract BaseOptionConfig GetConfig();
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is null)
                 return false;
@@ -94,12 +94,13 @@ namespace RiskOfOptions.Options
         public override int GetHashCode()
         {
             // ReSharper disable twice NonReadonlyMemberInGetHashCode
-            return (Identifier != null ? StringComparer.InvariantCulture.GetHashCode(Identifier) : 0);
+            return (!string.IsNullOrEmpty(Identifier) ? StringComparer.InvariantCulture.GetHashCode(Identifier) : 0);
         }
 
         protected internal virtual void SetProperties()
         {
-            if (ConfigEntry == null) return;
+            if (ConfigEntry is null)
+                return;
             var config = GetConfig();
             SetCategoryName(ConfigEntry.Definition.Section, config);
             SetName(ConfigEntry.Definition.Key, config);

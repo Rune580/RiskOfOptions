@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using RiskOfOptions.Options;
 
 namespace RiskOfOptions.Containers;
@@ -28,6 +29,17 @@ internal class ModIndexedOptionCollection : IEnumerable<OptionCollection>
     internal bool ContainsModGuid(string modGuid)
     {
         return _optionCollections.ContainsKey(modGuid);
+    }
+
+    internal bool TryGetCollection(string modGuid, [MaybeNullWhen(false)] out OptionCollection collection)
+    {
+        var exists = ContainsModGuid(modGuid);
+        collection = null;
+
+        if (exists)
+            collection = _optionCollections[modGuid];
+
+        return exists;
     }
 
     internal OptionCollection this[string modGuid]

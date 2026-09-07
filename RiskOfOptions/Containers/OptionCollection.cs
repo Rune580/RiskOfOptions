@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace RiskOfOptions.Containers
 {
-    internal class OptionCollection
+    public class OptionCollection
     {
         private readonly List<Category> _categories = new();
         private readonly Dictionary<string, int> _nameCategoryMap = new();

@@ -11,6 +11,10 @@ public class InitializeRoOUi : MonoBehaviour
     {
         var panel = LoadModOptionsPanelPrefab();
         InitializeHeader(panel);
+
+        Debug.Log("Initialized RoO UI!");
+        
+        ModSettingsManager.AutoGenerateFromConfigs();
         
         DestroyImmediate(this);
     }

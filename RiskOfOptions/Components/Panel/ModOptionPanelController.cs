@@ -298,7 +298,7 @@ namespace RiskOfOptions.Components.Panel
                 le.preferredWidth = 200;
 
                 newCategoryButton.GetComponentInChildren<LanguageTextMeshController>().token = collection[i].NameToken;
-                newCategoryButton.GetComponentInChildren<HGTextMeshProUGUI>().SetText(collection[i].name);
+                newCategoryButton.GetComponentInChildren<HGTextMeshProUGUI>().SetText(collection[i].Name);
                 newCategoryButton.GetComponentInChildren<HGButton>().onClick.RemoveAllListeners();
 
                 var categoryIndex = i;
@@ -310,13 +310,13 @@ namespace RiskOfOptions.Components.Panel
                     LoadOptionListFromCategory(modGuid, categoryIndex);
                 });
 
-                newCategoryButton.name = $"Category Button, {collection[i].name}";
+                newCategoryButton.name = $"Category Button, {collection[i].Name}";
                 newCategoryButton.SetActive(true);
 
                 HGHeaderNavigationController.Header header = new HGHeaderNavigationController.Header
                 {
                     headerButton = newCategoryButton.GetComponent<HGButton>(),
-                    headerName = $"Category Button, {collection[i].name}",
+                    headerName = $"Category Button, {collection[i].Name}",
                     tmpHeaderText = newCategoryButton.GetComponentInChildren<HGTextMeshProUGUI>(),
                     headerRoot = null
                 };
