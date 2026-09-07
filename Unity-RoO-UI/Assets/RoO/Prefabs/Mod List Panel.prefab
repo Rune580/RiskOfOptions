@@ -204,6 +204,24 @@ MonoBehaviour:
   m_Script: {fileID: 1459327474, guid: 0980d1b63c490224994fbd8d1bc5b3c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scrollRect: {fileID: 3864907510063754628}
+  listItemPrefab: {fileID: 1811808547515134054, guid: 1eb898ef0f1d7654cbf9a12afc11bdd0,
+    type: 3}
+  padding:
+    m_Left: 4
+    m_Right: 4
+    m_Top: 4
+    m_Bottom: 4
+  spacing: 6
+  preferredItemSize: {x: 12000, y: 64}
+  startCorner: 0
+  constraint: 0
+  maxInConstraint: 1
+  minPoolSize: 10
+  requiredCoverageMultiplier: 1.15
+  recyclingThreshold: 0.2
+  mainController: {fileID: 0}
+  modDescriptionLabel: {fileID: 0}
 --- !u!114 &2158352990173817142
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -348,6 +366,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5418070511294918307}
     m_Modifications:
+    - target: {fileID: 554259455331989797, guid: aabf9459010e5611f80699d6060d269e,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1256102660360490426, guid: aabf9459010e5611f80699d6060d269e,
         type: 3}
       propertyPath: m_Name
@@ -458,6 +481,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4083267859477781069, guid: aabf9459010e5611f80699d6060d269e,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5448446560854573863, guid: aabf9459010e5611f80699d6060d269e,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -475,6 +503,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aabf9459010e5611f80699d6060d269e, type: 3}
+--- !u!114 &3864907510063754628 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4630773695213552735, guid: aabf9459010e5611f80699d6060d269e,
+    type: 3}
+  m_PrefabInstance: {fileID: 8494132783063214555}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1aa08ab6e0800fa44ae55d278d1423e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &6490009246564944222 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3454293646608343173, guid: aabf9459010e5611f80699d6060d269e,

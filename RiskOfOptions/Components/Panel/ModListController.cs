@@ -1,40 +1,29 @@
 ﻿using System.Collections.Generic;
+using RiskOfOptions.Components.Gizmos;
+using RiskOfOptions.Components.Recycle;
 using RiskOfOptions.Containers;
+using RiskOfOptions.Utils;
 using RoR2;
 using RoR2.UI;
 using UnityEngine;
 
 namespace RiskOfOptions.Components.Panel;
 
-public class ModListController : MonoBehaviour
+public class ModListController : RecycleListView<ModListButton, OptionCollection>
 {
+    public ModOptionsPanelController mainController = null!;
     public HGTextMeshProUGUI modDescriptionLabel = null!;
-    public GameObject modListButtonPrefab = null!;
-    public RectTransform verticalLayout = null!;
+    
+    protected override IList<OptionCollection> ListData => [.. ModSettingsManager.OptionCollection];
 
-    private readonly List<ModListButton> _buttons = [];
+    private readonly List<(ModListButton, DrawRect)> _buttons = [];
 
-    private void Awake()
+    protected override void OnInstantiatePoolItem(ModListButton instance)
     {
-        CreateModList();
-    }
-
-    private void CreateModList()
-    {
-        foreach (var collection in ModSettingsManager.OptionCollection)
-        {
-            _buttons.Add(CreateModListButton(collection));
-        }
-    }
-
-    private ModListButton CreateModListButton(OptionCollection collection)
-    {
-        var instance = Instantiate(modListButtonPrefab, verticalLayout, false);
-        var modListButton = instance.GetComponent<ModListButton>();
-        modListButton.SetMod(collection);
-        modListButton.onSetModDescription += SetModDescription;
-
-        return modListButton;
+        instance.onSetModDescription += SetModDescription;
+        instance.onModSelected += mainController.ModSelected;
+        
+        _buttons.Add((instance, DrawRect.Create(Color.red, instance.RectTransform.GetWorldRect())));
     }
 
     private void SetModDescription(string descriptionToken)
@@ -50,5 +39,14 @@ public class ModListController : MonoBehaviour
             text = "No description provided"; // TODO: Use language token instead!
 
         modDescriptionLabel.text = text;
+    }
+
+    private void Update()
+    {
+        foreach (var (button, drawRect) in _buttons)
+        {
+            var rect = button.RectTransform.GetWorldRect();
+            drawRect.rect = rect;
+        }
     }
 }

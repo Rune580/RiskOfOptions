@@ -1,4 +1,5 @@
 ﻿using System;
+using RiskOfOptions.Components.Recycle;
 using RiskOfOptions.Containers;
 using RoR2.UI;
 using UnityEngine;
@@ -7,7 +8,8 @@ using UnityEngine.UI;
 
 namespace RiskOfOptions.Components.Panel;
 
-public class ModListButton : HGButton
+[RequireComponent(typeof(RectTransform))]
+public class ModListButton : HGButton, IRecycleViewItem<OptionCollection>
 {
     #region Legacy
 
@@ -23,14 +25,28 @@ public class ModListButton : HGButton
     public LanguageTextMeshController nameLabel = null!;
     public string modGuid = "";
     public Image? modIcon;
+    public Sprite fallbackIcon = null!;
+
+    private GameObject? _prefabIcon = null!;
 
     public Action<string>? onSetModDescription;
+    public Action<string, RectTransform>? onModSelected;
 
-    internal void SetMod(OptionCollection collection)
+    public int ConstraintIndex { get; set; }
+
+    public RectTransform RectTransform => (RectTransform)transform;
+
+    private OptionCollection Collection => ModSettingsManager.OptionCollection[modGuid];
+
+    public void BindData(OptionCollection collection)
     {
         descriptionToken = collection.DescriptionToken;
         token = collection.NameToken;
         modGuid = collection.ModGuid;
+        
+        UpdateState();
+        
+        Select();
     }
 
     public override void OnSelect(BaseEventData eventData)
@@ -38,11 +54,9 @@ public class ModListButton : HGButton
         base.OnSelect(eventData);
         SetDescription();
     }
-        
-    public override void Awake()
-    {
-        base.Awake();
 
+    private void UpdateState()
+    {
         if (nameLabel)
             nameLabel.token = token;
 
@@ -51,12 +65,18 @@ public class ModListButton : HGButton
 
         if (string.IsNullOrWhiteSpace(modGuid))
             return;
+        
+        if (_prefabIcon)
+            DestroyImmediate(_prefabIcon);
+
+        if (modIcon && modIcon!.sprite)
+            modIcon.sprite = fallbackIcon;
 
         // Prefer prefabs to sprite icons
-        if (ModSettingsManager.OptionCollection[modGuid].iconPrefab is not null)
+        if (Collection.iconPrefab is not null)
             PrefabIcon();
 
-        if (ModSettingsManager.OptionCollection[modGuid].icon is not null)
+        if (Collection.icon is not null)
             SpriteIcon();
     }
 
@@ -68,8 +88,8 @@ public class ModListButton : HGButton
         
         if (string.IsNullOrWhiteSpace(modGuid))
             return;
-
-        Instantiate(ModSettingsManager.OptionCollection[modGuid].iconPrefab!, modIcon!.transform.parent);
+        
+        _prefabIcon = Instantiate(Collection.iconPrefab!, modIcon!.transform.parent);
         
         modIcon.gameObject.SetActive(false);
     }
@@ -82,7 +102,9 @@ public class ModListButton : HGButton
         if (string.IsNullOrWhiteSpace(modGuid))
             return;
 
-        modIcon!.sprite = ModSettingsManager.OptionCollection[modGuid].icon!;
+        modIcon!.sprite = Collection.icon!;
+        
+        modIcon.gameObject.SetActive(true);
     }
 
     public override void Start()
@@ -90,10 +112,7 @@ public class ModListButton : HGButton
         base.Start();
 
         if (nameLabel)
-            nameLabel!.token = token;
-
-        // if (!Mopc)
-        //     Mopc = GetComponentInParent<ModOptionPanelController>();
+            nameLabel.token = token;
             
         onClick.AddListener(OnClick);
     }
@@ -114,18 +133,16 @@ public class ModListButton : HGButton
 
     private void OnClick()
     {
-        Debug.Log("TODO!");
-        // if (navigationController)
-        //     navigationController!.ChooseHeaderByButton(this);
-        //
-        // if (string.IsNullOrWhiteSpace(modGuid))
-        //     return;
-        //
-        // Mopc.LoadModOptionsFromOptionCollection(modGuid);
+        onModSelected?.Invoke(modGuid, RectTransform);
     }
 
     private void SetDescription()
     {
         onSetModDescription?.Invoke(descriptionToken);
+    }
+
+    public void Dispose()
+    {
+        DestroyImmediate(gameObject);
     }
 }
