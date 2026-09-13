@@ -1,100 +1,92 @@
 ﻿using System;
 using BepInEx.Configuration;
 using RiskOfOptions.Components.Options;
+using RiskOfOptions.Config;
 using RiskOfOptions.Lib;
 using RiskOfOptions.OptionConfigs;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace RiskOfOptions.Options
+namespace RiskOfOptions.Options;
+
+public class ChoiceOption : BaseOption, IConfigItemOption<object>
 {
-    public class ChoiceOption : BaseOption, ITypedValueHolder<object>
+    public IConfigItem<object> ConfigItem { get; }
+    protected readonly ChoiceConfig config;
+    private string[] _nameTokens = [];
+        
+    [Obsolete]
+    public ChoiceOption(ConfigEntryBase configEntry) : this(configEntry, new ChoiceConfig()) { }
+
+    [Obsolete]
+    public ChoiceOption(ConfigEntryBase configEntry, bool restartRequired) : this(configEntry, new ChoiceConfig { restartRequired = restartRequired }) { }
+
+    [Obsolete]
+    public ChoiceOption(ConfigEntryBase configEntry, ChoiceConfig config) : this(new BepInExConfigItem(configEntry), config) { }
+        
+    public ChoiceOption(IConfigItem<object> configItem) : this(configItem, new ChoiceConfig()) { }
+
+    public ChoiceOption(IConfigItem<object> configItem, bool restartRequired) : this(configItem, new ChoiceConfig { restartRequired = restartRequired }) { }
+    
+    public ChoiceOption(IConfigItem<object> configItem, ChoiceConfig config)
     {
-        protected readonly object originalValue;
-        private readonly ConfigEntryBase _configEntry;
-        protected readonly ChoiceConfig config;
-        private string[] _nameTokens;
+        if (!configItem.ValueType.IsEnum)
+            throw new InvalidCastException($"T in IConfigItem<T> must be of type Enum, Type found: {configItem.ValueType.Name}");
         
-        public ChoiceOption(ConfigEntryBase configEntry) : this(configEntry, new ChoiceConfig()) { }
+        ConfigItem = configItem;
+        this.config = config;
+    }
+    
+    public override IConfigItem BaseConfigItem => ConfigItem;
+    
+    internal override void RegisterTokens()
+    {
+        base.RegisterTokens();
+        RegisterChoiceTokens();
+    }
 
-        public ChoiceOption(ConfigEntryBase configEntry, bool restartRequired) : this(configEntry, new ChoiceConfig { restartRequired = restartRequired }) { }
+    internal void RegisterChoiceTokens()
+    {
+        string[] names = Enum.GetNames(Value.GetType());
 
-        public ChoiceOption(ConfigEntryBase configEntry, ChoiceConfig config) : this(config, configEntry.BoxedValue)
+        _nameTokens = new string[names.Length];
+
+        for (int i = 0; i < names.Length; i++)
         {
-            if (!configEntry.SettingType.IsEnum)
-                throw new InvalidCastException($"T in configEntry<T> must be of type Enum, Type found: {configEntry.SettingType.Name}");
-            _configEntry = configEntry;
-        }
-        protected ChoiceOption(ChoiceConfig config, object originalValue)
-        {
-            this.originalValue = originalValue;
-            this.config = config;
-        }
+            var token = $"{ModSettingsManager.StartingText}.{ModGuid}.{Category}.{Name}.item.{names[i]}".Replace(" ", "_").ToUpper();
 
-        public override string OptionTypeName { get; protected set; } = "choice";
-
-        internal override ConfigEntryBase ConfigEntry => _configEntry;
-        
-        internal override void RegisterTokens()
-        {
-            base.RegisterTokens();
-            RegisterChoiceTokens();
-        }
-
-        internal void RegisterChoiceTokens()
-        {
-            string[] names = Enum.GetNames(Value.GetType());
-
-            _nameTokens = new string[names.Length];
-
-            for (int i = 0; i < names.Length; i++)
-            {
-                string token = $"{ModSettingsManager.StartingText}.{ModGuid}.{Category}.{Name}.{OptionTypeName}.item.{names[i]}".Replace(" ", "_").ToUpper();
-
-                _nameTokens[i] = token;
+            _nameTokens[i] = token;
                 
-                LanguageApi.Add(token, names[i]);
-            }
+            LanguageApi.Add(token, names[i]);
         }
+    }
 
-        public override GameObject CreateOptionGameObject(GameObject prefab, Transform parent)
-        {
-            var button = Object.Instantiate(prefab, parent);
+    public override GameObject CreateOptionGameObject(GameObject prefab, Transform parent)
+    {
+        var button = Object.Instantiate(prefab, parent);
 
-            var controller = button.GetComponentInChildren<ModSettingsEnumDropDown>();
+        var controller = button.GetComponentInChildren<ModSettingsEnumDropDown>();
 
-            controller.nameToken = GetNameToken();
-            controller.settingToken = Identifier;
+        controller.nameToken = GetNameToken();
+        controller.settingToken = Identifier;
             
-            button.name = $"Mod Option Choice, {Name}";
+        button.name = $"Mod Option Choice, {Name}";
 
-            return button;
-        }
+        return button;
+    }
 
-        public override BaseOptionConfig GetConfig()
-        {
-            return config;
-        }
+    public override BaseOptionConfig GetConfig() => config;
+    
+    public object DefaultValue => ConfigItem.DefaultValue;
 
-        public bool ValueChanged()
-        {
-            return !Value.Equals(originalValue);
-        }
+    public virtual object Value
+    {
+        get => ConfigItem.Value;
+        set => ConfigItem.Value = Enum.Parse(ConfigItem.ValueType, value.ToString());
+    }
 
-        public object GetOriginalValue()
-        {
-            return originalValue;
-        }
-
-        public virtual object Value
-        {
-            get => _configEntry.BoxedValue;
-            set => _configEntry.BoxedValue = Enum.Parse(_configEntry.SettingType, value.ToString());
-        }
-
-        internal string[] GetNameTokens()
-        {
-            return _nameTokens;
-        }
+    internal string[] GetNameTokens()
+    {
+        return _nameTokens;
     }
 }

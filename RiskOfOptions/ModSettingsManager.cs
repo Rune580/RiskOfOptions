@@ -44,7 +44,6 @@ public static class ModSettingsManager
         LanguageTokens.Register();
 
         SettingsModifier.Init();
-        // CursorController.Init();
 
         var targetMethod = typeof(PauseManager).GetMethod("CCTogglePause", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
         var destMethod = typeof(ModSettingsManager).GetMethod(nameof(PauseManagerOnCCTogglePause), BindingFlags.NonPublic | BindingFlags.Static);
@@ -247,7 +246,7 @@ public static class ModSettingsManager
 
         option.RegisterTokens();
 
-        if (option.ConfigEntry is not null)
+        if (option.BaseConfigItem is not null)
         {
             AutoGenerateConfigEntryIdBlacklist.Add(option.Identifier);
             Debug.Info($"Added {option.Identifier} to blacklist!");
@@ -282,7 +281,7 @@ public static class ModSettingsManager
         // }
         option.RegisterTokens();
         
-        if (option.ConfigEntry is not null)
+        if (option.BaseConfigItem is not null)
         {
             AutoGenerateConfigEntryIdBlacklist.Add(option.Identifier);
             Debug.Info($"Added {option.Identifier} to blacklist!");

@@ -14,13 +14,13 @@ public abstract class ModSettingsControl<TValue, TOptionConfig> : ModSetting
     private TValue _originalValue;
     private bool _valueChanged;
 
-    private BaseOptionConfig.IsDisabledDelegate _isDisabled;
+    private BaseOptionConfig.IsDisabledDelegate? _isDisabled;
     private bool _disabled;
     private bool _restartRequired;
     
     protected TOptionConfig? Config { get; private set; }
         
-    protected ITypedValueHolder<TValue> valueHolder;
+    protected IConfigItemOption<TValue>? configItemOption;
 
     [SerializeField]
     private UnityEngine.UI.RawImage modifiedIndicator;
@@ -34,31 +34,16 @@ public abstract class ModSettingsControl<TValue, TOptionConfig> : ModSetting
             
         if (_originalValue.Equals(newValue))
             _valueChanged = false;
-            
-        valueHolder.Value = newValue;
-            
+
+        configItemOption?.Value = newValue;
+        
         UpdateControls();
         optionController.OptionChanged();
     }
 
-    protected TValue GetCurrentValue()
-    {
-        return valueHolder.Value;
-    }
+    protected TValue GetCurrentValue() => configItemOption!.Value;
 
-    protected TValue GetDefaultValue()
-    {
-        // ConfigEntry is null on mods that use ZioRiskOfOptions (see https://github.com/Rune580/RiskOfOptions/pull/28 )
-        if (option.ConfigEntry == null)
-        {
-#if DEBUG
-            UnityEngine.Debug.LogWarning($"{nameof(RiskOfOptions)}: Could not get default value, mod uses ZioRiskOfOptions?");
-#endif
-            return GetCurrentValue();
-        }
-
-        return (TValue)option.ConfigEntry.DefaultValue;
-    }
+    protected TValue GetDefaultValue() => configItemOption!.ConfigItem.DefaultValue;
 
     public override bool HasChanged()
     {
@@ -92,10 +77,10 @@ public abstract class ModSettingsControl<TValue, TOptionConfig> : ModSetting
             
         _eventSystemLocator = GetComponent<MPEventSystemLocator>();
 
-        if (option == null)
+        if (option is not IConfigItemOption<TValue> itemOption)
             return;
 
-        valueHolder ??= (ITypedValueHolder<TValue>)option;
+        configItemOption ??= itemOption;
 
         Config = (TOptionConfig)option.GetConfig();
         
@@ -104,7 +89,7 @@ public abstract class ModSettingsControl<TValue, TOptionConfig> : ModSetting
         _restartRequired = Config.restartRequired;
             
         var isDisabled = Config.checkIfDisabled;
-        if (isDisabled == null)
+        if (isDisabled is null)
             return;
 
         _isDisabled = isDisabled;
@@ -127,7 +112,7 @@ public abstract class ModSettingsControl<TValue, TOptionConfig> : ModSetting
         if (string.IsNullOrEmpty(settingToken))
             return;
             
-        if (_isDisabled == null)
+        if (_isDisabled is null)
             return;
 
         var disabled = _isDisabled.Invoke();
@@ -148,7 +133,8 @@ public abstract class ModSettingsControl<TValue, TOptionConfig> : ModSetting
     {
         if (!_restartRequired)
             return;
-            
+        
+        // TODO: Refactor this
         if (valueHolder.ValueChanged())
         {
             optionController.AddRestartRequired(settingToken);
@@ -163,7 +149,7 @@ public abstract class ModSettingsControl<TValue, TOptionConfig> : ModSetting
     {
         if (modifiedIndicator)
         {
-            bool nonDefault = !GetCurrentValue().Equals(GetDefaultValue());
+            var nonDefault = !GetCurrentValue().Equals(GetDefaultValue());
             modifiedIndicator.enabled = (nonDefault || HasChanged()) && RiskOfOptionsPlugin.showModifiedIndicator!.Value;
             modifiedIndicator.color = HasChanged() ? RiskOfOptionsPlugin.hasChangedModifiedColor!.Value : RiskOfOptionsPlugin.nonDefaultModifiedColor!.Value;
         }

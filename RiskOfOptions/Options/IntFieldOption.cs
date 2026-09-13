@@ -1,35 +1,40 @@
+using System;
 using BepInEx.Configuration;
 using RiskOfOptions.Components.Options;
+using RiskOfOptions.Config;
 using RiskOfOptions.OptionConfigs;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace RiskOfOptions.Options;
 
-public class IntFieldOption : BaseOption, ITypedValueHolder<int>
+public class IntFieldOption : BaseOption, IConfigItemOption<int>
 {
-    protected readonly int originalValue;
-    private readonly ConfigEntry<int> _configEntry;
+    public IConfigItem<int> ConfigItem { get; }
+    
     protected readonly IntFieldConfig config;
-    
-    public IntFieldOption(ConfigEntry<int> configEntry) : this(configEntry, new IntFieldConfig()) { }
-        
-    public IntFieldOption(ConfigEntry<int> configEntry, bool restartRequired) : this(configEntry, new IntFieldConfig { restartRequired = restartRequired }) { }
 
-    public IntFieldOption(ConfigEntry<int> configEntry, IntFieldConfig config) : this(config, configEntry.Value)
-    {
-        _configEntry = configEntry;
-    }
+    [Obsolete]
+    public IntFieldOption(ConfigEntry<int> configEntry) : this(configEntry, new IntFieldConfig()) { }
     
-    protected IntFieldOption(IntFieldConfig config, int originalValue)
+    [Obsolete]
+    public IntFieldOption(ConfigEntry<int> configEntry, bool restartRequired) : this(configEntry, new IntFieldConfig { restartRequired = restartRequired }) { }
+    
+    [Obsolete]
+    public IntFieldOption(ConfigEntry<int> configEntry, IntFieldConfig config) : this(new BepInExConfigItem<int>(configEntry), config) { }
+    
+    public IntFieldOption(IConfigItem<int> configItem) : this(configItem, new IntFieldConfig()) { }
+        
+    public IntFieldOption(IConfigItem<int> configItem, bool restartRequired) : this(configItem, new IntFieldConfig { restartRequired = restartRequired }) { }
+    
+    public IntFieldOption(IConfigItem<int> configItem, IntFieldConfig config)
     {
-        this.originalValue = originalValue;
+        ConfigItem = configItem;
         this.config = config;
     }
 
-    public override string OptionTypeName { get; protected set; } = "int_field";
-    
-    internal override ConfigEntryBase ConfigEntry => _configEntry;
-    
+    public override IConfigItem BaseConfigItem => ConfigItem;
+
     public override GameObject CreateOptionGameObject(GameObject prefab, Transform parent)
     {
         var intField = Object.Instantiate(prefab, parent);
@@ -49,14 +54,13 @@ public class IntFieldOption : BaseOption, ITypedValueHolder<int>
     }
 
     public override BaseOptionConfig GetConfig() => config;
-
-    public int GetOriginalValue() => originalValue;
-
+    
+    public int DefaultValue => ConfigItem.DefaultValue;
+    
     public virtual int Value
     {
-        get => _configEntry.Value;
-        set => _configEntry.Value = value;
+        get => ConfigItem.Value;
+        set => ConfigItem.Value = value;
     }
     
-    public bool ValueChanged() => Value != GetOriginalValue();
 }
