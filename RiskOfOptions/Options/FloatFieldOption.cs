@@ -1,35 +1,44 @@
+using System;
 using BepInEx.Configuration;
 using RiskOfOptions.Components.Options;
+using RiskOfOptions.Config;
 using RiskOfOptions.OptionConfigs;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace RiskOfOptions.Options;
 
-public class FloatFieldOption : BaseOption, ITypedValueHolder<float>
+public class FloatFieldOption : BaseOption, IConfigItemOption<float>
 {
-    protected readonly float originalValue;
-    private readonly ConfigEntry<float> _configEntry;
+    public IConfigItem<float> ConfigItem { get; }
+
+    public float InitialValue { get; }
+
     protected readonly FloatFieldConfig config;
     
+    [Obsolete]
     public FloatFieldOption(ConfigEntry<float> configEntry) : this(configEntry, new FloatFieldConfig()) { }
-        
+    
+    [Obsolete]
     public FloatFieldOption(ConfigEntry<float> configEntry, bool restartRequired) : this(configEntry, new FloatFieldConfig { restartRequired = restartRequired }) { }
-
-    public FloatFieldOption(ConfigEntry<float> configEntry, FloatFieldConfig config) : this(config, configEntry.Value)
-    {
-        _configEntry = configEntry;
-    }
     
-    protected FloatFieldOption(FloatFieldConfig config, float originalValue)
+    [Obsolete]
+    public FloatFieldOption(ConfigEntry<float> configEntry, FloatFieldConfig config) : this(new BepInExConfigItem<float>(configEntry), config) { }
+    
+    public FloatFieldOption(IConfigItem<float> configItem) : this(configItem, new FloatFieldConfig()) { }
+        
+    public FloatFieldOption(IConfigItem<float> configItem, bool restartRequired) : this(configItem, new FloatFieldConfig { restartRequired = restartRequired }) { }
+    
+    public FloatFieldOption(IConfigItem<float> configItem, FloatFieldConfig config)
     {
-        this.originalValue = originalValue;
+        ConfigItem = configItem;
         this.config = config;
+
+        InitialValue = ConfigItem.Value;
     }
 
-    public override string OptionTypeName { get; protected set; } = "float_field";
-    
-    internal override ConfigEntryBase ConfigEntry => _configEntry;
-    
+    public override IConfigItem BaseConfigItem => ConfigItem;
+
     public override GameObject CreateOptionGameObject(GameObject prefab, Transform parent)
     {
         var floatField = Object.Instantiate(prefab, parent);
@@ -37,7 +46,7 @@ public class FloatFieldOption : BaseOption, ITypedValueHolder<float>
         var settingsField = floatField.GetComponentInChildren<ModSettingsFloatField>();
 
         settingsField.nameToken = GetNameToken();
-        settingsField.settingToken = Identifier;
+        settingsField.optionId = Id;
 
         settingsField.min = config.Min;
         settingsField.max = config.Max;
@@ -49,15 +58,12 @@ public class FloatFieldOption : BaseOption, ITypedValueHolder<float>
     }
 
     public override BaseOptionConfig GetConfig() => config;
-
-    public float GetOriginalValue() => originalValue;
-
+    
+    public float DefaultValue => ConfigItem.DefaultValue;
+    
     public virtual float Value
     {
-        get => _configEntry.Value;
-        set => _configEntry.Value = value;
+        get => ConfigItem.Value;
+        set => ConfigItem.Value = value;
     }
-    
-    // ReSharper disable once CompareOfFloatsByEqualityOperator
-    public bool ValueChanged() => Value != GetOriginalValue();
 }

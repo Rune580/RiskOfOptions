@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace RiskOfOptions.Containers
 {
-    internal class OptionCollection
+    public class OptionCollection
     {
         private readonly List<Category> _categories = new();
         private readonly Dictionary<string, int> _nameCategoryMap = new();
@@ -53,7 +53,7 @@ namespace RiskOfOptions.Containers
             }
             
             _categories[_nameCategoryMap[option.Category]].AddOption(ref option);
-            _identifierCategoryNameMap[option.Identifier] = option.Category;
+            _identifierCategoryNameMap[option.Id] = option.Category;
         }
 
         internal BaseOption GetOption(string identifier)

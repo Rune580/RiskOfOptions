@@ -1,72 +1,69 @@
-﻿using BepInEx.Configuration;
+﻿using System;
+using BepInEx.Configuration;
 using RiskOfOptions.Components.Options;
+using RiskOfOptions.Config;
 using RiskOfOptions.OptionConfigs;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
-namespace RiskOfOptions.Options
+namespace RiskOfOptions.Options;
+
+public class IntSliderOption : BaseOption, IConfigItemOption<int>
 {
-    public class IntSliderOption : BaseOption, ITypedValueHolder<int>
+    public IConfigItem<int> ConfigItem { get; }
+
+    public int InitialValue { get; }
+
+    protected readonly IntSliderConfig config;
+    
+    [Obsolete]
+    public IntSliderOption(ConfigEntry<int> configEntry) : this(configEntry, new IntSliderConfig()) { }
+    
+    [Obsolete]
+    public IntSliderOption(ConfigEntry<int> configEntry, bool restartRequired) : this(configEntry, new IntSliderConfig { restartRequired = restartRequired }) { }
+    
+    [Obsolete]
+    public IntSliderOption(ConfigEntry<int> configEntry, IntSliderConfig config) : this(new BepInExConfigItem<int>(configEntry), config) { }
+    
+    public IntSliderOption(IConfigItem<int> configItem) : this(configItem, new IntSliderConfig()) { }
+        
+    public IntSliderOption(IConfigItem<int> configItem, bool restartRequired) : this(configItem, new IntSliderConfig { restartRequired = restartRequired }) { }
+    
+    public IntSliderOption(IConfigItem<int> configItem, IntSliderConfig config)
     {
-        protected readonly int originalValue;
-        private readonly ConfigEntry<int> _configEntry;
-        protected readonly IntSliderConfig config;
-        
-        public IntSliderOption(ConfigEntry<int> configEntry) : this(configEntry, new IntSliderConfig()) { }
-        
-        public IntSliderOption(ConfigEntry<int> configEntry, bool restartRequired) : this(configEntry, new IntSliderConfig { restartRequired = restartRequired }) { }
+        ConfigItem = configItem;
+        this.config = config;
 
-        public IntSliderOption(ConfigEntry<int> configEntry, IntSliderConfig config) : this(config, configEntry.Value)
-        {
-            _configEntry = configEntry;
-        }
-        
-        protected IntSliderOption(IntSliderConfig config, int originalValue)
-        {
-            this.originalValue = originalValue;
-            this.config = config;
-        }
+        InitialValue = ConfigItem.Value;
+    }
 
-        public override string OptionTypeName { get; protected set; } = "int_slider";
+    public override IConfigItem BaseConfigItem => ConfigItem;
 
-        internal override ConfigEntryBase ConfigEntry => _configEntry;
+    public override GameObject CreateOptionGameObject(GameObject prefab, Transform parent)
+    {
+        GameObject intSlider = Object.Instantiate(prefab, parent);
 
-        public override GameObject CreateOptionGameObject(GameObject prefab, Transform parent)
-        {
-            GameObject intSlider = Object.Instantiate(prefab, parent);
+        ModSettingsIntSlider settingsSlider = intSlider.GetComponentInChildren<ModSettingsIntSlider>();
 
-            ModSettingsIntSlider settingsSlider = intSlider.GetComponentInChildren<ModSettingsIntSlider>();
+        settingsSlider.nameToken = GetNameToken();
+        settingsSlider.optionId = Id;
 
-            settingsSlider.nameToken = GetNameToken();
-            settingsSlider.settingToken = Identifier;
+        settingsSlider.minValue = config.min;
+        settingsSlider.maxValue = config.max;
+        settingsSlider.formatString = config.formatString;
 
-            settingsSlider.minValue = config.min;
-            settingsSlider.maxValue = config.max;
-            settingsSlider.formatString = config.formatString;
+        intSlider.name = $"Mod Options Int Slider, {Name}";
 
-            intSlider.name = $"Mod Options Int Slider, {Name}";
+        return intSlider;
+    }
 
-            return intSlider;
-        }
-
-        public override BaseOptionConfig GetConfig()
-        {
-            return config;
-        }
-
-        public bool ValueChanged()
-        {
-            return Value != GetOriginalValue();
-        }
-
-        public int GetOriginalValue()
-        {
-            return originalValue;
-        }
-
-        public virtual int Value
-        {
-            get => _configEntry.Value;
-            set => _configEntry.Value = value;
-        }
+    public override BaseOptionConfig GetConfig() => config;
+    
+    public int DefaultValue => ConfigItem.DefaultValue;
+    
+    public virtual int Value
+    {
+        get => ConfigItem.Value;
+        set => ConfigItem.Value = value;
     }
 }
