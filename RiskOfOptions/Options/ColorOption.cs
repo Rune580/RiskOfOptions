@@ -11,7 +11,9 @@ namespace RiskOfOptions.Options;
 public class ColorOption : BaseOption, IConfigItemOption<Color>
 {
     public IConfigItem<Color> ConfigItem { get; }
-    
+
+    public Color InitialValue { get; }
+
     protected readonly ColorOptionConfig config;
     
     [Obsolete]
@@ -31,6 +33,7 @@ public class ColorOption : BaseOption, IConfigItemOption<Color>
     {
         ConfigItem = configItem;
         this.config = config;
+        InitialValue = ConfigItem.Value;
     }
 
     public override IConfigItem BaseConfigItem => ConfigItem;
@@ -42,7 +45,7 @@ public class ColorOption : BaseOption, IConfigItemOption<Color>
         var controller = button.GetComponentInChildren<ModSettingsColor>();
 
         controller.nameToken = GetNameToken();
-        controller.settingToken = Id;
+        controller.optionId = Id;
 
         button.name = $"Mod Option Color, {Name}";
 

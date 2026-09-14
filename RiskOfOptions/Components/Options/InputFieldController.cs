@@ -25,7 +25,7 @@ namespace RiskOfOptions.Components.Options
 
         protected override void Awake()
         {
-            _previewToken = $"{ModSettingsManager.StartingText}.{settingToken}.VALUE";
+            _previewToken = $"{ModSettingsManager.StartingText}.{optionId}.VALUE";
             
             _previewLanguage = transform.Find("Text Preview").GetComponentInChildren<LanguageTextMeshController>();
             _previewLanguage.token = _previewToken;

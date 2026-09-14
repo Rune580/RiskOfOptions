@@ -558,7 +558,7 @@ namespace RiskOfOptions.Components.Panel
         {
             foreach (var modSetting in GetComponentsInChildren<ModSetting>())
             {
-                if (modSetting.settingToken != optionToken)
+                if (modSetting.optionId != optionToken)
                     continue;
 
                 var canvasGroup = modSetting.GetComponent<CanvasGroup>();

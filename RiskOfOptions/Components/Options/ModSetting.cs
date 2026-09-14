@@ -1,5 +1,4 @@
-﻿using RiskOfOptions.Components.Panel;
-using RiskOfOptions.Options;
+﻿using RiskOfOptions.Options;
 using RoR2.UI;
 using UnityEngine;
 
@@ -10,7 +9,7 @@ public abstract class ModSetting : MonoBehaviour
     protected static DecimalSeparator Separator => RiskOfOptionsPlugin.decimalSeparator!.Value;
 
     public string nameToken;
-    public string settingToken;
+    public OptionId optionId;
     public LanguageTextMeshController nameLabel;
     // public ModOptionPanelController optionController;
 
@@ -21,10 +20,10 @@ public abstract class ModSetting : MonoBehaviour
         if (nameLabel && !string.IsNullOrEmpty(nameToken))
             nameLabel.token = nameToken;
 
-        if (string.IsNullOrEmpty(settingToken))
+        if (!optionId.IsValid())
             return;
 
-        option = ModSettingsManager.OptionCollection.GetOption(settingToken);
+        option = ModSettingsManager.OptionCollection.GetOption(optionId);
     }
 
     protected virtual void Start()

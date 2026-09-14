@@ -11,7 +11,9 @@ namespace RiskOfOptions.Options;
 public class StepSliderOption : BaseOption, IConfigItemOption<float>
 {
     public IConfigItem<float> ConfigItem { get; }
-    
+
+    public float InitialValue { get; }
+
     protected readonly StepSliderConfig config;
     
     [Obsolete]
@@ -31,6 +33,8 @@ public class StepSliderOption : BaseOption, IConfigItemOption<float>
     {
         ConfigItem = configItem;
         this.config = config;
+
+        InitialValue = ConfigItem.Value;
     }
 
     public override IConfigItem BaseConfigItem => ConfigItem;
@@ -42,7 +46,7 @@ public class StepSliderOption : BaseOption, IConfigItemOption<float>
         ModSettingsStepSlider settingsSlider = stepSlider.GetComponentInChildren<ModSettingsStepSlider>();
             
         settingsSlider.nameToken = GetNameToken();
-        settingsSlider.settingToken = Id;
+        settingsSlider.optionId = Id;
             
         settingsSlider.increment = config.increment;
         settingsSlider.minValue = config.min;

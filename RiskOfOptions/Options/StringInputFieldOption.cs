@@ -12,7 +12,9 @@ namespace RiskOfOptions.Options;
 public class StringInputFieldOption : BaseOption, IConfigItemOption<string>
 {
     public IConfigItem<string> ConfigItem { get; }
-    
+
+    public string InitialValue { get; }
+
     protected readonly InputFieldConfig config;
     
     [Obsolete]
@@ -32,6 +34,8 @@ public class StringInputFieldOption : BaseOption, IConfigItemOption<string>
     {
         ConfigItem = configItem;
         this.config = config;
+
+        InitialValue = ConfigItem.Value;
     }
 
     public override IConfigItem BaseConfigItem => ConfigItem;
@@ -43,7 +47,7 @@ public class StringInputFieldOption : BaseOption, IConfigItemOption<string>
         var controller = button.GetComponentInChildren<InputFieldController>();
 
         controller.nameToken = GetNameToken();
-        controller.settingToken = Id;
+        controller.optionId = Id;
 
         controller.submitOn = config.submitOn;
         controller.lineType = config.lineType;

@@ -11,7 +11,9 @@ namespace RiskOfOptions.Options;
 public class FloatFieldOption : BaseOption, IConfigItemOption<float>
 {
     public IConfigItem<float> ConfigItem { get; }
-    
+
+    public float InitialValue { get; }
+
     protected readonly FloatFieldConfig config;
     
     [Obsolete]
@@ -31,6 +33,8 @@ public class FloatFieldOption : BaseOption, IConfigItemOption<float>
     {
         ConfigItem = configItem;
         this.config = config;
+
+        InitialValue = ConfigItem.Value;
     }
 
     public override IConfigItem BaseConfigItem => ConfigItem;
@@ -42,7 +46,7 @@ public class FloatFieldOption : BaseOption, IConfigItemOption<float>
         var settingsField = floatField.GetComponentInChildren<ModSettingsFloatField>();
 
         settingsField.nameToken = GetNameToken();
-        settingsField.settingToken = Id;
+        settingsField.optionId = Id;
 
         settingsField.min = config.Min;
         settingsField.max = config.Max;

@@ -44,7 +44,7 @@ public class GenericButtonOption : BaseOption
         var controller = button.GetComponentInChildren<GenericButtonController>();
 
         controller.nameToken = GetNameToken();
-        controller.settingToken = Id;
+        controller.optionId = Id;
         controller.buttonToken = GetButtonLabelToken();
         controller.OnButtonPressed = config.OnButtonPressed;
 

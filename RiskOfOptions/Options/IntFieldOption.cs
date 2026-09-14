@@ -11,7 +11,9 @@ namespace RiskOfOptions.Options;
 public class IntFieldOption : BaseOption, IConfigItemOption<int>
 {
     public IConfigItem<int> ConfigItem { get; }
-    
+
+    public int InitialValue { get; }
+
     protected readonly IntFieldConfig config;
 
     [Obsolete]
@@ -31,6 +33,8 @@ public class IntFieldOption : BaseOption, IConfigItemOption<int>
     {
         ConfigItem = configItem;
         this.config = config;
+
+        InitialValue = ConfigItem.Value;
     }
 
     public override IConfigItem BaseConfigItem => ConfigItem;
@@ -42,7 +46,7 @@ public class IntFieldOption : BaseOption, IConfigItemOption<int>
         var settingsField = intField.GetComponentInChildren<ModSettingsIntField>();
 
         settingsField.nameToken = GetNameToken();
-        settingsField.settingToken = Id;
+        settingsField.optionId = Id;
 
         settingsField.min = config.Min;
         settingsField.max = config.Max;

@@ -114,7 +114,7 @@ public abstract class ModSettingsControl<TValue, TOptionConfig> : ModSetting
 
     public override void CheckIfDisabled()
     {
-        if (string.IsNullOrEmpty(settingToken))
+        if (!optionId.IsValid())
             return;
             
         if (_isDisabled is null)
@@ -136,17 +136,16 @@ public abstract class ModSettingsControl<TValue, TOptionConfig> : ModSetting
 
     private void RestartRequiredCheck()
     {
-        if (!_restartRequired)
+        if (!_restartRequired || configItemOption is null || configItemOption.Value is null)
             return;
         
-        // TODO: Refactor this
-        if (valueHolder.ValueChanged())
+        if (configItemOption.Value.Equals(configItemOption.InitialValue))
         {
-            optionController.AddRestartRequired(settingToken);
+            optionController.AddRestartRequired(optionId);
         }
         else
         {
-            optionController.RemoveRestartRequired(settingToken);
+            optionController.RemoveRestartRequired(optionId);
         }
     }
 
@@ -167,7 +166,7 @@ public abstract class ModSettingsControl<TValue, TOptionConfig> : ModSetting
         if (!this)
             return;
 
-        if (string.IsNullOrEmpty(settingToken))
+        if (string.IsNullOrEmpty(optionId))
             return;
 
         if (InUpdateControls)

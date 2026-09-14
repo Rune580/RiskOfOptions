@@ -11,7 +11,9 @@ namespace RiskOfOptions.Options;
 public class IntSliderOption : BaseOption, IConfigItemOption<int>
 {
     public IConfigItem<int> ConfigItem { get; }
-    
+
+    public int InitialValue { get; }
+
     protected readonly IntSliderConfig config;
     
     [Obsolete]
@@ -31,6 +33,8 @@ public class IntSliderOption : BaseOption, IConfigItemOption<int>
     {
         ConfigItem = configItem;
         this.config = config;
+
+        InitialValue = ConfigItem.Value;
     }
 
     public override IConfigItem BaseConfigItem => ConfigItem;
@@ -42,7 +46,7 @@ public class IntSliderOption : BaseOption, IConfigItemOption<int>
         ModSettingsIntSlider settingsSlider = intSlider.GetComponentInChildren<ModSettingsIntSlider>();
 
         settingsSlider.nameToken = GetNameToken();
-        settingsSlider.settingToken = Id;
+        settingsSlider.optionId = Id;
 
         settingsSlider.minValue = config.min;
         settingsSlider.maxValue = config.max;

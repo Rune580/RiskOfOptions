@@ -15,7 +15,7 @@ public class ModSettingsKeyBind : ModSettingsControl<KeyboardShortcut>
 
     protected override void Awake()
     {
-        if (settingToken == "")
+        if (optionId == "")
             return;
 
         _interactable = true;
@@ -38,7 +38,7 @@ public class ModSettingsKeyBind : ModSettingsControl<KeyboardShortcut>
 
     public void StartListening()
     {
-        KeyBindUtil.StartBinding(SubmitValue, ModSettingsManager.OptionCollection.GetOption(settingToken).Name, 5f, _mpEventSystem);
+        KeyBindUtil.StartBinding(SubmitValue, ModSettingsManager.OptionCollection.GetOption(optionId).Name, 5f, _mpEventSystem);
     }
 
     protected override void Disable()

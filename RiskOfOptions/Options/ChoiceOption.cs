@@ -12,6 +12,9 @@ namespace RiskOfOptions.Options;
 public class ChoiceOption : BaseOption, IConfigItemOption<object>
 {
     public IConfigItem<object> ConfigItem { get; }
+
+    public object InitialValue { get; }
+
     protected readonly ChoiceConfig config;
     private string[] _nameTokens = [];
         
@@ -35,6 +38,8 @@ public class ChoiceOption : BaseOption, IConfigItemOption<object>
         
         ConfigItem = configItem;
         this.config = config;
+
+        InitialValue = ConfigItem.Value;
     }
     
     public override IConfigItem BaseConfigItem => ConfigItem;
@@ -68,7 +73,7 @@ public class ChoiceOption : BaseOption, IConfigItemOption<object>
         var controller = button.GetComponentInChildren<ModSettingsEnumDropDown>();
 
         controller.nameToken = GetNameToken();
-        controller.settingToken = Id;
+        controller.optionId = Id;
             
         button.name = $"Mod Option Choice, {Name}";
 

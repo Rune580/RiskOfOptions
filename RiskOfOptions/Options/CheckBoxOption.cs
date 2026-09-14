@@ -11,7 +11,9 @@ namespace RiskOfOptions.Options;
 public class CheckBoxOption : BaseOption, IConfigItemOption<bool>
 {
     public IConfigItem<bool> ConfigItem { get; }
-    
+
+    public bool InitialValue { get; }
+
     protected readonly CheckBoxConfig config;
 
     [Obsolete]
@@ -31,6 +33,7 @@ public class CheckBoxOption : BaseOption, IConfigItemOption<bool>
     {
         ConfigItem = configItem;
         this.config = config;
+        InitialValue = ConfigItem.Value;
     }
 
     public override IConfigItem BaseConfigItem => ConfigItem;
@@ -42,7 +45,7 @@ public class CheckBoxOption : BaseOption, IConfigItemOption<bool>
         var controller = button.GetComponentInChildren<ModSettingsBool>();
 
         controller.nameToken = GetNameToken();
-        controller.settingToken = Id;
+        controller.optionId = Id;
             
         button.name = $"Mod Option CheckBox, {Name}";
 

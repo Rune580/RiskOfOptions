@@ -11,7 +11,9 @@ namespace RiskOfOptions.Options;
 public class SliderOption : BaseOption, IConfigItemOption<float>
 {
     public IConfigItem<float> ConfigItem { get; }
-    
+
+    public float InitialValue { get; }
+
     protected readonly SliderConfig config;
     
     [Obsolete]
@@ -31,6 +33,8 @@ public class SliderOption : BaseOption, IConfigItemOption<float>
     {
         ConfigItem = configItem;
         this.config = config;
+
+        InitialValue = ConfigItem.Value;
     }
 
     public override IConfigItem BaseConfigItem => ConfigItem;
@@ -42,7 +46,7 @@ public class SliderOption : BaseOption, IConfigItemOption<float>
         ModSettingsSlider settingsSlider = slider.GetComponentInChildren<ModSettingsSlider>();
 
         settingsSlider.nameToken = GetNameToken();
-        settingsSlider.settingToken = Id;
+        settingsSlider.optionId = Id;
             
         settingsSlider.minValue = config.min;
         settingsSlider.maxValue = config.max;

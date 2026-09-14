@@ -12,7 +12,9 @@ namespace RiskOfOptions.Options;
 public class KeyBindOption : BaseOption, IConfigItemOption<KeyboardShortcut>
 {
     public IConfigItem<KeyboardShortcut> ConfigItem { get; }
-    
+
+    public KeyboardShortcut InitialValue { get; }
+
     protected readonly KeyBindConfig config;
     
     [Obsolete]
@@ -32,6 +34,8 @@ public class KeyBindOption : BaseOption, IConfigItemOption<KeyboardShortcut>
     {
         ConfigItem = configItem;
         this.config = config;
+
+        InitialValue = ConfigItem.Value;
     }
 
     public override IConfigItem BaseConfigItem => ConfigItem;
@@ -43,7 +47,7 @@ public class KeyBindOption : BaseOption, IConfigItemOption<KeyboardShortcut>
         ModSettingsKeyBind controller = keyBind.GetComponentInChildren<ModSettingsKeyBind>();
 
         controller.nameToken = GetNameToken();
-        controller.settingToken = Id;
+        controller.optionId = Id;
             
         keyBind.transform.Find("ButtonText").GetComponent<HGTextMeshProUGUI>().SetText(GetLocalizedName());
         keyBind.name = $"Mod Option KeyBind, {Name}";
