@@ -44,6 +44,8 @@ public abstract class ModSettingsControl<TValue, TOptionConfig> : ModSetting
 
         if (option is not null)
             optionValueChanged?.Invoke(option.Id);
+        
+        RestartRequiredCheck();
     }
 
     protected TValue GetCurrentValue() => configItemOption!.Value;
@@ -141,11 +143,11 @@ public abstract class ModSettingsControl<TValue, TOptionConfig> : ModSetting
         
         if (configItemOption.Value.Equals(configItemOption.InitialValue))
         {
-            optionController.AddRestartRequired(optionId);
+            ModSettingsManager.RestartRequiredOptions.Add(optionId);
         }
         else
         {
-            optionController.RemoveRestartRequired(optionId);
+            ModSettingsManager.RestartRequiredOptions.Remove(optionId);
         }
     }
 
@@ -173,7 +175,7 @@ public abstract class ModSettingsControl<TValue, TOptionConfig> : ModSetting
             return;
 
         CheckIfDisabled();
-        RestartRequiredCheck();
+        // RestartRequiredCheck();
         UpdateModifiedIndicator();
 
         InUpdateControls = true;

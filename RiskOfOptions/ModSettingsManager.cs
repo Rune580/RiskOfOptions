@@ -32,7 +32,7 @@ public static class ModSettingsManager
 
     internal static bool disablePause = false;
 
-    internal static readonly List<string> RestartRequiredOptions = [];
+    public static readonly HashSet<OptionId> RestartRequiredOptions = [];
 
     internal static void Init()
     {

@@ -427,17 +427,17 @@ namespace RiskOfOptions.Components.Panel
             }
         }
 
-        internal void AddRestartRequired(string settingToken)
-        {
-            if (!ModSettingsManager.RestartRequiredOptions.Contains(settingToken))
-                ModSettingsManager.RestartRequiredOptions.Add(settingToken);
-        }
-
-        internal void RemoveRestartRequired(string settingToken)
-        {
-            if (ModSettingsManager.RestartRequiredOptions.Contains(settingToken))
-                ModSettingsManager.RestartRequiredOptions.Remove(settingToken);
-        }
+        // internal void AddRestartRequired(string settingToken)
+        // {
+        //     if (!ModSettingsManager.RestartRequiredOptions.Contains(settingToken))
+        //         ModSettingsManager.RestartRequiredOptions.Add(settingToken);
+        // }
+        //
+        // internal void RemoveRestartRequired(string settingToken)
+        // {
+        //     if (ModSettingsManager.RestartRequiredOptions.Contains(settingToken))
+        //         ModSettingsManager.RestartRequiredOptions.Remove(settingToken);
+        // }
 
         private void CheckIfRestartNeeded()
         {
