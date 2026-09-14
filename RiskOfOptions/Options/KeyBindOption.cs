@@ -43,7 +43,7 @@ public class KeyBindOption : BaseOption, IConfigItemOption<KeyboardShortcut>
         ModSettingsKeyBind controller = keyBind.GetComponentInChildren<ModSettingsKeyBind>();
 
         controller.nameToken = GetNameToken();
-        controller.settingToken = Identifier;
+        controller.settingToken = Id;
             
         keyBind.transform.Find("ButtonText").GetComponent<HGTextMeshProUGUI>().SetText(GetLocalizedName());
         keyBind.name = $"Mod Option KeyBind, {Name}";

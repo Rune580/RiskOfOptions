@@ -42,7 +42,7 @@ public class FloatFieldOption : BaseOption, IConfigItemOption<float>
         var settingsField = floatField.GetComponentInChildren<ModSettingsFloatField>();
 
         settingsField.nameToken = GetNameToken();
-        settingsField.settingToken = Identifier;
+        settingsField.settingToken = Id;
 
         settingsField.min = config.Min;
         settingsField.max = config.Max;

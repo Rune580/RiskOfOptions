@@ -1,4 +1,5 @@
-﻿using RiskOfOptions.OptionConfigs;
+﻿using System;
+using RiskOfOptions.OptionConfigs;
 using RiskOfOptions.Options;
 using RoR2.UI;
 using UnityEngine;
@@ -17,6 +18,8 @@ public abstract class ModSettingsControl<TValue, TOptionConfig> : ModSetting
     private BaseOptionConfig.IsDisabledDelegate? _isDisabled;
     private bool _disabled;
     private bool _restartRequired;
+
+    public Action<OptionId>? optionValueChanged;
     
     protected TOptionConfig? Config { get; private set; }
         
@@ -38,7 +41,9 @@ public abstract class ModSettingsControl<TValue, TOptionConfig> : ModSetting
         configItemOption?.Value = newValue;
         
         UpdateControls();
-        optionController.OptionChanged();
+
+        if (option is not null)
+            optionValueChanged?.Invoke(option.Id);
     }
 
     protected TValue GetCurrentValue() => configItemOption!.Value;

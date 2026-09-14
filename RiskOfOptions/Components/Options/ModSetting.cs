@@ -12,7 +12,7 @@ public abstract class ModSetting : MonoBehaviour
     public string nameToken;
     public string settingToken;
     public LanguageTextMeshController nameLabel;
-    public ModOptionPanelController optionController;
+    // public ModOptionPanelController optionController;
 
     protected BaseOption? option;
 

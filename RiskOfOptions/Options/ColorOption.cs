@@ -42,7 +42,7 @@ public class ColorOption : BaseOption, IConfigItemOption<Color>
         var controller = button.GetComponentInChildren<ModSettingsColor>();
 
         controller.nameToken = GetNameToken();
-        controller.settingToken = Identifier;
+        controller.settingToken = Id;
 
         button.name = $"Mod Option Color, {Name}";
 

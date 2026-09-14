@@ -17,7 +17,7 @@ internal class ModIndexedOptionCollection : IEnumerable<OptionCollection>
             _optionCollections[option.ModGuid] = new OptionCollection(option.ModName, option.ModGuid);
             
         _optionCollections[option.ModGuid].AddOption(ref option);
-        _identifierModGuidMap[option.Identifier] = option.ModGuid;
+        _identifierModGuidMap[option.Id] = option.ModGuid;
     }
 
     internal BaseOption GetOption(string identifier)

@@ -53,7 +53,7 @@ namespace RiskOfOptions.Containers
             }
             
             _categories[_nameCategoryMap[option.Category]].AddOption(ref option);
-            _identifierCategoryNameMap[option.Identifier] = option.Category;
+            _identifierCategoryNameMap[option.Id] = option.Category;
         }
 
         internal BaseOption GetOption(string identifier)

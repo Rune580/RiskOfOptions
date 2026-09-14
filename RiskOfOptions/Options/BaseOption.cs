@@ -9,7 +9,7 @@ namespace RiskOfOptions.Options;
 
 public abstract class BaseOption
 {
-    public string Identifier { get; internal set; }
+    public OptionId Id { get; internal set; }
     public string ModGuid { get; internal set; }
     public string ModName { get; internal set; }
     public string Category { get; internal set; }
@@ -87,13 +87,13 @@ public abstract class BaseOption
 
     private bool Equals(BaseOption other)
     {
-        return string.Equals(Identifier, other.Identifier, StringComparison.InvariantCulture);
+        return string.Equals(Id, other.Id, StringComparison.InvariantCulture);
     }
 
     public override int GetHashCode()
     {
         // ReSharper disable twice NonReadonlyMemberInGetHashCode
-        return (!string.IsNullOrEmpty(Identifier) ? StringComparer.InvariantCulture.GetHashCode(Identifier) : 0);
+        return (!string.IsNullOrEmpty(Id) ? StringComparer.InvariantCulture.GetHashCode(Id) : 0);
     }
 
     protected internal virtual void SetProperties()

@@ -68,7 +68,7 @@ public class ChoiceOption : BaseOption, IConfigItemOption<object>
         var controller = button.GetComponentInChildren<ModSettingsEnumDropDown>();
 
         controller.nameToken = GetNameToken();
-        controller.settingToken = Identifier;
+        controller.settingToken = Id;
             
         button.name = $"Mod Option Choice, {Name}";
 

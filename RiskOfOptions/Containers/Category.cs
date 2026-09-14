@@ -39,7 +39,7 @@ internal class Category
     {
         int optionIndex = _options.Count;
         _options.Add(option);
-        _identifierOptionMap.Add(option.Identifier, optionIndex);
+        _identifierOptionMap.Add(option.Id, optionIndex);
     }
 
     internal BaseOption GetOption(string identifier)

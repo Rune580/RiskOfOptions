@@ -7,7 +7,6 @@ using UnityEngine.Events;
 
 namespace RiskOfOptions.Options;
 
-// Todo: Refactor this!!!!
 public class GenericButtonOption : BaseOption
 {
     internal readonly GenericButtonConfig config;
@@ -45,7 +44,7 @@ public class GenericButtonOption : BaseOption
         var controller = button.GetComponentInChildren<GenericButtonController>();
 
         controller.nameToken = GetNameToken();
-        controller.settingToken = Identifier;
+        controller.settingToken = Id;
         controller.buttonToken = GetButtonLabelToken();
         controller.OnButtonPressed = config.OnButtonPressed;
 

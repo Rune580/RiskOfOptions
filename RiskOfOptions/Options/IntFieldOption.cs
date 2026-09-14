@@ -42,7 +42,7 @@ public class IntFieldOption : BaseOption, IConfigItemOption<int>
         var settingsField = intField.GetComponentInChildren<ModSettingsIntField>();
 
         settingsField.nameToken = GetNameToken();
-        settingsField.settingToken = Identifier;
+        settingsField.settingToken = Id;
 
         settingsField.min = config.Min;
         settingsField.max = config.Max;

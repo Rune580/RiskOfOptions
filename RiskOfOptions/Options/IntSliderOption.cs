@@ -42,7 +42,7 @@ public class IntSliderOption : BaseOption, IConfigItemOption<int>
         ModSettingsIntSlider settingsSlider = intSlider.GetComponentInChildren<ModSettingsIntSlider>();
 
         settingsSlider.nameToken = GetNameToken();
-        settingsSlider.settingToken = Identifier;
+        settingsSlider.settingToken = Id;
 
         settingsSlider.minValue = config.min;
         settingsSlider.maxValue = config.max;

@@ -42,7 +42,7 @@ public class CheckBoxOption : BaseOption, IConfigItemOption<bool>
         var controller = button.GetComponentInChildren<ModSettingsBool>();
 
         controller.nameToken = GetNameToken();
-        controller.settingToken = Identifier;
+        controller.settingToken = Id;
             
         button.name = $"Mod Option CheckBox, {Name}";
 

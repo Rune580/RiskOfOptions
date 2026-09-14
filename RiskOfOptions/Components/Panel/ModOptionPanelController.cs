@@ -372,7 +372,7 @@ namespace RiskOfOptions.Components.Panel
                 };
 
                 _modSettings[i] = button.GetComponentInChildren<ModSetting>();
-                _modSettings[i].optionController = this;
+                // _modSettings[i].optionController = this;
                 
                 CanvasGroup canvasGroup = button.AddComponent<CanvasGroup>();
 

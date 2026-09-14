@@ -42,7 +42,7 @@ public class StepSliderOption : BaseOption, IConfigItemOption<float>
         ModSettingsStepSlider settingsSlider = stepSlider.GetComponentInChildren<ModSettingsStepSlider>();
             
         settingsSlider.nameToken = GetNameToken();
-        settingsSlider.settingToken = Identifier;
+        settingsSlider.settingToken = Id;
             
         settingsSlider.increment = config.increment;
         settingsSlider.minValue = config.min;

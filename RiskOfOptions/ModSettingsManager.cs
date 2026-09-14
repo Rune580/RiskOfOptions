@@ -240,16 +240,14 @@ public static class ModSettingsManager
 
         option.ModGuid = modGuid;
         option.ModName = modName;
-        option.Identifier = $"{modGuid}.{option.Category}.{option.Name}"
-            .Replace(" ", "_")
-            .ToUpper();
+        option.Id = new OptionId(modGuid, option.Category, option.Name);
 
         option.RegisterTokens();
 
         if (option.BaseConfigItem is not null)
         {
-            AutoGenerateConfigEntryIdBlacklist.Add(option.Identifier);
-            Debug.Info($"Added {option.Identifier} to blacklist!");
+            AutoGenerateConfigEntryIdBlacklist.Add(option.Id);
+            Debug.Info($"Added {option.Id} to blacklist!");
         }
         
         OptionCollection.AddOption(ref option);
@@ -271,9 +269,7 @@ public static class ModSettingsManager
         option.ModName = modName;
         option.NameToken = nameToken;
         option.DescriptionToken = descriptionToken;
-        option.Identifier = $"{modGuid}.{option.Category}.{option.Name}"
-            .Replace(" ", "_")
-            .ToUpper();
+        option.Id = new OptionId(modGuid, option.Category, option.Name);
 
         // if (option is ChoiceOption choiceOption)
         // {
@@ -283,8 +279,8 @@ public static class ModSettingsManager
         
         if (option.BaseConfigItem is not null)
         {
-            AutoGenerateConfigEntryIdBlacklist.Add(option.Identifier);
-            Debug.Info($"Added {option.Identifier} to blacklist!");
+            AutoGenerateConfigEntryIdBlacklist.Add(option.Id);
+            Debug.Info($"Added {option.Id} to blacklist!");
         }
         
         OptionCollection.AddOption(ref option);

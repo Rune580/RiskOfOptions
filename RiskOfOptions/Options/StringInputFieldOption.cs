@@ -43,7 +43,7 @@ public class StringInputFieldOption : BaseOption, IConfigItemOption<string>
         var controller = button.GetComponentInChildren<InputFieldController>();
 
         controller.nameToken = GetNameToken();
-        controller.settingToken = Identifier;
+        controller.settingToken = Id;
 
         controller.submitOn = config.submitOn;
         controller.lineType = config.lineType;
