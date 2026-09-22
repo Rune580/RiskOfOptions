@@ -26,9 +26,7 @@ public class KeyBindOption : BaseOption, IConfigItemOption<KeyboardShortcut>
     [Obsolete]
     public KeyBindOption(ConfigEntry<KeyboardShortcut> configEntry, KeyBindConfig config) : this(new BepInExConfigItem<KeyboardShortcut>(configEntry), config) { }
     
-    public KeyBindOption(IConfigItem<KeyboardShortcut> configItem) : this(configItem, new KeyBindConfig()) { }
-        
-    public KeyBindOption(IConfigItem<KeyboardShortcut> configItem, bool restartRequired) : this(configItem, new KeyBindConfig { restartRequired = restartRequired }) { }
+    public KeyBindOption(IConfigItem<KeyboardShortcut> configItem) : this(configItem, new KeyBindConfig { restartRequired = configItem.Flags.HasFlag(ConfigItemFlags.RestartRequired) }) { }
     
     public KeyBindOption(IConfigItem<KeyboardShortcut> configItem, KeyBindConfig config)
     {

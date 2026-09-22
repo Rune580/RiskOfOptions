@@ -25,9 +25,7 @@ public class CheckBoxOption : BaseOption, IConfigItemOption<bool>
     [Obsolete]
     public CheckBoxOption(ConfigEntry<bool> configEntry, CheckBoxConfig config) : this(new BepInExConfigItem<bool>(configEntry), config) { }
         
-    public CheckBoxOption(IConfigItem<bool> configItem) : this(configItem, new CheckBoxConfig()) { }
-        
-    public CheckBoxOption(IConfigItem<bool> configItem, bool restartRequired) : this(configItem, new CheckBoxConfig { restartRequired = restartRequired }) { }
+    public CheckBoxOption(IConfigItem<bool> configItem) : this(configItem, new CheckBoxConfig { restartRequired = configItem.Flags.HasFlag(ConfigItemFlags.RestartRequired) }) { }
     
     public CheckBoxOption(IConfigItem<bool> configItem, CheckBoxConfig config)
     {

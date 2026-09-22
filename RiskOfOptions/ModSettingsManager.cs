@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using BepInEx.Bootstrap;
-using BepInEx.Configuration;
 using MonoMod.RuntimeDetour;
+using RiskOfOptions.Config;
+using RiskOfOptions.Config.OptionProviders;
 using RiskOfOptions.Containers;
 using RiskOfOptions.Lib;
-using RiskOfOptions.OptionConfigs;
 using RiskOfOptions.Options;
 using RoR2;
 using UnityEngine;
@@ -23,8 +21,11 @@ public static class ModSettingsManager
 
     internal static readonly ModIndexedOptionCollection OptionCollection = new();
 
+    private static readonly HashSet<IModConfigProvider> ModConfigProviders = [];
+    private static readonly HashSet<ConfigItemOptionProvider> ConfigItemOptionProviders = [];
+
     private static readonly HashSet<string> AutoGenerateModGuidBlacklist = [];
-    private static readonly HashSet<string> AutoGenerateConfigEntryIdBlacklist = [];
+    private static readonly HashSet<OptionId> AutoGenerateConfigEntryIdBlacklist = [];
     private static bool _autoGenerationComplete;
 
     internal const string StartingText = "RISK_OF_OPTIONS";
@@ -45,6 +46,19 @@ public static class ModSettingsManager
 
         SettingsModifier.Init();
 
+        ModConfigProviders.Add(new BepInExModConfigProvider());
+        
+        ConfigItemOptionProviders.Add(new CheckBoxOptionProvider());
+        ConfigItemOptionProviders.Add(new FloatFieldOptionProvider());
+        ConfigItemOptionProviders.Add(new FloatSliderOptionProvider());
+        ConfigItemOptionProviders.Add(new FloatStepSliderOptionProvider());
+        ConfigItemOptionProviders.Add(new IntFieldOptionProvider());
+        ConfigItemOptionProviders.Add(new IntSliderOptionProvider());
+        ConfigItemOptionProviders.Add(new StringInputFieldOptionProvider());
+        ConfigItemOptionProviders.Add(new ColorPickerOptionProvider());
+        ConfigItemOptionProviders.Add(new KeyBindOptionProvider());
+        ConfigItemOptionProviders.Add(new EnumDropDownOptionProvider());
+
         var targetMethod = typeof(PauseManager).GetMethod("CCTogglePause", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
         var destMethod = typeof(ModSettingsManager).GetMethod(nameof(PauseManagerOnCCTogglePause), BindingFlags.NonPublic | BindingFlags.Static);
         _pauseHook ??= new Hook(targetMethod, destMethod);
@@ -56,107 +70,61 @@ public static class ModSettingsManager
             return;
         
         Debug.Info("Starting config auto-generation");
-        
-        foreach (var (modGuid, pluginInfo) in Chainloader.PluginInfos)
+
+        var optionProviders = ConfigItemOptionProviders.OrderByDescending(item => item.Specificity)
+            .ToArray();
+
+        foreach (var modConfigProvider in ModConfigProviders)
         {
-            if (AutoGenerateModGuidBlacklist.Contains(modGuid))
-                continue;
-
-            foreach (var (_, configEntryBase) in pluginInfo.Instance.Config)
+            foreach (var modConfig in modConfigProvider.GetModConfigs())
             {
-                var uniqueId = $"{modGuid}.{configEntryBase.Definition.Section}.{configEntryBase.Definition.Key}"
-                    .Replace(" ", "_")
-                    .ToUpper();
-
-                if (AutoGenerateConfigEntryIdBlacklist.Contains(uniqueId))
+                if (AutoGenerateModGuidBlacklist.Contains(modConfig.ModGuid))
                     continue;
 
-                var metadata = pluginInfo.Metadata;
+                foreach (var configItem in modConfig.GetConfigItems())
+                {
+                    var id = new OptionId(modConfig.ModGuid, configItem.Section, configItem.Name);
 
-                if (configEntryBase is ConfigEntry<bool> boolConfigEntry)
-                {
-                    AddOption(new CheckBoxOption(boolConfigEntry, true), metadata.GUID, metadata.Name);
-                }
-                else if (configEntryBase is ConfigEntry<float> floatConfigEntry)
-                {
-                    if (floatConfigEntry.Description.AcceptableValues is AcceptableValueRange<float> floatRange)
+                    if (AutoGenerateConfigEntryIdBlacklist.Contains(id))
+                        continue;
+
+                    var handled = false;
+                    foreach (var optionProvider in optionProviders)
                     {
-                        AddOption(new SliderOption(floatConfigEntry, new SliderConfig
+                        if (!optionProvider.CanHandle(configItem))
+                            continue;
+                        
+                        AddOption(
+                            optionProvider.CreateOption(configItem),
+                            modConfig.ModGuid,
+                            modConfig.ModName
+                        );
+                        handled = true;
+                    }
+
+                    if (!handled)
+                        Debug.Warn($"Unhandled ConfigItem: \"{id}\", Type: {configItem.GetType()}");
+                }
+                
+                if (OptionCollection.TryGetCollection(modConfig.ModGuid, out var collection))
+                {
+                    // Set mod icon if not yet set.
+                    if (collection.icon is null && collection.iconPrefab is null && modConfig.ModIcon)
+                        collection.icon = modConfig.ModIcon;
+
+                    // Set mod description it not yet set.
+                    if (!collection.DescriptionSet)
+                    {
+                        if (modConfig.ModDescription.IsToken)
                         {
-                            min = floatRange.MinValue,
-                            max = floatRange.MaxValue,
-                            restartRequired = true
-                        }), metadata.GUID, metadata.Name);
-                    }
-                    else
-                    {
-                        AddOption(new FloatFieldOption(floatConfigEntry, true), metadata.GUID, metadata.Name);
-                    }
-                }
-                else if (configEntryBase is ConfigEntry<int> intConfigEntry)
-                {
-                    if (intConfigEntry.Description.AcceptableValues is AcceptableValueRange<int> intRange)
-                    {
-                        AddOption(new IntSliderOption(intConfigEntry, new IntSliderConfig
+                            collection.DescriptionToken = modConfig.ModDescription;
+                        }
+                        else
                         {
-                            min = intRange.MinValue,
-                            max = intRange.MaxValue,
-                            restartRequired = true,
-                        }), metadata.GUID, metadata.Name);
-                    }
-                    else
-                    {
-                        AddOption(new IntFieldOption(intConfigEntry, true), metadata.GUID, metadata.Name);
-                    }
-                }
-                else if (configEntryBase is ConfigEntry<KeyboardShortcut> keyConfigEntry)
-                {
-                    AddOption(new KeyBindOption(keyConfigEntry, true), metadata.GUID, metadata.Name);
-                }
-                else if (configEntryBase is ConfigEntry<Color> colorConfigEntry)
-                {
-                    AddOption(new ColorOption(colorConfigEntry, true), metadata.GUID, metadata.Name);
-                }
-                else if (configEntryBase is ConfigEntry<string> stringConfigEntry)
-                {
-                    AddOption(new StringInputFieldOption(stringConfigEntry, true), metadata.GUID, metadata.Name);
-                }
-                else if (configEntryBase.SettingType.IsEnum)
-                {
-                    AddOption(new ChoiceOption(configEntryBase, true), metadata.GUID, metadata.Name);
-                }
-            }
-            
-            var searchDir = System.IO.Path.GetFullPath(pluginInfo.Location);
-            var parent = Directory.GetParent(searchDir);
-            while (parent is not null && !string.Equals(parent.Name, "plugins", StringComparison.OrdinalIgnoreCase))
-            {
-                searchDir = parent.FullName;
-                parent = Directory.GetParent(searchDir);
-            }
-            
-            if (OptionCollection.TryGetCollection(pluginInfo.Metadata.GUID, out var collection))
-            {
-                // Set mod icon if it has not been set yet.
-                if (collection.icon is null && collection.iconPrefab is null)
-                {
-                    var iconPath = Directory.EnumerateFiles(searchDir, "icon.png", SearchOption.AllDirectories).FirstOrDefault();
-                    if (iconPath is not null)
-                    {
-                        var texture = new Texture2D(256, 256);
-                        if (texture.LoadImage(File.ReadAllBytes(iconPath)) && texture)
-                        {
-                            collection.icon = Sprite.Create(
-                                texture,
-                                new Rect(0, 0, texture.width, texture.height),
-                                new Vector2(0.5f, 0.5f),
-                                100
-                            );
+                            collection.SetDescriptionText(modConfig.ModDescription);
                         }
                     }
                 }
-                
-                // Todo: Set description as well
             }
         }
 
@@ -169,6 +137,16 @@ public static class ModSettingsManager
             return;
 
         orig(args);
+    }
+
+    public static void AddModConfigProvider(IModConfigProvider modConfigProvider)
+    {
+        ModConfigProviders.Add(modConfigProvider);
+    }
+
+    public static void AddConfigItemOptionProvider(ConfigItemOptionProvider configItemOptionProvider)
+    {
+        ConfigItemOptionProviders.Add(configItemOptionProvider);
     }
 
     public static void SetModDescription(string description)

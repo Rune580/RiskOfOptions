@@ -25,9 +25,7 @@ public class ColorOption : BaseOption, IConfigItemOption<Color>
     [Obsolete]
     public ColorOption(ConfigEntry<Color> configEntry, ColorOptionConfig config) : this(new BepInExConfigItem<Color>(configEntry), config) { }
     
-    public ColorOption(IConfigItem<Color> configItem) : this(configItem, new ColorOptionConfig()) { }
-        
-    public ColorOption(IConfigItem<Color> configItem, bool restartRequired) : this(configItem, new ColorOptionConfig { restartRequired = true }) { }
+    public ColorOption(IConfigItem<Color> configItem) : this(configItem, new ColorOptionConfig { restartRequired = configItem.Flags.HasFlag(ConfigItemFlags.RestartRequired) }) { }
     
     public ColorOption(IConfigItem<Color> configItem, ColorOptionConfig config)
     {

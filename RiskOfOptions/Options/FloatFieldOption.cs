@@ -25,9 +25,7 @@ public class FloatFieldOption : BaseOption, IConfigItemOption<float>
     [Obsolete]
     public FloatFieldOption(ConfigEntry<float> configEntry, FloatFieldConfig config) : this(new BepInExConfigItem<float>(configEntry), config) { }
     
-    public FloatFieldOption(IConfigItem<float> configItem) : this(configItem, new FloatFieldConfig()) { }
-        
-    public FloatFieldOption(IConfigItem<float> configItem, bool restartRequired) : this(configItem, new FloatFieldConfig { restartRequired = restartRequired }) { }
+    public FloatFieldOption(IConfigItem<float> configItem) : this(configItem, new FloatFieldConfig { restartRequired = configItem.Flags.HasFlag(ConfigItemFlags.RestartRequired) }) { }
     
     public FloatFieldOption(IConfigItem<float> configItem, FloatFieldConfig config)
     {

@@ -25,9 +25,7 @@ public class IntSliderOption : BaseOption, IConfigItemOption<int>
     [Obsolete]
     public IntSliderOption(ConfigEntry<int> configEntry, IntSliderConfig config) : this(new BepInExConfigItem<int>(configEntry), config) { }
     
-    public IntSliderOption(IConfigItem<int> configItem) : this(configItem, new IntSliderConfig()) { }
-        
-    public IntSliderOption(IConfigItem<int> configItem, bool restartRequired) : this(configItem, new IntSliderConfig { restartRequired = restartRequired }) { }
+    public IntSliderOption(IConfigItem<int> configItem) : this(configItem, new IntSliderConfig { restartRequired = configItem.Flags.HasFlag(ConfigItemFlags.RestartRequired) }) { }
     
     public IntSliderOption(IConfigItem<int> configItem, IntSliderConfig config)
     {

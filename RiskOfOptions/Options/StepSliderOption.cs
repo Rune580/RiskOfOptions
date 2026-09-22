@@ -25,9 +25,7 @@ public class StepSliderOption : BaseOption, IConfigItemOption<float>
     [Obsolete]
     public StepSliderOption(ConfigEntry<float> configEntry, StepSliderConfig config) : this(new BepInExConfigItem<float>(configEntry), config) { }
     
-    public StepSliderOption(IConfigItem<float> configItem) : this(configItem, new StepSliderConfig()) { }
-
-    public StepSliderOption(IConfigItem<float> configItem, bool restartRequired) : this(configItem, new StepSliderConfig { restartRequired = restartRequired }) { }
+    public StepSliderOption(IConfigItem<float> configItem) : this(configItem, new StepSliderConfig { restartRequired = configItem.Flags.HasFlag(ConfigItemFlags.RestartRequired) }) { }
     
     public StepSliderOption(IConfigItem<float> configItem, StepSliderConfig config)
     {

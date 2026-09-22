@@ -25,11 +25,9 @@ public class ChoiceOption : BaseOption, IConfigItemOption<object>
     public ChoiceOption(ConfigEntryBase configEntry, bool restartRequired) : this(configEntry, new ChoiceConfig { restartRequired = restartRequired }) { }
 
     [Obsolete]
-    public ChoiceOption(ConfigEntryBase configEntry, ChoiceConfig config) : this(new BepInExConfigItem(configEntry), config) { }
+    public ChoiceOption(ConfigEntryBase configEntry, ChoiceConfig config) : this(new BepInExObjectConfigItem(configEntry), config) { }
         
-    public ChoiceOption(IConfigItem<object> configItem) : this(configItem, new ChoiceConfig()) { }
-
-    public ChoiceOption(IConfigItem<object> configItem, bool restartRequired) : this(configItem, new ChoiceConfig { restartRequired = restartRequired }) { }
+    public ChoiceOption(IConfigItem<object> configItem) : this(configItem, new ChoiceConfig { restartRequired = configItem.Flags.HasFlag(ConfigItemFlags.RestartRequired) }) { }
     
     public ChoiceOption(IConfigItem<object> configItem, ChoiceConfig config)
     {

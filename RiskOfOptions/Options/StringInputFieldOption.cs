@@ -26,9 +26,7 @@ public class StringInputFieldOption : BaseOption, IConfigItemOption<string>
     [Obsolete]
     public StringInputFieldOption(ConfigEntry<string> configEntry, InputFieldConfig config) : this(new BepInExConfigItem<string>(configEntry), config) { }
     
-    public StringInputFieldOption(IConfigItem<string> configItem) : this(configItem, new InputFieldConfig()) { }
-    
-    public StringInputFieldOption(IConfigItem<string> configItem, bool restartRequired) : this(configItem, new InputFieldConfig { restartRequired =  restartRequired }) { }
+    public StringInputFieldOption(IConfigItem<string> configItem) : this(configItem, new InputFieldConfig { restartRequired = configItem.Flags.HasFlag(ConfigItemFlags.RestartRequired) }) { }
     
     public StringInputFieldOption(IConfigItem<string> configItem, InputFieldConfig config)
     {

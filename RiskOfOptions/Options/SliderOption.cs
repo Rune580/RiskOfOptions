@@ -25,9 +25,7 @@ public class SliderOption : BaseOption, IConfigItemOption<float>
     [Obsolete]
     public SliderOption(ConfigEntry<float> configEntry, SliderConfig config) : this(new BepInExConfigItem<float>(configEntry), config) { }
     
-    public SliderOption(IConfigItem<float> configItem) : this(configItem, new SliderConfig()) { }
-    
-    public SliderOption(IConfigItem<float> configItem, bool restartRequired) : this(configItem, new SliderConfig { restartRequired = restartRequired }) { }
+    public SliderOption(IConfigItem<float> configItem) : this(configItem, new SliderConfig { restartRequired = configItem.Flags.HasFlag(ConfigItemFlags.RestartRequired)} ) { }
     
     public SliderOption(IConfigItem<float> configItem, SliderConfig config)
     {

@@ -25,9 +25,7 @@ public class IntFieldOption : BaseOption, IConfigItemOption<int>
     [Obsolete]
     public IntFieldOption(ConfigEntry<int> configEntry, IntFieldConfig config) : this(new BepInExConfigItem<int>(configEntry), config) { }
     
-    public IntFieldOption(IConfigItem<int> configItem) : this(configItem, new IntFieldConfig()) { }
-        
-    public IntFieldOption(IConfigItem<int> configItem, bool restartRequired) : this(configItem, new IntFieldConfig { restartRequired = restartRequired }) { }
+    public IntFieldOption(IConfigItem<int> configItem) : this(configItem, new IntFieldConfig { restartRequired = configItem.Flags.HasFlag(ConfigItemFlags.RestartRequired) }) { }
     
     public IntFieldOption(IConfigItem<int> configItem, IntFieldConfig config)
     {

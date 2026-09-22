@@ -20,4 +20,8 @@ public interface IConfigItem
     public string Description { get; }
     
     public Type ValueType { get; }
+    
+    public ConfigItemFlags Flags { get; }
+    
+    public ConfigItemValueValidationRules ValidationRules { get; }
 }
