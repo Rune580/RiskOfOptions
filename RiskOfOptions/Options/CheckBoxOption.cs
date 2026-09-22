@@ -1,68 +1,60 @@
-﻿using BepInEx.Configuration;
+﻿using System;
+using BepInEx.Configuration;
 using RiskOfOptions.Components.Options;
+using RiskOfOptions.Config;
 using RiskOfOptions.OptionConfigs;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
-namespace RiskOfOptions.Options
+namespace RiskOfOptions.Options;
+
+public class CheckBoxOption : BaseOption, IConfigItemOption<bool>
 {
-    public class CheckBoxOption : BaseOption, ITypedValueHolder<bool>
+    public IConfigItem<bool> ConfigItem { get; }
+
+    public bool InitialValue { get; }
+
+    protected readonly CheckBoxConfig config;
+
+    [Obsolete]
+    public CheckBoxOption(ConfigEntry<bool> configEntry) : this(configEntry, new CheckBoxConfig()) { }
+    
+    [Obsolete]
+    public CheckBoxOption(ConfigEntry<bool> configEntry, bool restartRequired) : this(configEntry, new CheckBoxConfig { restartRequired = restartRequired }) { }
+
+    [Obsolete]
+    public CheckBoxOption(ConfigEntry<bool> configEntry, CheckBoxConfig config) : this(new BepInExConfigItem<bool>(configEntry), config) { }
+        
+    public CheckBoxOption(IConfigItem<bool> configItem) : this(configItem, new CheckBoxConfig { restartRequired = configItem.Flags.HasFlag(ConfigItemFlags.RestartRequired) }) { }
+    
+    public CheckBoxOption(IConfigItem<bool> configItem, CheckBoxConfig config)
     {
-        protected readonly bool originalValue;
-        private readonly ConfigEntry<bool> _configEntry;
-        protected readonly CheckBoxConfig config;
+        ConfigItem = configItem;
+        this.config = config;
+        InitialValue = ConfigItem.Value;
+    }
 
-        public CheckBoxOption(ConfigEntry<bool> configEntry) : this(configEntry, new CheckBoxConfig()) { }
-        
-        public CheckBoxOption(ConfigEntry<bool> configEntry, bool restartRequired) : this(configEntry, new CheckBoxConfig { restartRequired = restartRequired }) { }
+    public override IConfigItem BaseConfigItem => ConfigItem;
 
-        public CheckBoxOption(ConfigEntry<bool> configEntry, CheckBoxConfig config) : this(config, configEntry.Value)
-        {
-            _configEntry = configEntry;
-        }
+    public override GameObject CreateOptionGameObject(GameObject prefab, Transform parent)
+    {
+        GameObject button = Object.Instantiate(prefab, parent);
 
-        protected CheckBoxOption(CheckBoxConfig config, bool originalValue)
-        {
-            this.originalValue = originalValue;
-            this.config = config;
-        }
-        
-        public override string OptionTypeName { get; protected set; } = "checkbox";
-        
-        internal override ConfigEntryBase ConfigEntry => _configEntry;
+        var controller = button.GetComponentInChildren<ModSettingsBool>();
 
-        public override GameObject CreateOptionGameObject(GameObject prefab, Transform parent)
-        {
-            GameObject button = Object.Instantiate(prefab, parent);
-
-            var controller = button.GetComponentInChildren<ModSettingsBool>();
-
-            controller.nameToken = GetNameToken();
-            controller.settingToken = Identifier;
+        controller.nameToken = GetNameToken();
+        controller.optionId = Id;
             
-            button.name = $"Mod Option CheckBox, {Name}";
+        button.name = $"Mod Option CheckBox, {Name}";
 
-            return button;
-        }
+        return button;
+    }
         
-        public override BaseOptionConfig GetConfig()
-        {
-            return config;
-        }
+    public override BaseOptionConfig GetConfig() => config;
 
-        public bool ValueChanged()
-        {
-            return Value != GetOriginalValue();
-        }
-
-        public bool GetOriginalValue()
-        {
-            return originalValue;
-        }
-
-        public virtual bool Value
-        {
-            get => _configEntry.Value; 
-            set => _configEntry.Value = value;
-        }
+    public virtual bool Value
+    {
+        get => ConfigItem.Value; 
+        set => ConfigItem.Value = value;
     }
 }

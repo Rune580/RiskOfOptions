@@ -30,12 +30,13 @@ internal static class ExtensionMethods
             
         foreach (var item in types)
         {
-            BepInPlugin bepInPlugin = item.GetCustomAttribute<BepInPlugin>();
+            var bepInPlugin = item.GetCustomAttribute<BepInPlugin>();
 
             if (bepInPlugin == null) continue;
 
             modMetaData.Guid = bepInPlugin.GUID;
             modMetaData.Name = bepInPlugin.Name;
+            modMetaData.SourceAssembly = assembly;
         }
 
         return modMetaData;

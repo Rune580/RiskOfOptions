@@ -1,72 +1,67 @@
-﻿using BepInEx.Configuration;
+﻿using System;
+using BepInEx.Configuration;
 using RiskOfOptions.Components.Options;
+using RiskOfOptions.Config;
 using RiskOfOptions.OptionConfigs;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
-namespace RiskOfOptions.Options
+namespace RiskOfOptions.Options;
+
+public class SliderOption : BaseOption, IConfigItemOption<float>
 {
-    public class SliderOption : BaseOption, ITypedValueHolder<float>
+    public IConfigItem<float> ConfigItem { get; }
+
+    public float InitialValue { get; }
+
+    protected readonly SliderConfig config;
+    
+    [Obsolete]
+    public SliderOption(ConfigEntry<float> configEntry) : this(configEntry, new SliderConfig()) { }
+    
+    [Obsolete]
+    public SliderOption(ConfigEntry<float> configEntry, bool restartRequired) : this(configEntry, new SliderConfig { restartRequired = restartRequired }) { }
+
+    [Obsolete]
+    public SliderOption(ConfigEntry<float> configEntry, SliderConfig config) : this(new BepInExConfigItem<float>(configEntry), config) { }
+    
+    public SliderOption(IConfigItem<float> configItem) : this(configItem, new SliderConfig { restartRequired = configItem.Flags.HasFlag(ConfigItemFlags.RestartRequired)} ) { }
+    
+    public SliderOption(IConfigItem<float> configItem, SliderConfig config)
     {
-        protected readonly float originalValue;
-        private readonly ConfigEntry<float> _configEntry;
-        protected readonly SliderConfig config;
-        
-        public SliderOption(ConfigEntry<float> configEntry) : this(configEntry, new SliderConfig()) { }
-        
-        public SliderOption(ConfigEntry<float> configEntry, bool restartRequired) : this(configEntry, new SliderConfig { restartRequired = restartRequired }) { }
+        ConfigItem = configItem;
+        this.config = config;
 
-        public SliderOption(ConfigEntry<float> configEntry, SliderConfig config) : this(config, configEntry.Value)
-        {
-            _configEntry = configEntry;
-        }
-        protected SliderOption(SliderConfig config, float originalValue)
-        {
-            this.originalValue = originalValue;
-            this.config = config;
-        }
+        InitialValue = ConfigItem.Value;
+    }
 
-        public override string OptionTypeName { get; protected set; } = "slider";
-        
-        internal override ConfigEntryBase ConfigEntry => _configEntry;
-        
-        public override GameObject CreateOptionGameObject(GameObject prefab, Transform parent)
-        {
-            GameObject slider = Object.Instantiate(prefab, parent);
+    public override IConfigItem BaseConfigItem => ConfigItem;
 
-            ModSettingsSlider settingsSlider = slider.GetComponentInChildren<ModSettingsSlider>();
+    public override GameObject CreateOptionGameObject(GameObject prefab, Transform parent)
+    {
+        GameObject slider = Object.Instantiate(prefab, parent);
 
-            settingsSlider.nameToken = GetNameToken();
-            settingsSlider.settingToken = Identifier;
+        ModSettingsSlider settingsSlider = slider.GetComponentInChildren<ModSettingsSlider>();
+
+        settingsSlider.nameToken = GetNameToken();
+        settingsSlider.optionId = Id;
             
-            settingsSlider.minValue = config.min;
-            settingsSlider.maxValue = config.max;
-            settingsSlider.formatString = config.FormatString;
+        settingsSlider.minValue = config.min;
+        settingsSlider.maxValue = config.max;
+        settingsSlider.formatString = config.FormatString;
             
-            slider.name = $"Mod Option Slider, {Name}";
+        slider.name = $"Mod Option Slider, {Name}";
 
-            return slider;
-        }
+        return slider;
+    }
 
-        public override BaseOptionConfig GetConfig()
-        {
-            return config;
-        }
+    public override BaseOptionConfig GetConfig() => config;
 
-        public bool ValueChanged()
-        {
-            // ReSharper disable once CompareOfFloatsByEqualityOperator
-            return Value != GetOriginalValue();
-        }
-
-        public float GetOriginalValue()
-        {
-            return originalValue;
-        }
-
-        public virtual float Value
-        {
-            get => _configEntry.Value;
-            set => _configEntry.Value = value;
-        }
+    public float DefaultValue => ConfigItem.DefaultValue;
+    
+    public virtual float Value
+    {
+        get => ConfigItem.Value;
+        set => ConfigItem.Value = value;
     }
 }
