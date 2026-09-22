@@ -45,19 +45,19 @@ public static class ModSettingsManager
         LanguageTokens.Register();
 
         SettingsModifier.Init();
-
-        ModConfigProviders.Add(new BepInExModConfigProvider());
         
-        ConfigItemOptionProviders.Add(new CheckBoxOptionProvider());
-        ConfigItemOptionProviders.Add(new FloatFieldOptionProvider());
-        ConfigItemOptionProviders.Add(new FloatSliderOptionProvider());
-        ConfigItemOptionProviders.Add(new FloatStepSliderOptionProvider());
-        ConfigItemOptionProviders.Add(new IntFieldOptionProvider());
-        ConfigItemOptionProviders.Add(new IntSliderOptionProvider());
-        ConfigItemOptionProviders.Add(new StringInputFieldOptionProvider());
-        ConfigItemOptionProviders.Add(new ColorPickerOptionProvider());
-        ConfigItemOptionProviders.Add(new KeyBindOptionProvider());
-        ConfigItemOptionProviders.Add(new EnumDropDownOptionProvider());
+        AddModConfigProvider(new BepInExModConfigProvider());
+        
+        AddConfigItemOptionProvider(new CheckBoxOptionProvider());
+        AddConfigItemOptionProvider(new FloatFieldOptionProvider());
+        AddConfigItemOptionProvider(new FloatSliderOptionProvider());
+        AddConfigItemOptionProvider(new FloatStepSliderOptionProvider());
+        AddConfigItemOptionProvider(new IntFieldOptionProvider());
+        AddConfigItemOptionProvider(new IntSliderOptionProvider());
+        AddConfigItemOptionProvider(new StringInputFieldOptionProvider());
+        AddConfigItemOptionProvider(new ColorPickerOptionProvider());
+        AddConfigItemOptionProvider(new KeyBindOptionProvider());
+        AddConfigItemOptionProvider(new EnumDropDownOptionProvider());
 
         var targetMethod = typeof(PauseManager).GetMethod("CCTogglePause", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
         var destMethod = typeof(ModSettingsManager).GetMethod(nameof(PauseManagerOnCCTogglePause), BindingFlags.NonPublic | BindingFlags.Static);
@@ -93,6 +93,8 @@ public static class ModSettingsManager
                     {
                         if (!optionProvider.CanHandle(configItem))
                             continue;
+                        
+                        Debug.Info($"Auto-Generated Option: \"{id}\"");
                         
                         AddOption(
                             optionProvider.CreateOption(configItem),
@@ -142,11 +144,13 @@ public static class ModSettingsManager
     public static void AddModConfigProvider(IModConfigProvider modConfigProvider)
     {
         ModConfigProviders.Add(modConfigProvider);
+        Debug.Info($"Registered Mod Config Provider: \"{modConfigProvider.GetType()}\"");
     }
 
     public static void AddConfigItemOptionProvider(ConfigItemOptionProvider configItemOptionProvider)
     {
         ConfigItemOptionProviders.Add(configItemOptionProvider);
+        Debug.Info($"Registered Config Item Option Provider: \"{configItemOptionProvider.GetType()}\"");
     }
 
     public static void SetModDescription(string description)
@@ -223,10 +227,7 @@ public static class ModSettingsManager
         option.RegisterTokens();
 
         if (option.BaseConfigItem is not null)
-        {
             AutoGenerateConfigEntryIdBlacklist.Add(option.Id);
-            Debug.Info($"Added {option.Id} to blacklist!");
-        }
         
         OptionCollection.AddOption(ref option);
     }
@@ -256,10 +257,7 @@ public static class ModSettingsManager
         option.RegisterTokens();
         
         if (option.BaseConfigItem is not null)
-        {
             AutoGenerateConfigEntryIdBlacklist.Add(option.Id);
-            Debug.Info($"Added {option.Id} to blacklist!");
-        }
         
         OptionCollection.AddOption(ref option);
     }
