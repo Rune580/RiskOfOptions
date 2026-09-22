@@ -101,7 +101,9 @@ public static class ModSettingsManager
                             modConfig.ModGuid,
                             modConfig.ModName
                         );
+                        
                         handled = true;
+                        break;
                     }
 
                     if (!handled)
