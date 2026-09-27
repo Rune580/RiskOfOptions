@@ -39,7 +39,9 @@ public static class ModSettingsManager
     {
         LanguageApi.Init();
 
-        Resources.Assets.LoadAssets();
+        Utils.Assets.AddBundle("riskofoptions");
+        Utils.Assets.AddBundle("uielements");
+        
         Resources.Prefabs.Init();
 
         LanguageTokens.Register();

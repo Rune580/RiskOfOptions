@@ -51,7 +51,7 @@ public class DrawRect : MonoBehaviour
     {
         if (!_lineMaterial)
         {
-            var shader = Prefabs.LoadShader("GizmoShader.shader");
+            var shader = Utils.Assets.Load<Shader>("roo/shaders/GizmoShader.shader");
             _lineMaterial = new Material(shader)
             {
                 hideFlags = HideFlags.HideAndDontSave

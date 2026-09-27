@@ -324,7 +324,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             CategoryPageIndicator.SetActive(false);
 
             var image = CategoryPageIndicator.GetComponent<Image>();
-            image.sprite = RiskOfOptions.Resources.Assets.Load<Sprite>("assets/RiskOfOptions/IndicatorDot.png");
+            image.sprite = Utils.Assets.Load<Sprite>("assets/RiskOfOptions/IndicatorDot.png");
             image.preserveAspect = true;
 
             var dotRectTransform = CategoryPageIndicator.GetComponent<RectTransform>();
@@ -339,7 +339,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             CategoryPageIndicatorOutline.transform.SetParent(CategoryPageIndicators.transform, false);
             CategoryPageIndicatorOutline.SetActive(true);
             
-            CategoryPageIndicatorOutline.GetComponent<Image>().sprite = RiskOfOptions.Resources.Assets.Load<Sprite>("assets/RiskOfOptions/IndicatorOutline.png");
+            CategoryPageIndicatorOutline.GetComponent<Image>().sprite = Utils.Assets.Load<Sprite>("assets/RiskOfOptions/IndicatorOutline.png");
             
             var outlineRectTransform = CategoryPageIndicatorOutline.GetComponent<RectTransform>();
             outlineRectTransform.pivot = Vector2.zero;
@@ -455,7 +455,7 @@ namespace RiskOfOptions.Components.RuntimePrefabs
             restartIconLayoutElement.preferredWidth = 30;
 
             Image restartIcon = restartIconGameObject.AddComponent<Image>();
-            restartIcon.sprite = RiskOfOptions.Resources.Assets.Load<Sprite>("assets/RiskOfOptions/ror2RestartSymbol.png");
+            restartIcon.sprite = Utils.Assets.Load<Sprite>("assets/RiskOfOptions/ror2RestartSymbol.png");
             restartIcon.preserveAspect = true;
 
             restartIconGameObject.transform.SetParent(sizeFitterObject.transform, false);

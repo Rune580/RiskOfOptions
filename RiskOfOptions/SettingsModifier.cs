@@ -1,6 +1,5 @@
 ﻿using System;
 using RiskOfOptions.Components;
-using RiskOfOptions.Components.RuntimePrefabs;
 using RiskOfOptions.Lib;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -21,18 +20,6 @@ namespace RiskOfOptions
             settingsPanel.AddComponent<InitializeRoOUi>();
             
             LanguageApi.Add(LanguageTokens.HeaderToken, "MOD OPTIONS");
-            
-            RuntimePrefabManager.Register<ModOptionsPanelPrefab>();
-            RuntimePrefabManager.Register<CheckBoxPrefab>();
-            RuntimePrefabManager.Register<SliderPrefab>();
-            RuntimePrefabManager.Register<StepSliderPrefab>();
-            RuntimePrefabManager.Register<IntSliderPrefab>();
-            RuntimePrefabManager.Register<FloatFieldPrefab>();
-            RuntimePrefabManager.Register<IntFieldPrefab>();
-            RuntimePrefabManager.Register<KeyBindPrefab>();
-            RuntimePrefabManager.Register<InputFieldPrefab>();
-            RuntimePrefabManager.Register<ChoicePrefab>();
-            RuntimePrefabManager.Register<GenericButtonPrefab>();
         }
     }
 }
