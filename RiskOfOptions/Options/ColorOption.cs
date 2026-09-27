@@ -1,68 +1,62 @@
-﻿using BepInEx.Configuration;
+﻿using System;
+using BepInEx.Configuration;
 using RiskOfOptions.Components.Options;
+using RiskOfOptions.Config;
 using RiskOfOptions.OptionConfigs;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
-namespace RiskOfOptions.Options
+namespace RiskOfOptions.Options;
+
+public class ColorOption : BaseOption, IConfigItemOption<Color>
 {
-    public class ColorOption : BaseOption, ITypedValueHolder<Color>
+    public IConfigItem<Color> ConfigItem { get; }
+
+    public Color InitialValue { get; }
+
+    protected readonly ColorOptionConfig config;
+    
+    [Obsolete]
+    public ColorOption(ConfigEntry<Color> configEntry) : this(configEntry, new ColorOptionConfig()) { }
+    
+    [Obsolete]
+    public ColorOption(ConfigEntry<Color> configEntry, bool restartRequired) : this(configEntry, new ColorOptionConfig { restartRequired = true }) { }
+    
+    [Obsolete]
+    public ColorOption(ConfigEntry<Color> configEntry, ColorOptionConfig config) : this(new BepInExConfigItem<Color>(configEntry), config) { }
+    
+    public ColorOption(IConfigItem<Color> configItem) : this(configItem, new ColorOptionConfig { restartRequired = configItem.Flags.HasFlag(ConfigItemFlags.RestartRequired) }) { }
+    
+    public ColorOption(IConfigItem<Color> configItem, ColorOptionConfig config)
     {
-        protected readonly Color originalValue;
-        private readonly ConfigEntry<Color> _configEntry;
-        protected readonly ColorOptionConfig config;
-        
-        public ColorOption(ConfigEntry<Color> configEntry) : this(configEntry, new ColorOptionConfig()) { }
-        
-        public ColorOption(ConfigEntry<Color> configEntry, bool restartRequired) : this(configEntry, new ColorOptionConfig { restartRequired = true }) { }
+        ConfigItem = configItem;
+        this.config = config;
+        InitialValue = ConfigItem.Value;
+    }
 
-        public ColorOption(ConfigEntry<Color> configEntry, ColorOptionConfig config) : this(config, configEntry.Value)
-        {
-            _configEntry = configEntry;
-        }
+    public override IConfigItem BaseConfigItem => ConfigItem;
 
-        protected ColorOption(ColorOptionConfig config, Color originalValue)
-        {
-            this.originalValue = originalValue;
-            this.config = config;
-        }
+    public override GameObject CreateOptionGameObject(GameObject prefab, Transform parent)
+    {
+        GameObject button = Object.Instantiate(prefab, parent);
 
-        public override string OptionTypeName { get; protected set; } = "color";
+        var controller = button.GetComponentInChildren<ModSettingsColor>();
 
-        internal override ConfigEntryBase ConfigEntry => _configEntry;
+        controller.nameToken = GetNameToken();
+        controller.optionId = Id;
 
-        public override GameObject CreateOptionGameObject(GameObject prefab, Transform parent)
-        {
-            GameObject button = Object.Instantiate(prefab, parent);
+        button.name = $"Mod Option Color, {Name}";
 
-            var controller = button.GetComponentInChildren<ModSettingsColor>();
+        return button;
+    }
 
-            controller.nameToken = GetNameToken();
-            controller.settingToken = Identifier;
-
-            button.name = $"Mod Option Color, {Name}";
-
-            return button;
-        }
-
-        public override BaseOptionConfig GetConfig()
-        {
-            return config;
-        }
-
-        public bool ValueChanged()
-        {
-            return Value != GetOriginalValue();
-        }
-
-        public Color GetOriginalValue()
-        {
-            return originalValue;
-        }
-
-        public virtual Color Value
-        {
-            get => _configEntry.Value;
-            set => _configEntry.Value = value;
-        }
+    public override BaseOptionConfig GetConfig() => config;
+    
+    public Color DefaultValue => ConfigItem.DefaultValue;
+    
+    public virtual Color Value
+    {
+        get => ConfigItem.Value;
+        set => ConfigItem.Value = value;
     }
 }

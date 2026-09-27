@@ -1,5 +1,6 @@
 ﻿using System;
-using RoR2;
+using RiskOfOptions.Components.Recycle;
+using RiskOfOptions.Containers;
 using RoR2.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -7,7 +8,8 @@ using UnityEngine.UI;
 
 namespace RiskOfOptions.Components.Panel;
 
-public class ModListButton : HGButton
+[RequireComponent(typeof(RectTransform))]
+public class ModListButton : HGButton, IRecycleViewItem<OptionCollection>
 {
     #region Legacy
 
@@ -18,37 +20,63 @@ public class ModListButton : HGButton
 
     #endregion
         
-    public string token;
-    public string descriptionToken;
-    public LanguageTextMeshController nameLabel;
-    public HGTextMeshProUGUI descriptionLabel;
+    public string token = "";
+    public string descriptionToken = "";
+    public LanguageTextMeshController nameLabel = null!;
+    public string modGuid = "";
+    public Image? modIcon;
+    public Sprite fallbackIcon = null!;
+
+    private GameObject? _prefabIcon = null!;
+
+    public Action<string>? onSetModDescription;
+    public Action<string, RectTransform>? onModSelected;
+
+    public int ConstraintIndex { get; set; }
+
+    public RectTransform RectTransform => (RectTransform)transform;
+
+    private OptionCollection Collection => ModSettingsManager.OptionCollection[modGuid];
+
+    public void BindData(OptionCollection collection)
+    {
+        descriptionToken = collection.DescriptionToken;
+        token = collection.NameToken;
+        modGuid = collection.ModGuid;
         
-    public ModOptionPanelController Mopc { get; internal set; }
-    public string modGuid;
-    public HGHeaderNavigationController navigationController;
-    public Image modIcon;
+        UpdateState();
+        
+        Select();
+    }
 
     public override void OnSelect(BaseEventData eventData)
     {
         base.OnSelect(eventData);
         SetDescription();
     }
-        
-    public override void Awake()
-    {
-        base.Awake();
 
+    private void UpdateState()
+    {
         if (nameLabel)
             nameLabel.token = token;
 
         if (!modIcon)
             modIcon = transform.Find("Icon Area").Find("Mod Icon").gameObject.GetComponent<Image>();
 
-        // Prefer prefabs over sprite icons
-        if (ModSettingsManager.OptionCollection[modGuid].iconPrefab is not null)
+        if (string.IsNullOrWhiteSpace(modGuid))
+            return;
+        
+        if (_prefabIcon)
+            DestroyImmediate(_prefabIcon);
+
+        if (modIcon && modIcon!.sprite)
+            modIcon.sprite = fallbackIcon;
+
+        // Prefer prefabs to sprite icons
+        if (Collection.iconPrefab is not null)
             PrefabIcon();
 
-        if (ModSettingsManager.OptionCollection[modGuid].icon is not null)
+        if (Collection.icon is not null)
             SpriteIcon();
     }
 
@@ -57,8 +85,11 @@ public class ModListButton : HGButton
     {
         if (!modIcon)
             return;
-
-        Instantiate(ModSettingsManager.OptionCollection[modGuid].iconPrefab!, modIcon.transform.parent);
+        
+        if (string.IsNullOrWhiteSpace(modGuid))
+            return;
+        
+        _prefabIcon = Instantiate(Collection.iconPrefab!, modIcon!.transform.parent);
         
         modIcon.gameObject.SetActive(false);
     }
@@ -67,8 +98,13 @@ public class ModListButton : HGButton
     {
         if (!modIcon)
             return;
+        
+        if (string.IsNullOrWhiteSpace(modGuid))
+            return;
 
-        modIcon.sprite = ModSettingsManager.OptionCollection[modGuid].icon!;
+        modIcon!.sprite = Collection.icon!;
+        
+        modIcon.gameObject.SetActive(true);
     }
 
     public override void Start()
@@ -77,44 +113,36 @@ public class ModListButton : HGButton
 
         if (nameLabel)
             nameLabel.token = token;
-
-        if (!Mopc)
-            Mopc = GetComponentInParent<ModOptionPanelController>();
             
-        onClick.AddListener(delegate
-        {
-            navigationController.ChooseHeaderByButton(this);
-
-            Mopc.LoadModOptionsFromOptionCollection(modGuid);
-        });
+        onClick.AddListener(OnClick);
     }
 
     private new void Update()
     {
         if (!eventSystem)
-        {
             return;
-        }
+        
+        // TODO: Where the fuck did I get the actionId of 14 from??? 
         if (!disableGamepadClick && eventSystem.player.GetButtonDown(14) && eventSystem.currentSelectedGameObject == gameObject)
-        {
             InvokeClick();
-        }
-        if (defaultFallbackButton && eventSystem.currentInputSource == MPEventSystem.InputSource.Gamepad && eventSystem.currentSelectedGameObject == null && CanBeSelected())
-        {
+        
+        // TODO: What is this? What does this even do? It's not like Gamepads even work with RoO's UI, so why did I write this here?
+        if (defaultFallbackButton && eventSystem.currentInputSource == MPEventSystem.InputSource.Gamepad && !eventSystem.currentSelectedGameObject && CanBeSelected())
             Select();
-        }
     }
 
+    private void OnClick()
+    {
+        onModSelected?.Invoke(modGuid, RectTransform);
+    }
 
     private void SetDescription()
     {
-        if (!descriptionLabel || descriptionToken is null)
-            return;
+        onSetModDescription?.Invoke(descriptionToken);
+    }
 
-        string text = Language.currentLanguage.GetLocalizedStringByToken(descriptionToken);
-        if (text == descriptionToken)
-            text = "No description provided";
-
-        descriptionLabel.text = text;
+    public void Dispose()
+    {
+        DestroyImmediate(gameObject);
     }
 }

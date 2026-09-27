@@ -12,7 +12,7 @@ websiteUrl = "https://github.com/Rune580/RiskOfOptions"
 containsNsfwContent = false
 
 [package.dependencies]
-bbepis-BepInExPack = "5.4.2113"
+bbepis-BepInExPack = "5.4.2122"
 
 [build]
 icon = "icons/roo-icon-static.png"
@@ -26,6 +26,10 @@ target = "plugins/RiskOfOptions/"
 [[build.copy]]
 source = "../RiskOfOptions/bin/Release/netstandard2.1/RiskOfOptions.pdb"
 target = "plugins/RiskOfOptions/"
+
+[[build.copy]]
+source = "../RiskOfOptions/bin/Release/netstandard2.1/AssetBundles"
+target = "plugins/RiskOfOptions/AssetBundles"
 
 [[build.copy]]
 source = "../CHANGELOG.md"

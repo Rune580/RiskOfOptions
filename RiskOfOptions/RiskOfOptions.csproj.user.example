@@ -1,14 +1,19 @@
 <Project>
-  <ItemGroup>
-    <!-- You can add additional files to deploy with another <FilesToDeploy> tag, you should probably leave this one alone though... -->
-    <FilesToDeploy Include="$(ProjectDir)/bin/Debug/netstandard2.0/RiskOfOptions.dll;$(ProjectDir)/bin/Debug/netstandard2.0/RiskOfOptions.pdb" />
-    
-    <!-- Add as many <DeployDirs> entries as you need, replacing what's inside of Include="..." with the path you want to deploy to -->
-    <DeployDirs Include="" />
-  </ItemGroup>
+	<ItemGroup>
+		<!-- You can add additional files to deploy with another <FilesToDeploy> tag, you should probably leave this one alone though... -->
+		<FilesToDeploy Include="$(TargetPath);$(TargetDir)$(TargetName).pdb" />
+		
+		<!-- Add as many <DeployDirs> entries as you need, replacing what's inside of Include="..." with the path you want to deploy to -->
+		<DeployDirs Include="" />
+	</ItemGroup>
+	
+	<ItemGroup>
+		<AssetBundlesToDeploy Include="$(TargetDir)AssetBundles/**/*" />
+	</ItemGroup>
   
-  <!-- Files will be copied whenever you Build the project -->
-  <Target Name="DeployFiles" AfterTargets="PostBuildEvent" DependsOnTargets="PackageThunderstoreArtifact">
-    <Copy SourceFiles="@(FilesToDeploy)" DestinationFolder="%(DeployDirs.Identity)/RiskOfOptions" />
-  </Target>
+	<!-- Files will be copied whenever you Build the project -->
+	<Target Name="DeployFiles" AfterTargets="PostBuildEvent" DependsOnTargets="PackageThunderstoreArtifact">
+		<Copy SourceFiles="@(FilesToDeploy)" DestinationFolder="%(DeployDirs.Identity)/RiskOfOptions" />
+		<Copy SourceFiles="@(AssetBundlesToDeploy)" DestinationFolder="%(DeployDirs.Identity)/RiskOfOptions/AssetBundles" />
+	</Target>
 </Project>

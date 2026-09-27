@@ -139,7 +139,7 @@ namespace RoOToolkit.Editor.CustomEditors
             }
         }
 
-        private void ResolveSprite(Transform root, ImageAssetEntry entry)
+        public static void ResolveSprite(Transform root, ImageAssetEntry entry)
         {
             Texture2D texture = Addressables.LoadAssetAsync<Texture2D>(entry.addressablePath).WaitForCompletion();
             
@@ -150,7 +150,7 @@ namespace RoOToolkit.Editor.CustomEditors
             entry.GetTarget(root).sprite = asset;
         }
 
-        private void ResolveMaterial(Transform root, ImageAssetEntry entry)
+        public static void ResolveMaterial(Transform root, ImageAssetEntry entry)
         {
             Material material = Addressables.LoadAssetAsync<Material>(entry.addressablePath).WaitForCompletion();
 

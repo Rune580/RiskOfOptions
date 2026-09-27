@@ -80,13 +80,19 @@ namespace RoOToolkit.Editor.CustomEditors
             if (GUILayout.Button("Resolve"))
             {
                 if (resolver.entries != null)
-                    ResolveAssets(resolver);
+                {
+                    foreach (var r in resolver.GetComponentsInChildren<TAssetResolver>())
+                        ResolveAssets(r);
+                }
             }
             
             if (GUILayout.Button("Reset"))
             {
                 if (resolver.entries != null)
-                    ResetAssets(resolver);
+                {
+                    foreach (var r in resolver.GetComponentsInChildren<TAssetResolver>())
+                        ResetAssets(r);
+                }
             }
 
             GUILayout.EndHorizontal();

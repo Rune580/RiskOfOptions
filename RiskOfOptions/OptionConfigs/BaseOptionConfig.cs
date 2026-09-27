@@ -30,7 +30,7 @@ namespace RiskOfOptions.OptionConfigs
         [Obsolete("Not yet implemented")]
         public bool hidden = false;
 
-        public IsDisabledDelegate checkIfDisabled;
+        public IsDisabledDelegate? checkIfDisabled;
 
         public delegate bool IsDisabledDelegate();
     }

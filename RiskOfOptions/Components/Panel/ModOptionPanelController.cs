@@ -163,8 +163,8 @@ namespace RiskOfOptions.Components.Panel
                 modListButton.nameLabel = modListButton.GetComponent<LanguageTextMeshController>();
                 modListButton.token = collection.NameToken;
                 modListButton.modGuid = collection.ModGuid;
-                modListButton.navigationController = navigationController;
-                modListButton.descriptionLabel = _panel.ModDescriptionPanel.GetComponentInChildren<HGTextMeshProUGUI>();
+                // modListButton.navigationController = navigationController;
+                // modListButton.descriptionLabel = _panel.ModDescriptionPanel.GetComponentInChildren<HGTextMeshProUGUI>();
 
                 // RectTransform modIconRectTransform = newModButton.transform.Find("ModIcon").gameObject.GetComponent<RectTransform>();
                 //
@@ -298,7 +298,7 @@ namespace RiskOfOptions.Components.Panel
                 le.preferredWidth = 200;
 
                 newCategoryButton.GetComponentInChildren<LanguageTextMeshController>().token = collection[i].NameToken;
-                newCategoryButton.GetComponentInChildren<HGTextMeshProUGUI>().SetText(collection[i].name);
+                newCategoryButton.GetComponentInChildren<HGTextMeshProUGUI>().SetText(collection[i].Name);
                 newCategoryButton.GetComponentInChildren<HGButton>().onClick.RemoveAllListeners();
 
                 var categoryIndex = i;
@@ -310,13 +310,13 @@ namespace RiskOfOptions.Components.Panel
                     LoadOptionListFromCategory(modGuid, categoryIndex);
                 });
 
-                newCategoryButton.name = $"Category Button, {collection[i].name}";
+                newCategoryButton.name = $"Category Button, {collection[i].Name}";
                 newCategoryButton.SetActive(true);
 
                 HGHeaderNavigationController.Header header = new HGHeaderNavigationController.Header
                 {
                     headerButton = newCategoryButton.GetComponent<HGButton>(),
-                    headerName = $"Category Button, {collection[i].name}",
+                    headerName = $"Category Button, {collection[i].Name}",
                     tmpHeaderText = newCategoryButton.GetComponentInChildren<HGTextMeshProUGUI>(),
                     headerRoot = null
                 };
@@ -372,7 +372,7 @@ namespace RiskOfOptions.Components.Panel
                 };
 
                 _modSettings[i] = button.GetComponentInChildren<ModSetting>();
-                _modSettings[i].optionController = this;
+                // _modSettings[i].optionController = this;
                 
                 CanvasGroup canvasGroup = button.AddComponent<CanvasGroup>();
 
@@ -427,17 +427,17 @@ namespace RiskOfOptions.Components.Panel
             }
         }
 
-        internal void AddRestartRequired(string settingToken)
-        {
-            if (!ModSettingsManager.RestartRequiredOptions.Contains(settingToken))
-                ModSettingsManager.RestartRequiredOptions.Add(settingToken);
-        }
-
-        internal void RemoveRestartRequired(string settingToken)
-        {
-            if (ModSettingsManager.RestartRequiredOptions.Contains(settingToken))
-                ModSettingsManager.RestartRequiredOptions.Remove(settingToken);
-        }
+        // internal void AddRestartRequired(string settingToken)
+        // {
+        //     if (!ModSettingsManager.RestartRequiredOptions.Contains(settingToken))
+        //         ModSettingsManager.RestartRequiredOptions.Add(settingToken);
+        // }
+        //
+        // internal void RemoveRestartRequired(string settingToken)
+        // {
+        //     if (ModSettingsManager.RestartRequiredOptions.Contains(settingToken))
+        //         ModSettingsManager.RestartRequiredOptions.Remove(settingToken);
+        // }
 
         private void CheckIfRestartNeeded()
         {
@@ -558,7 +558,7 @@ namespace RiskOfOptions.Components.Panel
         {
             foreach (var modSetting in GetComponentsInChildren<ModSetting>())
             {
-                if (modSetting.settingToken != optionToken)
+                if (modSetting.optionId != optionToken)
                     continue;
 
                 var canvasGroup = modSetting.GetComponent<CanvasGroup>();
